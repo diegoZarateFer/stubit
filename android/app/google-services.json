@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "895390332443",
+    "firebase_url": "https://stu-bit-default-rtdb.firebaseio.com",
+    "project_id": "stu-bit",
+    "storage_bucket": "stu-bit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895390332443:android:ea2970e31dc6126b0caabe",
+        "android_client_info": {
+          "package_name": "com.example.stubit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAweydQZ6JiyE3VRnE2ClbDXxrXijcj3XY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895390332443:android:33d3e82e8b1e0b300caabe",
+        "android_client_info": {
+          "package_name": "com.stubit.stubit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAweydQZ6JiyE3VRnE2ClbDXxrXijcj3XY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
