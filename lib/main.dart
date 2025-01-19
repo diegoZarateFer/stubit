@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:stubit/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:stubit/screens/auth_wrapper.dart';
 import 'package:stubit/screens/create_FT_habit_screen.dart';
 
 final colorScheme = ColorScheme.fromSeed(
