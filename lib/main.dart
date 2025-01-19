@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:stubit/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/screens/auth_wrapper.dart';
-import 'package:stubit/screens/create_FT_habit_screen.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
@@ -56,7 +55,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Stu-bit',
       theme: theme,
-      home: const CreateFtHabitScreen(),
+      home: const AuthWrapper(),
     );
   }
 }
