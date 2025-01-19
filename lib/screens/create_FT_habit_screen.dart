@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
@@ -8,9 +9,27 @@ final List<DayInWeek> _days = [
   DayInWeek("M", dayKey: "wednesday"),
   DayInWeek("M", dayKey: "thursday"),
   DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday", isSelected: true),
-  DayInWeek("S", dayKey: "sunday", isSelected: true),
+  DayInWeek("V", dayKey: "saturday"),
+  DayInWeek("S", dayKey: "sunday"),
 ];
+
+final List<String> _options = [
+  "3 semanas",
+  "4 semanas",
+  "5 semanas",
+  "6 semanas",
+  "Indefinidamente"
+];
+
+final List<String> _hours = List.generate(
+  13,
+  (index) => index.toString(),
+);
+
+final List<String> _minutes = List.generate(
+  60,
+  (index) => index.toString(),
+);
 
 class CreateFtHabitScreen extends StatefulWidget {
   const CreateFtHabitScreen({super.key});
@@ -56,11 +75,11 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 16,
+                      height: 8,
                     ),
                     Image.asset(
                       "assets/images/calendar.png",
-                      height: 80,
+                      height: 60,
                     ),
                     const SizedBox(
                       height: 16,
@@ -77,11 +96,94 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Duración del hábito",
+                      "¿Cuánto tiempo quieres dedicar a la actividad por día?",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    CupertinoPageScaffold(
+                      backgroundColor: Colors.transparent,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 128,
+                              child: CupertinoPicker(
+                                looping: true,
+                                itemExtent: 32,
+                                onSelectedItemChanged: (index) {},
+                                children: _hours
+                                    .map(
+                                      (hour) => Center(
+                                        child: Text(hour),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            "horas",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 128,
+                              child: CupertinoPicker(
+                                looping: true,
+                                itemExtent: 32,
+                                onSelectedItemChanged: (index) {},
+                                children: _minutes
+                                    .map(
+                                      (minute) => Center(
+                                        child: Text(minute),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            "min.",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 32,
+                    ),
+                    DropdownButtonFormField(
+                      dropdownColor: Colors.black,
+                      items: _options.map((option) {
+                        return DropdownMenuItem(
+                          value: option,
+                          child: Text(
+                            option,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (priority) {},
+                      decoration: const InputDecoration(
+                        labelText: 'Duración del hábito.',
                       ),
                     ),
                     const SizedBox(
@@ -91,7 +193,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       "¿Que días quieres realizar el hábito?",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Colors.white,
                       ),
                     ),
@@ -102,9 +204,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       fontSize: 16,
                       onSelect: (value) {},
                       days: _days,
-                      selectedDaysFillColor: const Color(0xFFA6A6A6),
+                      unselectedDaysFillColor: const Color(0xFFA6A6A6),
                       unselectedDaysBorderColor: Colors.black,
-                      unselectedDaysFillColor: const Color(0xFFA557E8),
+                      selectedDaysFillColor: const Color(0xFFA557E8),
                       selectedDaysBorderColor: Colors.black,
                       selectedDayTextColor: Colors.white,
                       unSelectedDayTextColor: Colors.white,
