@@ -188,6 +188,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
+                      menuMaxHeight: 256,
                     ),
                     const SizedBox(
                       height: 16,
