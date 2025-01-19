@@ -8,6 +8,9 @@ final List<String> _options = [
   "5 semanas",
   "6 semanas",
   "7 semanas",
+  "8 semanas",
+  "9 semanas",
+  "10 semanas",
   "Indefinidamente"
 ];
 
@@ -175,6 +178,7 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
+                      menuMaxHeight: 256,
                     ),
                     const SizedBox(
                       height: 16,
