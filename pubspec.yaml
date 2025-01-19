@@ -34,6 +34,7 @@ dependencies:
     sdk: flutter
   google_fonts: ^6.0.0
   popover: ^0.3.1
+  day_picker: 2.3.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

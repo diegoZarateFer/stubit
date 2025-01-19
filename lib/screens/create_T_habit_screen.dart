@@ -1,44 +1,34 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:day_picker/day_picker.dart';
-
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
 
 final List<String> _options = [
   "3 semanas",
   "4 semanas",
   "5 semanas",
   "6 semanas",
+  "7 semanas",
   "Indefinidamente"
 ];
 
 final List<String> _hours = List.generate(
   13,
-  (index) => index.toString(),
+  (index) => index > 9 ? index.toString() : "0${index.toString()}",
 );
 
 final List<String> _minutes = List.generate(
   60,
-  (index) => index.toString(),
+  (index) => index > 9 ? index.toString() : "0${index.toString()}",
 );
 
-class CreateFtHabitScreen extends StatefulWidget {
-  const CreateFtHabitScreen({super.key});
+class CreateTHabitScreen extends StatefulWidget {
+  const CreateTHabitScreen({super.key});
 
   @override
-  State<CreateFtHabitScreen> createState() => _CreateFtHabitScreenState();
+  State<CreateTHabitScreen> createState() => _CreateFtHabitScreenState();
 }
 
-class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
+class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -85,7 +75,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Realizar estiramientos al despertar.",
+                      "Dormir adecuadamente.",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
@@ -185,33 +175,6 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "¿Que días quieres realizar el hábito?",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    SelectWeekDays(
-                      fontSize: 16,
-                      onSelect: (value) {},
-                      days: _days,
-                      unselectedDaysFillColor: const Color(0xFFA6A6A6),
-                      unselectedDaysBorderColor: Colors.black,
-                      selectedDaysFillColor: const Color(0xFFA557E8),
-                      selectedDaysBorderColor: Colors.black,
-                      selectedDayTextColor: Colors.white,
-                      unSelectedDayTextColor: Colors.white,
-                      borderWidth: 4,
-                      backgroundColor: Colors.transparent,
                     ),
                     const SizedBox(
                       height: 16,
