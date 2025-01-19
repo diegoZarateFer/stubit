@@ -18,17 +18,20 @@ final List<String> _options = [
   "4 semanas",
   "5 semanas",
   "6 semanas",
+  "7 semanas",
+  "9 semanas",
+  "10 semanas",
   "Indefinidamente"
 ];
 
 final List<String> _hours = List.generate(
   13,
-  (index) => index.toString(),
+  (index) => index > 9 ? index.toString() : "0${index.toString()}",
 );
 
 final List<String> _minutes = List.generate(
   60,
-  (index) => index.toString(),
+  (index) => index > 9 ? index.toString() : "0${index.toString()}",
 );
 
 class CreateFtHabitScreen extends StatefulWidget {
