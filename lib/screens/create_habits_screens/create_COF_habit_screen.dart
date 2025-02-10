@@ -24,6 +24,11 @@ final List<String> _numberOfWeeks = [
   "Indefinidamente"
 ];
 
+final List<String> _units = [
+  "páginas",
+  "rompecabezas",
+];
+
 class CreateCofHabitScreen extends StatefulWidget {
   const CreateCofHabitScreen({super.key});
 
@@ -116,13 +121,21 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                           ),
                         ),
                         Expanded(
-                          child: Text(
-                            "unidad",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
+                          child: CupertinoPicker(
+                            itemExtent: 64,
+                            onSelectedItemChanged: (index) {},
+                            children: _units
+                                .map(
+                                  (unit) => Center(
+                                    child: Text(
+                                      unit,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ),
                       ],
