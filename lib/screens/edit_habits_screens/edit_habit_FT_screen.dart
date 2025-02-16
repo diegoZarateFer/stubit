@@ -18,27 +18,30 @@ final List<String> _options = [
   "4 semanas",
   "5 semanas",
   "6 semanas",
+  "7 semanas",
+  "9 semanas",
+  "10 semanas",
   "Indefinidamente"
 ];
 
 final List<String> _hours = List.generate(
   13,
-  (index) => index.toString(),
+  (index) => index > 9 ? index.toString() : "0${index.toString()}",
 );
 
 final List<String> _minutes = List.generate(
   60,
-  (index) => index.toString(),
+  (index) => index > 9 ? index.toString() : "0${index.toString()}",
 );
 
-class CreateFtHabitScreen extends StatefulWidget {
-  const CreateFtHabitScreen({super.key});
+class EditHabitFtScreen extends StatefulWidget {
+  const EditHabitFtScreen({super.key});
 
   @override
-  State<CreateFtHabitScreen> createState() => _CreateFtHabitScreenState();
+  State<EditHabitFtScreen> createState() => _EditHabitFtScreenState();
 }
 
-class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
+class _EditHabitFtScreenState extends State<EditHabitFtScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -67,7 +70,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "CREACIÓN DE HÁBITO",
+                      "MODIFICAR HÁBITO",
                       style: GoogleFonts.poppins(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -185,6 +188,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
+                      menuMaxHeight: 256,
                     ),
                     const SizedBox(
                       height: 16,
@@ -225,7 +229,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                         backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
                       ),
                       child: Text(
-                        "Aceptar",
+                        "Guardar",
                         style: GoogleFonts.openSans(
                           color: Colors.white,
                           decorationColor: Colors.white,
