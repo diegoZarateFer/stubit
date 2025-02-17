@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stubit/data/habits.dart';
+import 'package:stubit/widgets/habit_category_details.dart';
 import 'package:stubit/widgets/image_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/widgets/user_button.dart';
@@ -91,9 +93,35 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                   controller: _pageViewController,
                   onPageChanged: _handlePageViewChanged,
                   children: [
-                    Center(child: Text("Página 1"),),
-                    Center(child: Text("Página 2"),),
-                    Center(child: Text("Página 3"),),
+                    HabitCategoryDetails(
+                      categoryName: "Hábitos de estudio",
+                      description:
+                          "Son prácticas o rutinas que ayudan a mejorar la eficiencia y efectividad en el aprendizaje.",
+                      habits: habits
+                          .where((habit) => habit.category == "c1")
+                          .toList(),
+                      image: const AssetImage("assets/images/study_habits.jpg"),
+                    ),
+                    HabitCategoryDetails(
+                      categoryName: "Hábitos físicos y de salud",
+                      description:
+                          "Actividades que una persona adopta para mantener o mejorar su bienestar físico y mental.  Están relacionados con la alimentación, el ejercicio físico, el descanso y la salud mental.",
+                      habits: habits
+                          .where((habit) => habit.category == "c2")
+                          .toList(),
+                      image:
+                          const AssetImage("assets/images/health_habits.png"),
+                    ),
+                    HabitCategoryDetails(
+                      categoryName: "Hábitos de autocuidado",
+                      description:
+                          "Actividades que una persona realiza para cuidar su bienestar emocional, físico y mental. Promueven el equilibrio emocional y físico.",
+                      habits: habits
+                          .where((habit) => habit.category == "c3")
+                          .toList(),
+                      image:
+                          const AssetImage("assets/images/selfcare_habits.jpg"),
+                    ),
                   ],
                 ),
               ],
