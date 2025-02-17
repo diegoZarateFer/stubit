@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stubit/screens/board_screen.dart';
 import 'package:stubit/screens/create_task_screen.dart';
+import 'package:stubit/screens/habits_menu_screen.dart';
 import 'package:stubit/screens/habits_screen.dart';
 import 'package:stubit/widgets/bottom_navigator.dart';
 import 'package:stubit/widgets/image_button.dart';
@@ -34,11 +35,11 @@ class _HomeScreenState extends State<HomeScreen>
     int currentTabIndex = _tabController.index;
     if (currentTabIndex == 0) {
       // Add a new habit
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (ctx) => const HabitsMenuScreen(),
-      //   ),
-      // );
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => const HabitsMenuScreen(),
+        ),
+      );
     } else {
       // Add a new task to the board.
       Navigator.of(context).push(
