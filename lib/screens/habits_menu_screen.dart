@@ -12,6 +12,27 @@ class HabitsMenuScreen extends StatefulWidget {
 
 class _HabitsMenuScreenState extends State<HabitsMenuScreen>
     with SingleTickerProviderStateMixin {
+  late PageController _pageViewController;
+  int _currentPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageViewController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageViewController.dispose();
+    super.dispose();
+  }
+
+  void _handlePageViewChanged(int currentPageIndex) {
+    setState(() {
+      _currentPageIndex = currentPageIndex;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -63,8 +84,19 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                 ],
               ),
             ),
-            child: Center(
-              child: Text("hOLA"),
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                PageView(
+                  controller: _pageViewController,
+                  onPageChanged: _handlePageViewChanged,
+                  children: [
+                    Center(child: Text("Página 1"),),
+                    Center(child: Text("Página 2"),),
+                    Center(child: Text("Página 3"),),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
