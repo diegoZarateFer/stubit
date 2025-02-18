@@ -81,26 +81,27 @@ class HabitCategoryDetails extends StatelessWidget {
               const SizedBox(
                 height: 32,
               ),
-              DropdownButtonFormField(
-                dropdownColor: Colors.black,
-                items: habits.map((habit) {
-                  return DropdownMenuItem(
-                    value: habit.name,
-                    child: Text(
-                      habit.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+              if (habits.isNotEmpty)
+                DropdownButtonFormField(
+                  dropdownColor: Colors.black,
+                  items: habits.map((habit) {
+                    return DropdownMenuItem(
+                      value: habit.name,
+                      child: Text(
+                        habit.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {},
-                decoration: const InputDecoration(
-                  labelText: 'Selecciona un hábito',
+                    );
+                  }).toList(),
+                  onChanged: (value) {},
+                  decoration: const InputDecoration(
+                    labelText: 'Selecciona un hábito',
+                  ),
                 ),
-              ),
               const SizedBox(
                 height: 16,
               ),

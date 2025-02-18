@@ -136,7 +136,7 @@ const habits = [
   // Mentales.
   Habit(
     id: "h18",
-    name: "Hacer una lista de las cosas por las que te sientes agradecido",
+    name: "Practicar la gratitud",
     description:
         "Hacer una lista de las cosas por las que te sientes agradecido este día.",
     category: "c5",
