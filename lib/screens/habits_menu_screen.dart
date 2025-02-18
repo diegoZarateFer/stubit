@@ -12,40 +12,43 @@ class HabitsMenuScreen extends StatefulWidget {
 class _HabitsMenuScreenState extends State<HabitsMenuScreen>
     with SingleTickerProviderStateMixin {
   late PageController _pageViewController;
+  late TabController _tabController;
   int _currentPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController();
+    _tabController = TabController(length: 6, vsync: this);
   }
 
   @override
   void dispose() {
     _pageViewController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   void _handlePageViewChanged(int currentPageIndex) {
+    _tabController.index = currentPageIndex;
+
     setState(() {
       _currentPageIndex = currentPageIndex;
     });
   }
 
+  void _updateCurrentPageIndex(int index) {
+    _tabController.index = index;
+    _pageViewController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-          ),
-        ),
-      ),
       body: Container(
         height: double.infinity,
         decoration: const BoxDecoration(
@@ -114,10 +117,74 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                 ),
               ],
             ),
+            PageIndicator(
+              currentPageIndex: _currentPageIndex,
+              tabController: _tabController,
+              onUpdateCurrentPageIndex: _updateCurrentPageIndex,
+            ),
           ],
         ),
       ),
     );
-    ;
+  }
+}
+
+class PageIndicator extends StatelessWidget {
+  const PageIndicator({
+    super.key,
+    required this.currentPageIndex,
+    required this.tabController,
+    required this.onUpdateCurrentPageIndex,
+  });
+
+  final int currentPageIndex;
+  final TabController tabController;
+  final void Function(int) onUpdateCurrentPageIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(
+        8,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            splashRadius: 16,
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              if (currentPageIndex == 0) {
+                return;
+              }
+              onUpdateCurrentPageIndex(currentPageIndex - 1);
+            },
+            icon: const Icon(
+              Icons.arrow_left_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          TabPageSelector(
+            controller: tabController,
+          ),
+          IconButton(
+            splashRadius: 16,
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              if (currentPageIndex == 5) {
+                return;
+              }
+              onUpdateCurrentPageIndex(currentPageIndex + 1);
+            },
+            icon: const Icon(
+              Icons.arrow_right_rounded,
+              size: 32,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
