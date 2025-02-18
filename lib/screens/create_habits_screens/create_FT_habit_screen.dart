@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
+import 'package:stubit/models/habit.dart';
 
 final List<DayInWeek> _days = [
   DayInWeek("D", dayKey: "monday"),
@@ -35,7 +36,12 @@ final List<String> _minutes = List.generate(
 );
 
 class CreateFtHabitScreen extends StatefulWidget {
-  const CreateFtHabitScreen({super.key});
+  const CreateFtHabitScreen({
+    super.key,
+    required this.habit,
+  });
+
+  final Habit habit;
 
   @override
   State<CreateFtHabitScreen> createState() => _CreateFtHabitScreenState();
@@ -88,7 +94,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Realizar estiramientos al despertar.",
+                      widget.habit.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
