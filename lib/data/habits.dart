@@ -108,4 +108,69 @@ const habits = [
     category: "c3",
     strategy: "TF",
   ),
+
+  // Sociales.
+  Habit(
+    id: "h15",
+    name: "Llamar a amigos y familiares",
+    description:
+        "Llamar, enviar mensajes o visitar a amigos y familiares de manera constante.",
+    category: "c4",
+    strategy: "CF",
+  ),
+  Habit(
+    id: "h16",
+    name: "Iniciar conversaciones con personas nuevas",
+    description: "Iniciar conversaciones con personas nuevas.",
+    category: "c4",
+    strategy: "CF",
+  ),
+  Habit(
+    id: "h17",
+    name: "Asistir a eventos sociales",
+    description: "Asistir a eventos sociales.",
+    category: "c4",
+    strategy: "CF",
+  ),
+
+  // Mentales.
+  Habit(
+    id: "h18",
+    name: "Hacer una lista de las cosas por las que te sientes agradecido",
+    description:
+        "Hacer una lista de las cosas por las que te sientes agradecido este día.",
+    category: "c5",
+    strategy: "L",
+  ),
+  Habit(
+    id: "h19",
+    name: "Evitar la sobreexposición a redes sociales",
+    description:
+        "Evitar la sobreexposición a redes sociales y limitar el tiempo frente a la televisión o entretenimiento pasivo.",
+    category: "c5",
+    strategy: "T",
+  ),
+  Habit(
+    id: "h20",
+    name: "Dividir el trabajo en bloques de tiempo",
+    description:
+        "Dividir el trabajo en bloques de tiempo para mantener el enfoque y evitar el agotamiento.",
+    category: "c5",
+    strategy: "TP",
+  ),
+  Habit(
+    id: "h21",
+    name: "Leer",
+    description: "Leer sobre algún tema que sea de tu interés.",
+    category: "c5",
+    strategy: "COF",
+  ),
+  Habit(
+    id: "h22",
+    name: "Resolver rompecabezas o juegos de lógica",
+    description:
+        "Resolver rompecabezas o juegos de lógica para ejercitar la mente.",
+    category: "c5",
+    strategy: "COF",
+  ),
 ];
