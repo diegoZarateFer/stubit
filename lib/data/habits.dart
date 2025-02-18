@@ -4,7 +4,7 @@ const habits = [
   //Estudio
   Habit(
     id: "h1",
-    name: "Estudiar",
+    name: "Dedicar tiempo al estudio",
     description: "Registrar cuándo y cuánto tiempo se dedica al estudio. ",
     category: "c1",
     strategy: "TF",

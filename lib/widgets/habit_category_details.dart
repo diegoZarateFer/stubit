@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/create_habits_screens/create_FT_habit_screen.dart';
 
-class HabitCategoryDetails extends StatelessWidget {
+class HabitCategoryDetails extends StatefulWidget {
   const HabitCategoryDetails({
     super.key,
     required this.categoryName,
@@ -15,6 +16,40 @@ class HabitCategoryDetails extends StatelessWidget {
   final String description;
   final List<Habit> habits;
   final AssetImage image;
+
+  @override
+  State<HabitCategoryDetails> createState() => _HabitCategoryDetailsState();
+}
+
+class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
+  Habit? _selectedHabit;
+
+  void _loadCreatingHabitForm() {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (_selectedHabit == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Te falta seleccionar algún hábito.'),
+        ),
+      );
+      return;
+    }
+
+    final habitStrategy = _selectedHabit!.strategy;
+    if (habitStrategy == "TF") {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => CreateFtHabitScreen(
+            habit: _selectedHabit!,
+          ),
+        ),
+      );
+    } else if (habitStrategy == "T") {
+    } else if (habitStrategy == "CF") {
+    } else if (habitStrategy == "L") {
+    } else if (habitStrategy == "COF") {
+    } else if (habitStrategy == "TP") {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +86,7 @@ class HabitCategoryDetails extends StatelessWidget {
                     ),
                   ],
                   image: DecorationImage(
-                    image: image,
+                    image: widget.image,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -60,7 +95,7 @@ class HabitCategoryDetails extends StatelessWidget {
                 height: 32,
               ),
               Text(
-                categoryName,
+                widget.categoryName,
                 style: GoogleFonts.poppins(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -71,7 +106,7 @@ class HabitCategoryDetails extends StatelessWidget {
                 height: 32,
               ),
               Text(
-                description,
+                widget.description,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
@@ -81,12 +116,12 @@ class HabitCategoryDetails extends StatelessWidget {
               const SizedBox(
                 height: 32,
               ),
-              if (habits.isNotEmpty)
+              if (widget.habits.isNotEmpty)
                 DropdownButtonFormField(
                   dropdownColor: Colors.black,
-                  items: habits.map((habit) {
+                  items: widget.habits.map((habit) {
                     return DropdownMenuItem(
-                      value: habit.name,
+                      value: habit,
                       child: Text(
                         habit.name,
                         style: const TextStyle(
@@ -97,7 +132,9 @@ class HabitCategoryDetails extends StatelessWidget {
                       ),
                     );
                   }).toList(),
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    _selectedHabit = value;
+                  },
                   decoration: const InputDecoration(
                     labelText: 'Selecciona un hábito',
                   ),
@@ -106,7 +143,9 @@ class HabitCategoryDetails extends StatelessWidget {
                 height: 16,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _loadCreatingHabitForm();
+                },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
