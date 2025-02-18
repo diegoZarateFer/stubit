@@ -122,6 +122,26 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                       image:
                           const AssetImage("assets/images/selfcare_habits.jpg"),
                     ),
+                    HabitCategoryDetails(
+                      categoryName: "Hábitos sociales",
+                      description:
+                          "Ayudan a una persona a interactuar de manera efectiva y positiva con los demás, fortaleciendo sus relaciones interpersonales.",
+                      habits: habits
+                          .where((habit) => habit.category == "c4")
+                          .toList(),
+                      image:
+                          const AssetImage("assets/images/social_habits.jpg"),
+                    ),
+                    HabitCategoryDetails(
+                      categoryName: "Hábitos mentales",
+                      description:
+                          "Patrones de pensamiento que se repiten de manera automática. Influyen en la forma en que percibimos y reaccionamos ante el mundo.",
+                      habits: habits
+                          .where((habit) => habit.category == "c5")
+                          .toList(),
+                      image:
+                          const AssetImage("assets/images/mental_habits.jpg"),
+                    ),
                   ],
                 ),
               ],
