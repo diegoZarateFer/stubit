@@ -6,10 +6,12 @@ class Habit {
     required this.name,
     required this.description,
     required this.category,
+    required this.strategy,
   });
 
   final String id;
   final String name;
   final String description;
-  final Categories category;
+  final String category;
+  final String strategy;
 }
