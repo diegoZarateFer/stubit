@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,11 +51,18 @@ class CreateFtHabitScreen extends StatefulWidget {
 }
 
 class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
+  User? _currentUser;
   final _formKey = GlobalKey<FormState>();
 
   List<String> _selectedDaysOfWeek = [];
   int _selectedNumberOfHours = 0, _selectedNumberOfMinutes = 0;
   num? _selectedNumberOfWeeks;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
 
   String? _habitDurationValidator(selectedDuration) {
     if (selectedDuration == null) {
@@ -90,8 +99,33 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
         return;
       }
 
-      // TODO: Save habit to DB.
-      print(_selectedNumberOfWeeks);
+      try {
+        // Saving habit information.
+        await FirebaseFirestore.instance
+            .collection("user_data")
+            .doc(_currentUser!.uid.toString())
+            .collection("habits")
+            .doc(widget.habit.id)
+            .set({
+          "allotedTime": selectedTotalMinutes,
+          "days": _selectedDaysOfWeek,
+          "numberOfWeeks": _selectedNumberOfWeeks,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Hábito agregado correctamente!'),
+          ),
+        );
+        Navigator.of(context).pop();
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Ha ocurrido un error inesperado. Intentalo más tarde.'),
+          ),
+        );
+      }
     }
   }
 
