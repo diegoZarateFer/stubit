@@ -117,7 +117,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
             content: Text('¡Hábito agregado correctamente!'),
           ),
         );
-        Navigator.of(context).pop();
+        Navigator.pop(context, true);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -336,7 +336,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context, false);
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

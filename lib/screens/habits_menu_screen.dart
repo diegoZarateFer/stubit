@@ -46,6 +46,10 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
     );
   }
 
+  void _closeMenu() {
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,6 +79,7 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                   habits:
                       habits.where((habit) => habit.category == "c1").toList(),
                   image: const AssetImage("assets/images/study_habits.jpg"),
+                  onHabitCreated: _closeMenu,
                 ),
                 HabitCategoryDetails(
                   categoryName: "Hábitos físicos y de salud",
@@ -83,6 +88,7 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                   habits:
                       habits.where((habit) => habit.category == "c2").toList(),
                   image: const AssetImage("assets/images/health_habits.png"),
+                  onHabitCreated: _closeMenu,
                 ),
                 HabitCategoryDetails(
                   categoryName: "Hábitos de autocuidado",
@@ -91,6 +97,7 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                   habits:
                       habits.where((habit) => habit.category == "c3").toList(),
                   image: const AssetImage("assets/images/selfcare_habits.jpg"),
+                  onHabitCreated: _closeMenu,
                 ),
                 HabitCategoryDetails(
                   categoryName: "Hábitos sociales",
@@ -99,6 +106,7 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                   habits:
                       habits.where((habit) => habit.category == "c4").toList(),
                   image: const AssetImage("assets/images/social_habits.jpg"),
+                  onHabitCreated: _closeMenu,
                 ),
                 HabitCategoryDetails(
                   categoryName: "Hábitos mentales",
@@ -107,13 +115,15 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                   habits:
                       habits.where((habit) => habit.category == "c5").toList(),
                   image: const AssetImage("assets/images/mental_habits.jpg"),
+                  onHabitCreated: _closeMenu,
                 ),
-                const HabitCategoryDetails(
+                HabitCategoryDetails(
                   categoryName: "Crea un hábito a tu medida",
                   description:
                       "¿No encontraste algún hábito para ti? ¡No hay problema! También puedes integrar rutinas que se ajusten a ti.",
                   habits: [],
-                  image: AssetImage("assets/images/custom_habit.jpg"),
+                  image: const AssetImage("assets/images/custom_habit.jpg"),
+                  onHabitCreated: _closeMenu,
                 ),
               ],
             ),
