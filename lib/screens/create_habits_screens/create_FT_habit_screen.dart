@@ -14,16 +14,17 @@ final List<DayInWeek> _days = [
   DayInWeek("S", dayKey: "sunday"),
 ];
 
-final List<String> _options = [
-  "3 semanas",
-  "4 semanas",
-  "5 semanas",
-  "6 semanas",
-  "7 semanas",
-  "9 semanas",
-  "10 semanas",
-  "Indefinidamente"
-];
+Map<String, num> _numberOfWeeksOptions = {
+  "3 semanas": 3,
+  "4 semanas": 4,
+  "5 semanas": 5,
+  "6 semanas": 6,
+  "7 semanas": 7,
+  "8 semanas": 8,
+  "9 semanas": 9,
+  "10 semanas": 10,
+  "Indefinidamente": double.infinity,
+};
 
 final List<String> _hours = List.generate(
   13,
@@ -49,6 +50,50 @@ class CreateFtHabitScreen extends StatefulWidget {
 
 class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  List<String> _selectedDaysOfWeek = [];
+  int _selectedNumberOfHours = 0, _selectedNumberOfMinutes = 0;
+  num? _selectedNumberOfWeeks;
+
+  String? _habitDurationValidator(selectedDuration) {
+    if (selectedDuration == null) {
+      return "Campo obligatorio.";
+    }
+
+    return null;
+  }
+
+  void _saveForm() async {
+    int selectedTotalMinutes =
+        _selectedNumberOfHours * 60 + _selectedNumberOfMinutes;
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (selectedTotalMinutes < 15) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes dedicar al menos 15 minutos a esta actividad.'),
+        ),
+      );
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      if (_selectedNumberOfWeeks != double.infinity &&
+          _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'En total debes dedicar al menos 21 días a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      // TODO: Save habit to DB.
+      print(_selectedNumberOfWeeks);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +170,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                               child: CupertinoPicker(
                                 looping: true,
                                 itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
+                                onSelectedItemChanged: (value) {
+                                  _selectedNumberOfHours = value;
+                                },
                                 children: _hours
                                     .map(
                                       (hour) => Center(
@@ -150,7 +197,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                               child: CupertinoPicker(
                                 looping: true,
                                 itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
+                                onSelectedItemChanged: (value) {
+                                  _selectedNumberOfMinutes = value;
+                                },
                                 children: _minutes
                                     .map(
                                       (minute) => Center(
@@ -177,9 +226,10 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                     ),
                     DropdownButtonFormField(
                       dropdownColor: Colors.black,
-                      items: _options.map((option) {
+                      validator: _habitDurationValidator,
+                      items: _numberOfWeeksOptions.keys.toList().map((option) {
                         return DropdownMenuItem(
-                          value: option,
+                          value: _numberOfWeeksOptions[option],
                           child: Text(
                             option,
                             style: const TextStyle(
@@ -190,7 +240,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (priority) {},
+                      onChanged: (numberOfWeeks) {
+                        _selectedNumberOfWeeks = numberOfWeeks!;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
@@ -212,7 +264,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                     ),
                     SelectWeekDays(
                       fontSize: 16,
-                      onSelect: (value) {},
+                      onSelect: (value) {
+                        _selectedDaysOfWeek = value;
+                      },
                       days: _days,
                       unselectedDaysFillColor: const Color(0xFFA6A6A6),
                       unselectedDaysBorderColor: Colors.black,
@@ -227,7 +281,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _saveForm,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
