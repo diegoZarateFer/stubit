@@ -1,19 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
 import 'package:stubit/models/habit.dart';
 
-final List<String> _numberOfDays = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
+final List<int> _numberOfDays = [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
 ];
 
 Map<String, num> _numberOfWeeksOptions = {
@@ -84,21 +83,23 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
     ScaffoldMessenger.of(context).clearSnackBars();
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (_selectedNumberOfDays != _selectedDaysOfWeek.length) {
+
+      if (_selectedNumberOfWeeks != double.infinity &&
+          _selectedNumberOfWeeks! * _selectedNumberOfDays < 21) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text(
-                'Debes seleccionar $_selectedNumberOfDays días a la semana para esta actividad'),
+                'En total debes dedicar al menos 21 días a esta actividad.'),
           ),
         );
         return;
       }
 
-      if (_selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+      if (_selectedNumberOfDays != _selectedDaysOfWeek.length) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-                'En total debes dedicar al menos 21 días a esta actividad.'),
+                'Debes seleccionar los $_selectedNumberOfDays días a la semana que dedicarás esta actividad'),
           ),
         );
         return;
@@ -209,7 +210,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                         return DropdownMenuItem(
                           value: option,
                           child: Text(
-                            option,
+                            option.toString(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -219,7 +220,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                         );
                       }).toList(),
                       onChanged: (value) {
-                        _selectedNumberOfDays = value as int;
+                        _selectedNumberOfDays = value!;
                       },
                       decoration: const InputDecoration(
                         labelText: 'Días por semana.',
@@ -280,7 +281,9 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                     ),
                     SelectWeekDays(
                       fontSize: 16,
-                      onSelect: (value) {},
+                      onSelect: (value) {
+                        _selectedDaysOfWeek = value;
+                      },
                       days: _days,
                       unselectedDaysFillColor: const Color(0xFFA6A6A6),
                       unselectedDaysBorderColor: Colors.black,
