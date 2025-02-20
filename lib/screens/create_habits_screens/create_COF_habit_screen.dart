@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
+import 'package:stubit/models/habit.dart';
 
 final List<DayInWeek> _days = [
   DayInWeek("D", dayKey: "monday"),
@@ -30,7 +31,12 @@ final List<String> _units = [
 ];
 
 class CreateCofHabitScreen extends StatefulWidget {
-  const CreateCofHabitScreen({super.key});
+  const CreateCofHabitScreen({
+    super.key,
+    required this.habit,
+  });
+
+  final Habit habit;
 
   @override
   State<CreateCofHabitScreen> createState() => _CreateCofHabitScreenState();
