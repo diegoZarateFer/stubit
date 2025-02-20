@@ -6,16 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
 import 'package:stubit/models/habit.dart';
 
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
-
 Map<String, num> _numberOfWeeksOptions = {
   "3 semanas": 3,
   "4 semanas": 4,
@@ -41,6 +31,16 @@ class CreateLHabitScreen extends StatefulWidget {
 }
 
 class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
+  final List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "monday"),
+    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("M", dayKey: "thursday"),
+    DayInWeek("J", dayKey: "friday"),
+    DayInWeek("V", dayKey: "saturday"),
+    DayInWeek("S", dayKey: "sunday"),
+  ];
+
   User? _currentUser;
   final _formKey = GlobalKey<FormState>();
 
