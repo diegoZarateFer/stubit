@@ -1,17 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
-
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
+import 'package:stubit/models/habit.dart';
 
 final List<String> _numberOfDays = [
   "1",
@@ -23,26 +16,126 @@ final List<String> _numberOfDays = [
   "7",
 ];
 
-final List<String> _options = [
-  "3 semanas",
-  "4 semanas",
-  "5 semanas",
-  "6 semanas",
-  "7 semanas",
-  "9 semanas",
-  "10 semanas",
-  "Indefinidamente"
-];
+Map<String, num> _numberOfWeeksOptions = {
+  "3 semanas": 3,
+  "4 semanas": 4,
+  "5 semanas": 5,
+  "6 semanas": 6,
+  "7 semanas": 7,
+  "8 semanas": 8,
+  "9 semanas": 9,
+  "10 semanas": 10,
+  "Indefinidamente": double.infinity,
+};
 
 class CreateCfHabitScreen extends StatefulWidget {
-  const CreateCfHabitScreen({super.key});
+  const CreateCfHabitScreen({
+    super.key,
+    required this.habit,
+  });
+
+  final Habit habit;
 
   @override
   State<CreateCfHabitScreen> createState() => _CreateCfHabitScreenState();
 }
 
 class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
+  final List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "monday"),
+    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("M", dayKey: "thursday"),
+    DayInWeek("J", dayKey: "friday"),
+    DayInWeek("V", dayKey: "saturday"),
+    DayInWeek("S", dayKey: "sunday"),
+  ];
+
+  User? _currentUser;
   final _formKey = GlobalKey<FormState>();
+
+  List<String> _selectedDaysOfWeek = [];
+  int _selectedNumberOfDays = 0;
+  num? _selectedNumberOfWeeks;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
+
+  String? _habitDurationValidator(selectedDuration) {
+    if (selectedDuration == null) {
+      return "Campo obligatorio.";
+    }
+
+    return null;
+  }
+
+  String? _numberOfDaysValidator(selectedNumberOfDays) {
+    if (selectedNumberOfDays == null) {
+      return "Campo obligatorio.";
+    }
+
+    return null;
+  }
+
+  void _saveForm() async {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      if (_selectedNumberOfDays != _selectedDaysOfWeek.length) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Debes seleccionar $_selectedNumberOfDays días a la semana para esta actividad'),
+          ),
+        );
+        return;
+      }
+
+      if (_selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'En total debes dedicar al menos 21 días a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      try {
+        // Saving habit information.
+        await FirebaseFirestore.instance
+            .collection("user_data")
+            .doc(_currentUser!.uid.toString())
+            .collection("habits")
+            .doc(widget.habit.id)
+            .set({
+          "numberOfdays": _selectedNumberOfDays,
+          "days": _selectedDaysOfWeek,
+          "numberOfWeeks": _selectedNumberOfWeeks,
+          "name": widget.habit.name,
+          "strategy": widget.habit.strategy,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Hábito agregado correctamente!'),
+          ),
+        );
+        Navigator.pop(context, true);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +181,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Llamar a amigos y familiares",
+                      widget.habit.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
@@ -111,6 +204,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                     ),
                     DropdownButtonFormField(
                       dropdownColor: Colors.black,
+                      validator: _numberOfDaysValidator,
                       items: _numberOfDays.map((option) {
                         return DropdownMenuItem(
                           value: option,
@@ -124,7 +218,9 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (priority) {},
+                      onChanged: (value) {
+                        _selectedNumberOfDays = value as int;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Días por semana.',
                       ),
@@ -146,9 +242,10 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                     ),
                     DropdownButtonFormField(
                       dropdownColor: Colors.black,
-                      items: _options.map((option) {
+                      validator: _habitDurationValidator,
+                      items: _numberOfWeeksOptions.keys.toList().map((option) {
                         return DropdownMenuItem(
-                          value: option,
+                          value: _numberOfWeeksOptions[option],
                           child: Text(
                             option,
                             style: const TextStyle(
@@ -159,7 +256,9 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (priority) {},
+                      onChanged: (value) {
+                        _selectedNumberOfWeeks = value;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
@@ -169,7 +268,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "¿Que días quieres realizar el hábito?",
+                      "¿Que días a la semana prefieres realizar la actividad?",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
@@ -196,7 +295,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _saveForm,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

@@ -134,8 +134,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text('Ha ocurrido un error inesperado. Intentalo más tarde.'),
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
           ),
         );
       }
