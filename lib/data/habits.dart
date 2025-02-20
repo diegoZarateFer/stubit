@@ -64,7 +64,7 @@ const habits = [
   ),
   Habit(
     id: "h9",
-    name: "Dormir de 7 a 9 horas",
+    name: "Dormir adecuadamente",
     description: "Dormir de 7 a 9 horas diariamente.",
     category: "c2",
     strategy: "T",
