@@ -88,8 +88,19 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
 
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (_selectedNumberOfWeeks != double.infinity &&
-          _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+
+      if (_selectedNumberOfWeeks == double.infinity &&
+          _selectedDaysOfWeek.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Selecciona los días a la semana que dedicarás a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      if (_selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
