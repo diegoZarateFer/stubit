@@ -110,6 +110,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
           "allotedTime": selectedTotalMinutes,
           "days": _selectedDaysOfWeek,
           "numberOfWeeks": _selectedNumberOfWeeks,
+          "name": widget.habit.name,
+          "strategy": widget.habit.strategy,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
