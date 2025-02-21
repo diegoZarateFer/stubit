@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
@@ -29,7 +31,25 @@ class HabitCategoryDetails extends StatefulWidget {
 }
 
 class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
+  User? _currentUser;
   Habit? _selectedHabit;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
+
+  Future<bool> isExistingHabit(String habitId) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection("user_data")
+        .doc(_currentUser!.uid.toString())
+        .collection("habits")
+        .doc(habitId)
+        .get();
+
+    return doc.exists;
+  }
 
   void _loadCreatingHabitForm() async {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -37,6 +57,23 @@ class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Te falta seleccionar algún hábito.'),
+        ),
+      );
+      return;
+    }
+
+    if (await isExistingHabit(_selectedHabit!.id)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            '¡Ya estás desarrollando este hábito!',
+          ),
+          action: SnackBarAction(
+            label: "Ver",
+            onPressed: () {
+              // TODO: Redirigir a la pantalla de progeso del hábito.
+            },
+          ),
         ),
       );
       return;
