@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
 
@@ -21,7 +22,7 @@ class HabitItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String habitName = _formatHabitName(habit.name);
+    final String habitName = habit.name;
     return Container(
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.only(
@@ -33,14 +34,18 @@ class HabitItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
-            habitName,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 14,
+          Expanded(
+            child: Text(
+              textAlign: TextAlign.center,
+              habitName,
+              softWrap: true,
+              maxLines: 2,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 14,
+              ),
             ),
           ),
-          const Spacer(),
           const Icon(
             Icons.local_fire_department,
             color: Colors.grey,
