@@ -140,6 +140,8 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
           "days": _selectedDaysOfWeek,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

@@ -104,6 +104,8 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
           "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

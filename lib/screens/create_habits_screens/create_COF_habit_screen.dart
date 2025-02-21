@@ -117,6 +117,8 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "unit": widget.habit.unit ?? _units[_selectedUnitIndex],
+          "category": widget.habit.category,
+          "description": widget.habit.description,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

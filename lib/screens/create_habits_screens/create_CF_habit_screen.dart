@@ -118,6 +118,8 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
           "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
