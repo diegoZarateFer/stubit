@@ -7,6 +7,7 @@ class Habit {
     required this.description,
     required this.category,
     required this.strategy,
+    this.unit,
   });
 
   final String id;
@@ -14,4 +15,5 @@ class Habit {
   final String description;
   final String category;
   final String strategy;
+  final String? unit;
 }

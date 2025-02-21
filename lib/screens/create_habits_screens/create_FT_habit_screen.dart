@@ -100,7 +100,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
         return;
       }
 
-      if (_selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+      if (_selectedNumberOfWeeks != double.infinity &&
+          _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(

@@ -164,6 +164,7 @@ const habits = [
     description: "Leer sobre algún tema que sea de tu interés.",
     category: "c5",
     strategy: "COF",
+    unit: "páginas",
   ),
   Habit(
     id: "h22",
@@ -172,5 +173,6 @@ const habits = [
         "Resolver rompecabezas o juegos de lógica para ejercitar la mente.",
     category: "c5",
     strategy: "COF",
+    unit: "rompecabezas",
   ),
 ];
