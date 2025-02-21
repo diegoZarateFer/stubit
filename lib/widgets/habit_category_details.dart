@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/create_habits_screens/create_CF_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_COF_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_FT_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_L_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_T_habit_screen.dart';
 
 class HabitCategoryDetails extends StatefulWidget {
@@ -62,8 +65,35 @@ class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
           ) ??
           false;
     } else if (habitStrategy == "CF") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateCfHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
     } else if (habitStrategy == "L") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateLHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
     } else if (habitStrategy == "COF") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateCofHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
     } else if (habitStrategy == "TP") {}
 
     if (habitWasCreated) {
