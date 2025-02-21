@@ -5,6 +5,7 @@ import 'package:stubit/screens/create_habits_screens/create_CF_habit_screen.dart
 import 'package:stubit/screens/create_habits_screens/create_COF_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_FT_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_L_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_TP_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_T_habit_screen.dart';
 
 class HabitCategoryDetails extends StatefulWidget {
@@ -94,7 +95,17 @@ class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
             ),
           ) ??
           false;
-    } else if (habitStrategy == "TP") {}
+    } else if (habitStrategy == "TP") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateTpHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
+    }
 
     if (habitWasCreated) {
       widget.onHabitCreated();

@@ -2,16 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
-
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
+import 'package:stubit/models/habit.dart';
 
 final List<String> _numberOfWeeks = [
   "3 semanas",
@@ -30,7 +21,12 @@ final List<String> _minutes = List.generate(
 );
 
 class CreateTpHabitScreen extends StatefulWidget {
-  const CreateTpHabitScreen({super.key});
+  const CreateTpHabitScreen({
+    super.key,
+    required this.habit,
+  });
+
+  final Habit habit;
 
   @override
   State<CreateTpHabitScreen> createState() => _CreateTpHabitScreenState();
@@ -38,6 +34,16 @@ class CreateTpHabitScreen extends StatefulWidget {
 
 class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  final List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "monday"),
+    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("M", dayKey: "thursday"),
+    DayInWeek("J", dayKey: "friday"),
+    DayInWeek("V", dayKey: "saturday"),
+    DayInWeek("S", dayKey: "sunday"),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +89,7 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Estudiar o realizar tareas académicas",
+                      widget.habit.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
