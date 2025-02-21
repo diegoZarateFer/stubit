@@ -70,8 +70,14 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
   }
 
   void _saveForm() async {
-    int selectedTotalMinutes = _scrollHoursController.selectedItem * 60 +
-        _scrollMinutesController.selectedItem;
+    int selectedHours = _scrollHoursController.selectedItem < 0
+        ? 13 + _scrollHoursController.selectedItem
+        : _scrollHoursController.selectedItem;
+    int selectedMinutes = _scrollMinutesController.selectedItem < 0
+        ? 60 + _scrollMinutesController.selectedItem
+        : _scrollMinutesController.selectedItem;
+
+    int selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
 
     ScaffoldMessenger.of(context).clearSnackBars();
     if (selectedTotalMinutes < 15) {

@@ -79,6 +79,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      ScaffoldMessenger.of(context).clearSnackBars();
       if (_selectedNumberOfWeeks == double.infinity &&
           _selectedDaysOfWeek.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +96,8 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-                'En total debes dedicar al menos 21 días a esta actividad.'),
+              'En total debes dedicar al menos 21 días a esta actividad.',
+            ),
           ),
         );
         return;
