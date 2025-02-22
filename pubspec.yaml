@@ -68,6 +68,7 @@ flutter:
     - assets/images/social_habits.jpg
     - assets/images/mental_habits.jpg
     - assets/images/custom_habit.jpg
+    - assets/images/fire.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

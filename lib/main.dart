@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stubit/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:stubit/track_habit_screen.dart';
+import 'package:stubit/screens/track_habit_screen.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
