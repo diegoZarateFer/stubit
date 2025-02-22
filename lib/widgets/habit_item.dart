@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/track_habit_screen.dart';
 
 class HabitItem extends StatelessWidget {
   const HabitItem({
@@ -50,7 +51,13 @@ class HabitItem extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.calendar_month),
               title: const Text('Seguimiento'),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => const TrackHabitScreen(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.edit),
