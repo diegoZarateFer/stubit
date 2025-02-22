@@ -22,9 +22,26 @@ class HabitItem extends StatelessWidget {
   void _showMenuAction(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
+      ),
       builder: (ctx) {
-        return Wrap(
+        return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                'Selecciona una opción',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            const Divider(),
             ListTile(
               leading: const Icon(Icons.check),
               title: const Text('Registrar día'),
