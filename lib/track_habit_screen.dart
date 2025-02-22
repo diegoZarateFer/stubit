@@ -101,6 +101,7 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: TableCalendar(
+                    locale: 'es_ES',
                     focusedDay: DateTime.now(),
                     firstDay: DateTime.utc(2025, 1, 1),
                     lastDay: DateTime.utc(2030, 3, 14),

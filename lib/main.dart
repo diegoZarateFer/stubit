@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stubit/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/track_habit_screen.dart';
@@ -55,6 +56,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Stu-bit',
       theme: theme,
+      locale: const Locale('es', 'ES'),
+      supportedLocales: const [
+        Locale('es', 'ES'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const TrackHabitScreen(),
     );
   }
