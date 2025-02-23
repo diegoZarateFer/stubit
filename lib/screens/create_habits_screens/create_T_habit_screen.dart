@@ -70,12 +70,9 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
   }
 
   void _saveForm() async {
-    int selectedHours = _scrollHoursController.selectedItem < 0
-        ? 13 + _scrollHoursController.selectedItem
-        : _scrollHoursController.selectedItem;
-    int selectedMinutes = _scrollMinutesController.selectedItem < 0
-        ? 60 + _scrollMinutesController.selectedItem
-        : _scrollMinutesController.selectedItem;
+    int selectedHours = _scrollHoursController.selectedItem % _hours.length;
+    int selectedMinutes =
+        _scrollMinutesController.selectedItem % _minutes.length;
 
     int selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
 

@@ -234,7 +234,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                               ? CupertinoPicker(
                                   itemExtent: 64,
                                   onSelectedItemChanged: (index) {
-                                    _selectedUnitIndex = index;
+                                    _selectedUnitIndex = index % _units.length;
                                   },
                                   children: _units
                                       .map(
