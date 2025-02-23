@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/track_habit_screen.dart';
 
 class HabitItem extends StatelessWidget {
   const HabitItem({
@@ -34,7 +35,7 @@ class HabitItem extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8),
               child: Text(
-                'Selecciona una opción',
+                habit.name,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 14,
@@ -50,7 +51,13 @@ class HabitItem extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.calendar_month),
               title: const Text('Seguimiento'),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => const TrackHabitScreen(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.edit),
@@ -70,7 +77,6 @@ class HabitItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String habitName = habit.name;
     return GestureDetector(
       onTap: () {
         _showMenuAction(context);
@@ -89,7 +95,7 @@ class HabitItem extends StatelessWidget {
             Expanded(
               child: Text(
                 textAlign: TextAlign.center,
-                habitName,
+                habit.name,
                 softWrap: true,
                 maxLines: 2,
                 style: GoogleFonts.poppins(
