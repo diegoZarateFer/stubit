@@ -28,8 +28,6 @@ class RegisterTHabitScreen extends StatefulWidget {
 }
 
 class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
-  final _formKey = GlobalKey<FormState>();
-
   bool _confirmationBoxIsSelected = false;
   int _selectedDifficulty = 0, _selectedTotalMinutes = 0;
 
@@ -100,232 +98,228 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(32),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 16,
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    "REGISTRO DE HÁBITO",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    Text(
-                      "REGISTRO DE HÁBITO",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Image.asset(
+                    "assets/images/calendar.png",
+                    height: 60,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    "Dormir adecuadamente.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.white,
                     ),
-                    const SizedBox(
-                      height: 8,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    "¿Cuánto tiempo dedicaste a esta actividad hoy?",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white,
                     ),
-                    Image.asset(
-                      "assets/images/calendar.png",
-                      height: 60,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "Dormir adecuadamente.",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "¿Cuánto tiempo dedicaste a esta actividad hoy?",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    CupertinoPageScaffold(
-                      backgroundColor: Colors.transparent,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 128,
-                              child: CupertinoPicker(
-                                looping: true,
-                                itemExtent: 32,
-                                scrollController: _scrollHoursController,
-                                onSelectedItemChanged: (index) {
-                                  _onSelectedTimeChange();
-                                },
-                                children: _hours
-                                    .map(
-                                      (hour) => Center(
-                                        child: Text(hour),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                          const Text(
-                            "horas",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Expanded(
-                            child: SizedBox(
-                              height: 128,
-                              child: CupertinoPicker(
-                                looping: true,
-                                itemExtent: 32,
-                                scrollController: _scrollMinutesController,
-                                onSelectedItemChanged: (index) {
-                                  _onSelectedTimeChange();
-                                },
-                                children: _minutes
-                                    .map(
-                                      (minute) => Center(
-                                        child: Text(minute),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                          const Text(
-                            "min.",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    CircularPercentIndicator(
-                      radius: 50,
-                      lineWidth: 5,
-                      percent: targetPercentage,
-                      center: Text(
-                        "${(targetPercentage * 100).toStringAsFixed(1)}%",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
-                      progressColor: const Color.fromARGB(255, 228, 200, 247),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      "Del 1 al 5 que tanto trabajo te costó realizar hoy este hábito",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    RatingBar.builder(
-                      itemCount: 5,
-                      unratedColor: Colors.white,
-                      itemBuilder: (ctx, _) => const Icon(
-                        Icons.local_fire_department,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (difficulty) {
-                        setState(() {
-                          _selectedDifficulty = difficulty.toInt();
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Row(
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  CupertinoPageScaffold(
+                    backgroundColor: Colors.transparent,
+                    child: Row(
                       children: [
                         Expanded(
-                          child: Checkbox(
-                            shape: const CircleBorder(),
-                            value: _confirmationBoxIsSelected,
-                            onChanged: (bool? isSelected) {
-                              setState(() {
-                                _confirmationBoxIsSelected =
-                                    isSelected ?? false;
-                              });
-                            },
+                          child: SizedBox(
+                            height: 128,
+                            child: CupertinoPicker(
+                              looping: true,
+                              itemExtent: 32,
+                              scrollController: _scrollHoursController,
+                              onSelectedItemChanged: (index) {
+                                _onSelectedTimeChange();
+                              },
+                              children: _hours
+                                  .map(
+                                    (hour) => Center(
+                                      child: Text(hour),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
                           ),
                         ),
-                        Text(
-                          "Confirmo que hoy realicé este hábito",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
+                        const Text(
+                          "horas",
+                          style: TextStyle(
                             color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Expanded(
+                          child: SizedBox(
+                            height: 128,
+                            child: CupertinoPicker(
+                              looping: true,
+                              itemExtent: 32,
+                              scrollController: _scrollMinutesController,
+                              onSelectedItemChanged: (index) {
+                                _onSelectedTimeChange();
+                              },
+                              children: _minutes
+                                  .map(
+                                    (minute) => Center(
+                                      child: Text(minute),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          "min.",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    ElevatedButton(
-                      onPressed: _registerHabit,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  CircularPercentIndicator(
+                    radius: 50,
+                    lineWidth: 5,
+                    percent: targetPercentage,
+                    center: Text(
+                      "${(targetPercentage * 100).toStringAsFixed(1)}%",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: Text(
-                        "Registrar",
-                        style: GoogleFonts.openSans(
+                    ),
+                    backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+                    progressColor: const Color.fromARGB(255, 228, 200, 247),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Del 1 al 5 que tanto trabajo te costó realizar hoy este hábito",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  RatingBar.builder(
+                    itemCount: 5,
+                    unratedColor: Colors.white,
+                    itemBuilder: (ctx, _) => const Icon(
+                      Icons.local_fire_department,
+                      color: Colors.amber,
+                    ),
+                    onRatingUpdate: (difficulty) {
+                      setState(() {
+                        _selectedDifficulty = difficulty.toInt();
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Checkbox(
+                          shape: const CircleBorder(),
+                          value: _confirmationBoxIsSelected,
+                          onChanged: (bool? isSelected) {
+                            setState(() {
+                              _confirmationBoxIsSelected = isSelected ?? false;
+                            });
+                          },
+                        ),
+                      ),
+                      Text(
+                        "Confirmo que hoy realicé este hábito",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
                           color: Colors.white,
-                          decorationColor: Colors.white,
-                          fontSize: 18,
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Colors.white,
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: _registerHabit,
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        "Cancelar",
-                        style: GoogleFonts.openSans(
-                          color: Colors.black,
-                          decorationColor: Colors.black,
-                          fontSize: 18,
-                        ),
+                      backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                    ),
+                    child: Text(
+                      "Registrar",
+                      style: GoogleFonts.openSans(
+                        color: Colors.white,
+                        decorationColor: Colors.white,
+                        fontSize: 18,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      backgroundColor: Colors.white,
+                    ),
+                    child: Text(
+                      "Cancelar",
+                      style: GoogleFonts.openSans(
+                        color: Colors.black,
+                        decorationColor: Colors.black,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
