@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
-import 'package:stubit/widgets/dissmisible_backgrounds.dart';
 import 'package:stubit/widgets/habit_item.dart';
 
 String apology = """
@@ -158,15 +157,9 @@ class HabitsScreen extends StatelessWidget {
                       strategy: habitData['strategy'],
                       unit: habitData['unit'],
                     );
-                    return Dismissible(
-                      key: Key(habitId),
-                      direction: DismissDirection.startToEnd,
-                      onDismissed: (direction) {},
-                      background: const DissmisibleBackground(),
-                      child: HabitItem(
-                        habit: habit,
-                        onTap: () {},
-                      ),
+                    return HabitItem(
+                      habit: habit,
+                      onTap: () {},
                     );
                   },
                 ),

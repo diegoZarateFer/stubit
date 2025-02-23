@@ -13,13 +13,6 @@ class HabitItem extends StatelessWidget {
   final Habit habit;
   final void Function() onTap;
 
-  // String _formatHabitName(String habitName) {
-  //   const int maxLength = 26;
-  //   return (habitName.length > maxLength)
-  //       ? "${habitName.substring(0, maxLength)}..."
-  //       : habitName;
-  // }
-
   void _showMenuAction(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -79,6 +72,9 @@ class HabitItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        // TODO: show registrer habit screen.
+      },
+      onLongPress: () {
         _showMenuAction(context);
       },
       child: Container(
