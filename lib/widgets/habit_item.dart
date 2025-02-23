@@ -72,9 +72,6 @@ class HabitItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: show registrer habit screen.
-      },
-      onLongPress: () {
         _showMenuAction(context);
       },
       child: Container(
