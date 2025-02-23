@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 final List<String> _hours = List.generate(
   13,
@@ -17,7 +18,7 @@ class RegisterTHabitScreen extends StatefulWidget {
   const RegisterTHabitScreen({
     super.key,
     this.initialNumberOfMinutes = 0,
-    this.initialNumberOfHours = 7,
+    this.initialNumberOfHours = 0,
   });
 
   final int initialNumberOfMinutes, initialNumberOfHours;
@@ -30,18 +31,25 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
   final _formKey = GlobalKey<FormState>();
 
   bool _confirmationBoxIsSelected = false;
-  int _selectedDifficulty = 0;
+  int _selectedDifficulty = 0, _selectedTotalMinutes = 0;
+
+  late int _targetTime;
 
   late FixedExtentScrollController _scrollHoursController,
       _scrollMinutesController;
 
-  void _registerHabit() {
-    ScaffoldMessenger.of(context).clearSnackBars();
+  void _onSelectedTimeChange() {
     int selectedHours = _scrollHoursController.selectedItem % _hours.length;
     int selectedMinutes =
         _scrollMinutesController.selectedItem % _minutes.length;
 
-    int selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
+    setState(() {
+      _selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
+    });
+  }
+
+  void _registerHabit() {
+    ScaffoldMessenger.of(context).clearSnackBars();
 
     if (!_confirmationBoxIsSelected) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -56,12 +64,14 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
 
     print(_selectedDifficulty);
     print(_confirmationBoxIsSelected);
-    print(selectedTotalMinutes);
+    print(_selectedTotalMinutes);
   }
 
   @override
   void initState() {
     super.initState();
+    // TODO: Get daily time from DB.
+    _targetTime = 480;
     _scrollHoursController =
         FixedExtentScrollController(initialItem: widget.initialNumberOfHours);
     _scrollMinutesController =
@@ -70,6 +80,10 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double targetPercentage = _selectedTotalMinutes.toDouble() / _targetTime > 1
+        ? 1
+        : _selectedTotalMinutes.toDouble() / _targetTime;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -144,7 +158,9 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 scrollController: _scrollHoursController,
-                                onSelectedItemChanged: (index) {},
+                                onSelectedItemChanged: (index) {
+                                  _onSelectedTimeChange();
+                                },
                                 children: _hours
                                     .map(
                                       (hour) => Center(
@@ -170,7 +186,9 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 scrollController: _scrollMinutesController,
-                                onSelectedItemChanged: (index) {},
+                                onSelectedItemChanged: (index) {
+                                  _onSelectedTimeChange();
+                                },
                                 children: _minutes
                                     .map(
                                       (minute) => Center(
@@ -193,7 +211,25 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 32,
+                      height: 8,
+                    ),
+                    CircularPercentIndicator(
+                      radius: 50,
+                      lineWidth: 5,
+                      percent: targetPercentage,
+                      center: Text(
+                        "${(targetPercentage * 100).toStringAsFixed(1)}%",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+                      progressColor: const Color.fromARGB(255, 228, 200, 247),
+                    ),
+                    const SizedBox(
+                      height: 8,
                     ),
                     Text(
                       "Del 1 al 5 que tanto trabajo te costó realizar hoy este hábito",
