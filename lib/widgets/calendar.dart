@@ -32,7 +32,8 @@ class _CalendarState extends State<Calendar> {
       height: 410,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: const Color(0xFFE9E8E8),
+        color: const Color.fromARGB(230, 35, 35, 35),
+        // color: const Color(0xFFE9E8E8),
         borderRadius: BorderRadius.circular(16),
       ),
       child: TableCalendar(
@@ -47,19 +48,25 @@ class _CalendarState extends State<Calendar> {
           CalendarFormat.month: 'Month',
         },
         daysOfWeekStyle: const DaysOfWeekStyle(
-          weekdayStyle: TextStyle(fontSize: 12),
-          weekendStyle: TextStyle(fontSize: 12),
+          weekdayStyle: TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+          ),
+          weekendStyle: TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+          ),
         ),
         calendarStyle: const CalendarStyle(
           selectedDecoration: BoxDecoration(
-            color: Color.fromARGB(255, 150, 134, 252),
+            color: Color(0xFFBB86FC),
             shape: BoxShape.circle,
           ),
           selectedTextStyle: TextStyle(
-            color: Color.fromARGB(190, 255, 255, 255),
+            color: Colors.white,
           ),
           todayDecoration: BoxDecoration(
-            color: Color.fromARGB(187, 164, 87, 232),
+            color: Color(0xFF03DAC5),
             shape: BoxShape.circle,
           ),
           todayTextStyle: TextStyle(
@@ -70,23 +77,22 @@ class _CalendarState extends State<Calendar> {
           ),
           disabledTextStyle: TextStyle(
             color: Color(0xFF6F6F6F),
-            fontSize: 12,
           ),
-          outsideTextStyle: TextStyle(color: Color(0xFF757575), fontSize: 12),
+          outsideTextStyle: TextStyle(
+            color: Color(0xFF757575),
+          ),
           defaultTextStyle: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF000000),
+            color: Color(0xFFE0E0E0),
           ),
-          cellPadding: EdgeInsets.all(2),
         ),
         headerStyle: HeaderStyle(
           titleCentered: true,
           titleTextStyle: const TextStyle(
-            color: Colors.black,
+            color: Color(0xFFE0E0E0),
             fontSize: 18,
           ),
           formatButtonTextStyle: const TextStyle(
-            color: Color.fromARGB(187, 164, 87, 232),
+            color: Color(0xFF03DAC5),
           ),
           formatButtonDecoration: BoxDecoration(
             color: const Color(0xFF373737),
@@ -94,11 +100,11 @@ class _CalendarState extends State<Calendar> {
           ),
           leftChevronIcon: const Icon(
             Icons.chevron_left,
-            color: Colors.black,
+            color: Color(0xFFE0E0E0),
           ),
           rightChevronIcon: const Icon(
             Icons.chevron_right,
-            color: Colors.black,
+            color: Color(0xFFE0E0E0),
           ),
         ),
       ),
