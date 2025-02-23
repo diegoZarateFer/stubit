@@ -66,9 +66,6 @@ class HabitItem extends StatelessWidget {
     final String habitName = habit.name;
     return GestureDetector(
       onTap: () {
-        // TODO: show registrer habit screen.
-      },
-      onLongPress: () {
         _showMenuAction(context);
       },
       child: Container(
