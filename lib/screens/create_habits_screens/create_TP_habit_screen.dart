@@ -59,8 +59,6 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
 
   List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
-  late FixedExtentScrollController _scrollWorkIntervalController,
-      _scrollRestIntervalController;
 
   int _totalTime = 0;
   int _workInterval = 15, _restInterval = 5;
@@ -69,8 +67,6 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
   void initState() {
     super.initState();
     _currentUser = FirebaseAuth.instance.currentUser;
-    _scrollWorkIntervalController = FixedExtentScrollController(initialItem: 0);
-    _scrollRestIntervalController = FixedExtentScrollController(initialItem: 0);
   }
 
   String? _numberOfCyclesValidator(selectedDailyTarget) {
@@ -252,10 +248,9 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                               child: CupertinoPicker(
                                 looping: true,
                                 itemExtent: 32,
-                                scrollController: _scrollWorkIntervalController,
                                 onSelectedItemChanged: (index) {
-                                  _workInterval =
-                                      index < 0 ? 61 + index : index + 15;
+                                  _workInterval = int.tryParse(_minutesForWork[
+                                      index % _minutesForWork.length])!;
                                   _updateTotalTime();
                                 },
                                 children: _minutesForWork
@@ -285,10 +280,9 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                               child: CupertinoPicker(
                                 itemExtent: 32,
                                 looping: true,
-                                scrollController: _scrollRestIntervalController,
                                 onSelectedItemChanged: (index) {
-                                  _restInterval =
-                                      index < 0 ? 61 + index : index + 5;
+                                  _restInterval = int.tryParse(_minutesForRest[
+                                      index % _minutesForRest.length])!;
                                   _updateTotalTime();
                                 },
                                 children: _minutesForRest

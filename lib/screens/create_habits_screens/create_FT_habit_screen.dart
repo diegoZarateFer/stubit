@@ -222,7 +222,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfHours = value;
+                                  _selectedNumberOfHours = value % _hours.length;
                                 },
                                 children: _hours
                                     .map(
@@ -249,7 +249,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfMinutes = value;
+                                  _selectedNumberOfMinutes = value % _minutes.length;
                                 },
                                 children: _minutes
                                     .map(
