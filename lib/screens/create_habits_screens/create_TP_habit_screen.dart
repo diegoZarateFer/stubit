@@ -1,43 +1,162 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
+import 'package:stubit/models/habit.dart';
 
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
+Map<String, num> _numberOfWeeksOptions = {
+  "3 semanas": 3,
+  "4 semanas": 4,
+  "5 semanas": 5,
+  "6 semanas": 6,
+  "7 semanas": 7,
+  "8 semanas": 8,
+  "9 semanas": 9,
+  "10 semanas": 10,
+  "Indefinidamente": double.infinity,
+};
 
-final List<String> _numberOfWeeks = [
-  "3 semanas",
-  "4 semanas",
-  "5 semanas",
-  "6 semanas",
-  "7 semanas",
-  "9 semanas",
-  "10 semanas",
-  "Indefinidamente"
-];
+final List<String> _minutesForWork = List.generate(
+  46,
+  (index) => "${index + 15}",
+);
 
-final List<String> _minutes = List.generate(
-  60,
-  (index) => index > 9 ? index.toString() : "0${index.toString()}",
+final List<String> _minutesForRest = List.generate(
+  56,
+  (index) => index + 5 <= 9 ? "0${index + 5}" : "${index + 5}",
 );
 
 class CreateTpHabitScreen extends StatefulWidget {
-  const CreateTpHabitScreen({super.key});
+  const CreateTpHabitScreen({
+    super.key,
+    required this.habit,
+  });
+
+  final Habit habit;
 
   @override
   State<CreateTpHabitScreen> createState() => _CreateTpHabitScreenState();
 }
 
 class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
+  final List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "monday"),
+    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("M", dayKey: "thursday"),
+    DayInWeek("J", dayKey: "friday"),
+    DayInWeek("V", dayKey: "saturday"),
+    DayInWeek("S", dayKey: "sunday"),
+  ];
+
+  User? _currentUser;
   final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _selectedNumberOfCylcesController =
+      TextEditingController();
+
+  List<String> _selectedDaysOfWeek = [];
+  num? _selectedNumberOfWeeks;
+
+  int _totalTime = 0;
+  int _workInterval = 15, _restInterval = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
+
+  String? _numberOfCyclesValidator(selectedDailyTarget) {
+    if (selectedDailyTarget == null ||
+        selectedDailyTarget.toString().trim() == '') {
+      return 'Campo obligatorio.';
+    }
+    return null;
+  }
+
+  String? _habitDurationValidator(selectedDuration) {
+    if (selectedDuration == null) {
+      return "Campo obligatorio";
+    }
+
+    return null;
+  }
+
+  void _updateTotalTime() {
+    int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
+    setState(() {
+      _totalTime = (_restInterval + _workInterval) * cycles;
+    });
+  }
+
+  void _saveForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      if (_selectedNumberOfWeeks == double.infinity &&
+          _selectedDaysOfWeek.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Debes seleccionar los días a la semana que dedicarás a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      if (_selectedNumberOfWeeks != double.infinity &&
+          _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'En total debes dedicar al menos 21 días a esta actividad.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
+      try {
+        // Saving habit information.
+        await FirebaseFirestore.instance
+            .collection("user_data")
+            .doc(_currentUser!.uid.toString())
+            .collection("habits")
+            .doc(widget.habit.id)
+            .set({
+          "workInterval": _workInterval,
+          "restInterval": _restInterval,
+          "cycles": cycles,
+          "numberOfWeeks": _selectedNumberOfWeeks,
+          "days": _selectedDaysOfWeek,
+          "name": widget.habit.name,
+          "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Hábito agregado correctamente!'),
+          ),
+        );
+        Navigator.pop(context, true);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +202,7 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Estudiar o realizar tareas académicas",
+                      widget.habit.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
@@ -127,10 +246,14 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                             child: SizedBox(
                               height: 128,
                               child: CupertinoPicker(
-                                itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
                                 looping: true,
-                                children: _minutes
+                                itemExtent: 32,
+                                onSelectedItemChanged: (index) {
+                                  _workInterval = int.tryParse(_minutesForWork[
+                                      index % _minutesForWork.length])!;
+                                  _updateTotalTime();
+                                },
+                                children: _minutesForWork
                                     .map(
                                       (minute) => Center(
                                         child: Text(minute),
@@ -156,9 +279,13 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                               height: 128,
                               child: CupertinoPicker(
                                 itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
                                 looping: true,
-                                children: _minutes
+                                onSelectedItemChanged: (index) {
+                                  _restInterval = int.tryParse(_minutesForRest[
+                                      index % _minutesForRest.length])!;
+                                  _updateTotalTime();
+                                },
+                                children: _minutesForRest
                                     .map(
                                       (minute) => Center(
                                         child: Text(minute),
@@ -189,6 +316,11 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                             maxLength: 3,
                             textAlign: TextAlign.center,
                             keyboardType: TextInputType.number,
+                            validator: _numberOfCyclesValidator,
+                            controller: _selectedNumberOfCylcesController,
+                            onChanged: (value) {
+                              _updateTotalTime();
+                            },
                             style: const TextStyle(
                               color: Colors.white,
                             ),
@@ -203,7 +335,7 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                         ),
                         Expanded(
                           child: Text(
-                            "Tiempo total: 70 minutos por día.",
+                            "Tiempo total: $_totalTime minutos por día.",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.dmSans(
                               fontSize: 16,
@@ -218,9 +350,10 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                     ),
                     DropdownButtonFormField(
                       dropdownColor: Colors.black,
-                      items: _numberOfWeeks.map((option) {
+                      validator: _habitDurationValidator,
+                      items: _numberOfWeeksOptions.keys.toList().map((option) {
                         return DropdownMenuItem(
-                          value: option,
+                          value: _numberOfWeeksOptions[option],
                           child: Text(
                             option,
                             style: const TextStyle(
@@ -231,7 +364,9 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (priority) {},
+                      onChanged: (value) {
+                        _selectedNumberOfWeeks = value;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
@@ -253,7 +388,9 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                     ),
                     SelectWeekDays(
                       fontSize: 16,
-                      onSelect: (value) {},
+                      onSelect: (value) {
+                        _selectedDaysOfWeek = value;
+                      },
                       days: _days,
                       unselectedDaysFillColor: const Color(0xFFA6A6A6),
                       unselectedDaysBorderColor: Colors.black,
@@ -268,7 +405,7 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _saveForm,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

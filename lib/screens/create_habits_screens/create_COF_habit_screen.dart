@@ -1,43 +1,150 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
+import 'package:stubit/models/habit.dart';
 
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
-
-final List<String> _numberOfWeeks = [
-  "3 semanas",
-  "4 semanas",
-  "5 semanas",
-  "6 semanas",
-  "7 semanas",
-  "9 semanas",
-  "10 semanas",
-  "Indefinidamente"
-];
+Map<String, num> _numberOfWeeksOptions = {
+  "3 semanas": 3,
+  "4 semanas": 4,
+  "5 semanas": 5,
+  "6 semanas": 6,
+  "7 semanas": 7,
+  "8 semanas": 8,
+  "9 semanas": 9,
+  "10 semanas": 10,
+  "Indefinidamente": double.infinity,
+};
 
 final List<String> _units = [
   "páginas",
   "rompecabezas",
+  "repeticiones",
+  "problemas",
+  "litros",
+  "minutos",
 ];
 
 class CreateCofHabitScreen extends StatefulWidget {
-  const CreateCofHabitScreen({super.key});
+  const CreateCofHabitScreen({
+    super.key,
+    required this.habit,
+  });
+
+  final Habit habit;
 
   @override
   State<CreateCofHabitScreen> createState() => _CreateCofHabitScreenState();
 }
 
 class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
+  final List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "monday"),
+    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("M", dayKey: "thursday"),
+    DayInWeek("J", dayKey: "friday"),
+    DayInWeek("V", dayKey: "saturday"),
+    DayInWeek("S", dayKey: "sunday"),
+  ];
+
+  User? _currentUser;
   final _formKey = GlobalKey<FormState>();
+
+  List<String> _selectedDaysOfWeek = [];
+  num? _selectedNumberOfWeeks;
+  int _selectedUnitIndex = 0;
+
+  final TextEditingController _dailyTargetController = TextEditingController();
+
+  String? _dailyTargetvalidator(selectedDailyTarget) {
+    if (selectedDailyTarget == null ||
+        selectedDailyTarget.toString().trim() == '') {
+      return 'Campo obligatorio.';
+    }
+    return null;
+  }
+
+  String? _habitDurationValidator(selectedDuration) {
+    if (selectedDuration == null) {
+      return "Campo obligatorio.";
+    }
+
+    return null;
+  }
+
+  void _saveForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      if (_selectedNumberOfWeeks == double.infinity &&
+          _selectedDaysOfWeek.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Selecciona los días a la semana que dedicarás a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      if (_selectedNumberOfWeeks != double.infinity &&
+          _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'En total debes dedicar al menos 21 días a esta actividad.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      try {
+        // Saving habit information.
+        await FirebaseFirestore.instance
+            .collection("user_data")
+            .doc(_currentUser!.uid.toString())
+            .collection("habits")
+            .doc(widget.habit.id)
+            .set({
+          "dailyTarget": int.tryParse(_dailyTargetController.text),
+          "days": _selectedDaysOfWeek,
+          "numberOfWeeks": _selectedNumberOfWeeks,
+          "name": widget.habit.name,
+          "strategy": widget.habit.strategy,
+          "unit": widget.habit.unit ?? _units[_selectedUnitIndex],
+          "category": widget.habit.category,
+          "description": widget.habit.description,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Hábito agregado correctamente!'),
+          ),
+        );
+        Navigator.pop(context, true);
+      } catch (error) {
+        ;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +190,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Lectura",
+                      widget.habit.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
@@ -111,6 +218,8 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                             maxLength: 3,
                             textAlign: TextAlign.center,
                             keyboardType: TextInputType.number,
+                            controller: _dailyTargetController,
+                            validator: _dailyTargetvalidator,
                             style: const TextStyle(
                               color: Colors.white,
                             ),
@@ -121,22 +230,34 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                           ),
                         ),
                         Expanded(
-                          child: CupertinoPicker(
-                            itemExtent: 64,
-                            onSelectedItemChanged: (index) {},
-                            children: _units
-                                .map(
-                                  (unit) => Center(
-                                    child: Text(
-                                      unit,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                      ),
+                          child: widget.habit.unit == null
+                              ? CupertinoPicker(
+                                  itemExtent: 64,
+                                  onSelectedItemChanged: (index) {
+                                    _selectedUnitIndex = index % _units.length;
+                                  },
+                                  children: _units
+                                      .map(
+                                        (unit) => Center(
+                                          child: Text(
+                                            unit,
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                )
+                              : Center(
+                                  child: Text(
+                                    widget.habit.unit!,
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 16,
                                     ),
                                   ),
-                                )
-                                .toList(),
-                          ),
+                                ),
                         ),
                       ],
                     ),
@@ -156,9 +277,10 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                     ),
                     DropdownButtonFormField(
                       dropdownColor: Colors.black,
-                      items: _numberOfWeeks.map((option) {
+                      validator: _habitDurationValidator,
+                      items: _numberOfWeeksOptions.keys.toList().map((option) {
                         return DropdownMenuItem(
-                          value: option,
+                          value: _numberOfWeeksOptions[option],
                           child: Text(
                             option,
                             style: const TextStyle(
@@ -169,7 +291,9 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (priority) {},
+                      onChanged: (value) {
+                        _selectedNumberOfWeeks = value;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
@@ -191,7 +315,9 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                     ),
                     SelectWeekDays(
                       fontSize: 16,
-                      onSelect: (value) {},
+                      onSelect: (value) {
+                        _selectedDaysOfWeek = value;
+                      },
                       days: _days,
                       unselectedDaysFillColor: const Color(0xFFA6A6A6),
                       unselectedDaysBorderColor: Colors.black,
@@ -206,7 +332,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _saveForm,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

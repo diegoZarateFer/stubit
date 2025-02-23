@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/screens/account_details_screen.dart';
 import 'package:stubit/screens/auth_wrapper.dart';
+import 'package:stubit/screens/faq_screen.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
 
 const double btnWidth = 115.0;
@@ -17,7 +18,7 @@ class UserMenu extends StatefulWidget {
 class _UserMenuState extends State<UserMenu> {
   void _logout() async {
     final bool? logout = await showConfirmationDialog(context, "Cerrar Sesión",
-        "¿Estás seguro(a) que deseas salir?", "Cerrar Sesión","Cancelar");
+        "¿Estás seguro(a) que deseas salir?", "Cerrar Sesión", "Cancelar");
     if (logout ?? false) {
       await FirebaseAuth.instance.signOut();
       Navigator.of(context).pushReplacement(
@@ -32,6 +33,14 @@ class _UserMenuState extends State<UserMenu> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) => const AccountDetailsScreen(),
+      ),
+    );
+  }
+
+  void _showFaqScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => const FaqScreen(),
       ),
     );
   }
@@ -71,7 +80,7 @@ class _UserMenuState extends State<UserMenu> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: _showFaqScreen,
             child: SizedBox(
               width: btnWidth,
               child: Center(

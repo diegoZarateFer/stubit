@@ -6,16 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
 import 'package:stubit/models/habit.dart';
 
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
-
 Map<String, num> _numberOfWeeksOptions = {
   "3 semanas": 3,
   "4 semanas": 4,
@@ -51,6 +41,16 @@ class CreateFtHabitScreen extends StatefulWidget {
 }
 
 class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
+  final List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "monday"),
+    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("M", dayKey: "thursday"),
+    DayInWeek("J", dayKey: "friday"),
+    DayInWeek("V", dayKey: "saturday"),
+    DayInWeek("S", dayKey: "sunday"),
+  ];
+
   User? _currentUser;
   final _formKey = GlobalKey<FormState>();
 
@@ -88,6 +88,18 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
 
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      if (_selectedNumberOfWeeks == double.infinity &&
+          _selectedDaysOfWeek.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Selecciona los días a la semana que dedicarás a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
       if (_selectedNumberOfWeeks != double.infinity &&
           _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,6 +122,10 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
           "allotedTime": selectedTotalMinutes,
           "days": _selectedDaysOfWeek,
           "numberOfWeeks": _selectedNumberOfWeeks,
+          "name": widget.habit.name,
+          "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -121,8 +137,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text('Ha ocurrido un error inesperado. Intentalo más tarde.'),
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
           ),
         );
       }
@@ -205,7 +222,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfHours = value;
+                                  _selectedNumberOfHours = value % _hours.length;
                                 },
                                 children: _hours
                                     .map(
@@ -232,7 +249,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfMinutes = value;
+                                  _selectedNumberOfMinutes = value % _minutes.length;
                                 },
                                 children: _minutes
                                     .map(
