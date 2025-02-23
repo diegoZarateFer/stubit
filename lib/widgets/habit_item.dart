@@ -35,7 +35,7 @@ class HabitItem extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8),
               child: Text(
-                'Selecciona una opción',
+                habit.name,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 14,
@@ -77,7 +77,6 @@ class HabitItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String habitName = habit.name;
     return GestureDetector(
       onTap: () {
         _showMenuAction(context);
@@ -96,7 +95,7 @@ class HabitItem extends StatelessWidget {
             Expanded(
               child: Text(
                 textAlign: TextAlign.center,
-                habitName,
+                habit.name,
                 softWrap: true,
                 maxLines: 2,
                 style: GoogleFonts.poppins(
