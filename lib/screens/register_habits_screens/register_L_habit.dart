@@ -133,13 +133,17 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
                           itemCount: _listItems.length,
                           itemBuilder: (ctx, index) {
                             return ListTile(
-                              onTap: () {
-                                _textEditingController.text = _listItems[index];
-                                setState(() {
-                                  _editingList = true;
-                                  _listItems.removeAt(index);
-                                });
-                              },
+                              onTap:
+                                  _textEditingController.text.trim().isNotEmpty
+                                      ? () {}
+                                      : () {
+                                          _textEditingController.text =
+                                              _listItems[index];
+                                          setState(() {
+                                            _editingList = true;
+                                            _listItems.removeAt(index);
+                                          });
+                                        },
                               leading: const Icon(
                                 Icons.star,
                                 color: Colors.amber,
@@ -188,7 +192,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
                               _textEditingController.text = "";
 
                               setState(() {
-                                _editingList = !_editingList;
+                                _editingList = false;
                               });
                             }
                           },
