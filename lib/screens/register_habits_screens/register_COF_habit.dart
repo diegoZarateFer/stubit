@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -156,7 +158,8 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            _counter--;
+                            _counter = max(_counter - 1, 0);
+                            
                           });
                         },
                         style: ElevatedButton.styleFrom(
