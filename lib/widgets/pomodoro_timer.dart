@@ -1,9 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+
+final player = AudioPlayer();
 
 class PomodoroTimer extends StatefulWidget {
   const PomodoroTimer({
@@ -34,6 +36,11 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
 
   late int _remainingSeconds;
 
+  void _playAlertSound() async {
+    await player.setSourceAsset('sounds/ding.wav');
+    await player.resume();
+  }
+
   void _startTimer() {
     if (_timer != null) {
       _timer!.cancel();
@@ -47,11 +54,14 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
         });
       } else {
         timer.cancel();
+
+        _playAlertSound();
         if (_runningAditionalCycle) {
           setState(() {
             _runningAditionalCycle = false;
             _completedCycles++;
           });
+
           widget.onFinish(_completedCycles);
           return;
         }
