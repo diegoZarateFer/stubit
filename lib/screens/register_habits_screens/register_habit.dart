@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/register_habits_screens/register_CF_habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_T_habit_screen.dart';
 import 'package:stubit/widgets/apology.dart';
 
@@ -70,6 +71,10 @@ class _RegisterHabitState extends State<RegisterHabit> {
               if (habitStrategy == 'T') {
                 return RegisterTHabitScreen(
                   targetNumberOfMinutes: loadedHabitData['allotedTime'],
+                  habit: widget.habit,
+                );
+              } else if (habitStrategy == 'CF') {
+                return RegisterCfHabit(
                   habit: widget.habit,
                 );
               } else {
