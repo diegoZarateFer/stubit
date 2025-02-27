@@ -77,10 +77,10 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
     int selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
 
     ScaffoldMessenger.of(context).clearSnackBars();
-    if (selectedTotalMinutes < 15) {
+    if (selectedTotalMinutes < 10) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Debes dedicar al menos 15 minutos a esta actividad.'),
+          content: Text('Debes dedicar al menos 10 minutos a esta actividad.'),
         ),
       );
       return;

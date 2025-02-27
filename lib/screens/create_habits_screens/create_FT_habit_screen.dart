@@ -77,10 +77,10 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
         _selectedNumberOfHours * 60 + _selectedNumberOfMinutes;
 
     ScaffoldMessenger.of(context).clearSnackBars();
-    if (selectedTotalMinutes < 15) {
+    if (selectedTotalMinutes < 10) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Debes dedicar al menos 15 minutos a esta actividad.'),
+          content: Text('Debes dedicar al menos 10 minutos a esta actividad.'),
         ),
       );
       return;
@@ -222,7 +222,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfHours = value % _hours.length;
+                                  _selectedNumberOfHours =
+                                      value % _hours.length;
                                 },
                                 children: _hours
                                     .map(
@@ -249,7 +250,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfMinutes = value % _minutes.length;
+                                  _selectedNumberOfMinutes =
+                                      value % _minutes.length;
                                 },
                                 children: _minutes
                                     .map(
