@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/widgets/apology.dart';
 import 'package:stubit/widgets/habit_item.dart';
 
 String apology = """
@@ -66,32 +67,8 @@ class HabitsScreen extends StatelessWidget {
         }
 
         if (boardSnapshots.hasError) {
-          return Center(
-            child: Column(
-              children: [
-                const Spacer(),
-                Text(
-                  'Algo salió mal :(',
-                  style: GoogleFonts.poppins(
-                    fontSize: 31,
-                    color: Colors.white,
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.all(30),
-                  child: Text(
-                    apology,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
+          return const Apology(
+            message: "Lo sentimos pero algo salió mal :(",
           );
         }
 
