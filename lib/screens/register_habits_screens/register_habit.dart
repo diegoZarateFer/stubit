@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_CF_habit.dart';
+import 'package:stubit/screens/register_habits_screens/register_COF_habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_FT_habit_screen.dart';
 import 'package:stubit/screens/register_habits_screens/register_L_habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_TP_habit.dart';
@@ -95,6 +96,11 @@ class _RegisterHabitState extends State<RegisterHabit> {
                   workInterval: loadedHabitData['workInterval'],
                   restInterval: loadedHabitData['restInterval'],
                   targetNumberOfCycles: loadedHabitData['cycles'],
+                );
+              } else if (habitStrategy == 'COF') {
+                return RegisterCofHabit(
+                  habit: widget.habit,
+                  dailyTarget: loadedHabitData['dailyTarget'],
                 );
               } else {
                 return const Apology(message: 'ERROR: Estrategia no válida.');
