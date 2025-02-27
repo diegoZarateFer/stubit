@@ -26,7 +26,8 @@ class PomodoroTimer extends StatefulWidget {
 }
 
 class _PomodoroTimerState extends State<PomodoroTimer> {
-  bool _workIntervalIsActive = true,
+  bool _hastStarted = false,
+      _workIntervalIsActive = true,
       _timerIsPaused = true,
       _targetCompleted = false,
       _runningAditionalCycle = false;
@@ -34,7 +35,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   Timer? _timer;
   int _completedCycles = 0;
 
-  late int _remainingSeconds;
+  late int _remainingSeconds, _workInterval, _restInterval;
 
   void _playAlertSound() async {
     await player.setSourceAsset('sounds/ding.wav');
@@ -76,7 +77,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
         _workIntervalIsActive = !_workIntervalIsActive;
         setState(() {
           _remainingSeconds =
-              _workIntervalIsActive ? widget.workInterval : widget.restInterval;
+              _workIntervalIsActive ? _workInterval : _restInterval;
         });
 
         if (_completedCycles < widget.targetNumberOfCycles) {
@@ -104,28 +105,34 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   @override
   void initState() {
     super.initState();
-    _remainingSeconds = widget.workInterval;
+    _workInterval = widget.workInterval * 60;
+    _restInterval = widget.restInterval * 60;
+    _remainingSeconds = _workInterval;
   }
 
   @override
   void dispose() {
-    _timer!.cancel();
     super.dispose();
+    if (_timer != null) {
+      _timer!.cancel();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     double timerPercentage = _workIntervalIsActive
-        ? _remainingSeconds / widget.workInterval
-        : _remainingSeconds / widget.restInterval;
+        ? _remainingSeconds / _workInterval
+        : _remainingSeconds / _restInterval;
 
-    String timerTitle = _targetCompleted && !_runningAditionalCycle
-        ? "Enhorabuena, ¡has terminado!"
-        : _timerIsPaused
-            ? "Pausado"
-            : _workIntervalIsActive
-                ? "Concentrate en tu actividad"
-                : "Descanso";
+    String timerTitle = !_hastStarted
+        ? "Prepárate para comenzar"
+        : _targetCompleted && !_runningAditionalCycle
+            ? "Enhorabuena, ¡has terminado!"
+            : _timerIsPaused
+                ? "Pausado"
+                : _workIntervalIsActive
+                    ? "Concentrate en tu actividad"
+                    : "Descanso";
 
     final timerButtonIcon = _targetCompleted && !_runningAditionalCycle
         ? Icons.add
@@ -206,13 +213,17 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
             ),
             ElevatedButton(
               onPressed: () {
+                setState(() {
+                  _hastStarted = true;
+                });
+
                 if (!_runningAditionalCycle && _targetCompleted) {
                   setState(() {
                     _timerIsPaused = false;
                     _runningAditionalCycle = true;
                     _workIntervalIsActive = true;
                   });
-                  _remainingSeconds = widget.workInterval;
+                  _remainingSeconds = _workInterval;
                 } else {
                   setState(() {
                     _timerIsPaused = !_timerIsPaused;

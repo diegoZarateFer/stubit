@@ -5,6 +5,7 @@ import 'package:stubit/models/habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_CF_habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_FT_habit_screen.dart';
 import 'package:stubit/screens/register_habits_screens/register_L_habit.dart';
+import 'package:stubit/screens/register_habits_screens/register_TP_habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_T_habit_screen.dart';
 import 'package:stubit/widgets/apology.dart';
 
@@ -87,6 +88,13 @@ class _RegisterHabitState extends State<RegisterHabit> {
                 return RegisterFtHabitScreen(
                   targetNumberOfMinutes: loadedHabitData['allotedTime'],
                   habit: widget.habit,
+                );
+              } else if (habitStrategy == 'TP') {
+                return RegisterTpHabit(
+                  habit: widget.habit,
+                  workInterval: loadedHabitData['workInterval'],
+                  restInterval: loadedHabitData['restInterval'],
+                  targetNumberOfCycles: loadedHabitData['cycles'],
                 );
               } else {
                 return const Apology(message: 'ERROR: Estrategia no válida.');
