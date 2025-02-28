@@ -153,7 +153,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
     if (doc.exists) {
       final createdAt = (doc.data()?['createdAt'] as Timestamp).toDate();
       final now = DateTime.now();
-      if (now.difference(createdAt).inDays >= 1) {
+      if (isDifferentDay(createdAt, now)) {
         await _firestore
             .collection("user_data")
             .doc(userId)
