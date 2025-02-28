@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
-import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/pomodoro_timer.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -85,10 +84,6 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
       );
     }
   }
-
-  void _loadLastLog() {
-    
-   }
 
   @override
   Widget build(BuildContext context) {

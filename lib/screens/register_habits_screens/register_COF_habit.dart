@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
+import 'package:stubit/widgets/confirmation_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -30,7 +29,9 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
   late String _date;
-  bool _confirmationBoxIsSelected = false, _isLoading = true;
+  bool _confirmationBoxIsSelected = false,
+      _isLoading = true,
+      _changesWereMade = false;
 
   late int _dailyTarget;
   int _counter = 0;
@@ -65,6 +66,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
           {
             "createdAt": now,
             "counter": _counter,
+            "confirmation": _confirmationBoxIsSelected,
           },
           SetOptions(
             merge: true,
@@ -115,6 +117,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         {
           "createdAt": now,
           "counter": _counter,
+          "confirmation": _confirmationBoxIsSelected,
         },
         SetOptions(
           merge: true,
@@ -162,10 +165,12 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         setState(() {
           _counter = 0;
           _isLoading = false;
+          _confirmationBoxIsSelected = false;
         });
       } else {
         setState(() {
           _counter = doc.data()?['counter'];
+          _confirmationBoxIsSelected = doc.data()?['confirmation'];
           _isLoading = false;
         });
       }
@@ -173,6 +178,22 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  void _handleCancelButtonPressed() async {
+    if (_changesWereMade) {
+      final bool? confirmation = await showConfirmationDialog(
+          context,
+          "Salir del registro",
+          "Se perderán los cambios realizados.",
+          "Continuar",
+          "Cancelar");
+      if (confirmation ?? false) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      Navigator.of(context).pop();
     }
   }
 
@@ -284,9 +305,18 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            setState(() {
-                              _counter = max(_counter - 1, 0);
-                            });
+                            if (_counter > 0) {
+                              setState(() {
+                                _counter--;
+                                _changesWereMade = true;
+                              });
+                            }
+
+                            if (_counter < _dailyTarget) {
+                              setState(() {
+                                _confirmationBoxIsSelected = false;
+                              });
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
@@ -306,6 +336,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                           onPressed: () {
                             setState(() {
                               _counter++;
+                              _changesWereMade = true;
                             });
                           },
                           style: ElevatedButton.styleFrom(
@@ -362,7 +393,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                         backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
                       ),
                       child: Text(
-                        isCompleted ? "Registrar" : "Guardar",
+                        isCompleted ? "Completar" : "Guardar",
                         style: GoogleFonts.openSans(
                           color: Colors.white,
                           decorationColor: Colors.white,
@@ -374,9 +405,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                       height: 8,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: _handleCancelButtonPressed,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
