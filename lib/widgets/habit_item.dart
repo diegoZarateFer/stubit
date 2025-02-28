@@ -10,12 +10,10 @@ class HabitItem extends StatelessWidget {
     required this.habit,
     required this.onTap,
     required this.habitParameters,
-    this.lastLoggedData,
   });
 
   final Habit habit;
   final Map<String, dynamic> habitParameters;
-  final Map<String, dynamic>? lastLoggedData;
   final void Function() onTap;
 
   void _showMenuAction(BuildContext context) {
@@ -51,7 +49,6 @@ class HabitItem extends StatelessWidget {
                     builder: (ctx) => RegisterHabit(
                       habit: habit,
                       habitParameters: habitParameters,
-                      lastLoggedData: lastLoggedData,
                     ),
                   ),
                 );

@@ -15,10 +15,12 @@ class RegisterTpHabit extends StatefulWidget {
     required this.workInterval,
     required this.restInterval,
     required this.targetNumberOfCycles,
+    this.lastLoggedData,
   });
 
   final Habit habit;
   final int workInterval, restInterval, targetNumberOfCycles;
+  final Map<String, dynamic>? lastLoggedData;
 
   @override
   State<RegisterTpHabit> createState() => _CreateFtHabitScreenState();
@@ -26,6 +28,8 @@ class RegisterTpHabit extends StatefulWidget {
 
 class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
+
+  late String _date, _userId;
   int _completedCycles = 0;
   bool _confirmationBoxIsSelected = false, _targetIsCompleted = false;
 
@@ -42,16 +46,21 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
       return;
     }
 
-    final userId = _currentUser.uid.toString();
-    final date = getDateAsString();
+    Map<String, dynamic> lastLog = {
+      "date": _date,
+      "counter": _completedCycles,
+      "workInterval": widget.workInterval,
+      "resInterval": widget.restInterval,
+    };
+
     try {
       await _firestore
           .collection("user_data")
-          .doc(userId)
+          .doc(_userId)
           .collection("habits")
           .doc(widget.habit.id)
           .collection("habit_log")
-          .doc(date)
+          .doc(_date)
           .set({
         "completedCycles": _completedCycles,
         "restInterval": widget.restInterval,
@@ -76,6 +85,10 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
       );
     }
   }
+
+  void _loadLastLog() {
+    
+   }
 
   @override
   Widget build(BuildContext context) {
