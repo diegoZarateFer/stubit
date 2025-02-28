@@ -16,19 +16,23 @@ class RegisterCofHabit extends StatefulWidget {
     required this.habit,
     required this.dailyTarget,
     required this.unit,
+    this.lastLoggedData,
   });
 
   final Habit habit;
   final int dailyTarget;
   final String unit;
+  final Map<String, dynamic>? lastLoggedData;
 
   @override
   State<RegisterCofHabit> createState() => _CreateFtHabitScreenState();
 }
 
 class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
+  late String _userId;
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
+  late String _date;
   bool _confirmationBoxIsSelected = false;
 
   late int _dailyTarget;
@@ -49,23 +53,40 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
       return;
     }
 
-    final userId = _currentUser.uid.toString();
-    final date = getDateAsString();
-    try {
-      await _firestore
-          .collection("user_data")
-          .doc(userId)
-          .collection("habits")
-          .doc(widget.habit.id)
-          .collection("habit_log")
-          .doc(date)
-          .set({
-        "counter": _counter,
-        "unit": _unit,
-        "dailyTarget": _dailyTarget,
-      });
+    Map<String, dynamic> lastLog = {
+      "date": _date,
+      "counter": _counter,
+    };
 
-      // TODO: mostrar las gemas obtenidas con la frase motivacional.
+    try {
+      await Future.wait([
+        _firestore
+            .collection("user_data")
+            .doc(_userId)
+            .collection("habits")
+            .doc(widget.habit.id)
+            .set(
+          {
+            "lastLoggedData": lastLog,
+          },
+          SetOptions(
+            merge: true,
+          ),
+        ),
+        _firestore
+            .collection("user_data")
+            .doc(_userId)
+            .collection("habits")
+            .doc(widget.habit.id)
+            .collection("habit_log")
+            .doc(_date)
+            .set({
+          "counter": _counter,
+          "unit": _unit,
+          "dailyTarget": _dailyTarget,
+        }),
+      ]);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("¡Felicidades! Registro del día completado."),
@@ -74,14 +95,59 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
 
       Navigator.of(context).pop();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Hubo un problema al guardar el registro. Inténtalo más tarde.",
-          ),
+      const SnackBar(
+        content: Text(
+          "Hubo un problema al guardar el registro. Inténtalo más tarde.",
         ),
       );
     }
+  }
+
+  void _updateLastLog() async {
+    Map<String, dynamic> lastLog = {
+      "date": _date,
+      "counter": _counter,
+    };
+
+    try {
+      _firestore
+          .collection("user_data")
+          .doc(_userId)
+          .collection("habits")
+          .doc(widget.habit.id)
+          .set(
+        {
+          "lastLoggedData": lastLog,
+        },
+        SetOptions(
+          merge: true,
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Se ha guardado tu avance."),
+        ),
+      );
+
+      Navigator.of(context).pop();
+    } catch (e) {
+      const SnackBar(
+        content: Text(
+          "Hubo un problema al guardar el avance. Inténtalo más tarde.",
+        ),
+      );
+    }
+  }
+
+  void _initLastLoggedData() {
+    if (widget.lastLoggedData == null) {
+      _counter = 0;
+      return;
+    }
+
+    _counter = widget.lastLoggedData!['date'] == _date
+        ? widget.lastLoggedData!['counter']
+        : 0;
   }
 
   @override
@@ -89,10 +155,14 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
     super.initState();
     _dailyTarget = widget.dailyTarget;
     _unit = widget.unit;
+    _userId = _currentUser.uid.toString();
+    _date = getDateAsString();
+    _initLastLoggedData();
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isCompleted = _counter >= _dailyTarget;
     double targetPercentage = _counter.toDouble() / _dailyTarget > 1
         ? 1
         : _counter.toDouble() / _dailyTarget;
@@ -225,34 +295,36 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
               const SizedBox(
                 height: 16,
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Checkbox(
-                      shape: const CircleBorder(),
-                      value: _confirmationBoxIsSelected,
-                      onChanged: (bool? isSelected) {
-                        setState(() {
-                          _confirmationBoxIsSelected = isSelected ?? false;
-                        });
-                      },
+              if (isCompleted)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Checkbox(
+                        shape: const CircleBorder(),
+                        value: _confirmationBoxIsSelected,
+                        onChanged: (bool? isSelected) {
+                          setState(() {
+                            _confirmationBoxIsSelected = isSelected ?? false;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Confirmo que hoy realicé este hábito",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color: Colors.white,
+                    Text(
+                      "Confirmo que hoy realicé este hábito",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 16,
-              ),
+                  ],
+                ),
+              if (isCompleted)
+                const SizedBox(
+                  height: 16,
+                ),
               ElevatedButton(
-                onPressed: _registerHabit,
+                onPressed: isCompleted ? _registerHabit : _updateLastLog,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -260,7 +332,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                   backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
                 ),
                 child: Text(
-                  "Registrar",
+                  isCompleted ? "Registrar" : "Guardar",
                   style: GoogleFonts.openSans(
                     color: Colors.white,
                     decorationColor: Colors.white,

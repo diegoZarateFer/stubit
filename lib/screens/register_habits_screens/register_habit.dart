@@ -17,10 +17,12 @@ class RegisterHabit extends StatefulWidget {
     super.key,
     required this.habit,
     required this.habitParameters,
+    this.lastLoggedData,
   });
 
   final Habit habit;
   final Map<String, dynamic> habitParameters;
+  final Map<String, dynamic>? lastLoggedData;
 
   @override
   State<RegisterHabit> createState() => _RegisterHabitState();
@@ -28,11 +30,13 @@ class RegisterHabit extends StatefulWidget {
 
 class _RegisterHabitState extends State<RegisterHabit> {
   late Map<String, dynamic> _habitParameters;
+  late Map<String, dynamic>? _lastLoggedData;
 
   @override
   void initState() {
     super.initState();
     _habitParameters = widget.habitParameters;
+    _lastLoggedData = widget.lastLoggedData;
   }
 
   Widget _loadRegisterHabitForm() {
@@ -65,11 +69,11 @@ class _RegisterHabitState extends State<RegisterHabit> {
         targetNumberOfCycles: _habitParameters['cycles'],
       );
     } else {
-      // COF
       return RegisterCofHabit(
         habit: widget.habit,
         dailyTarget: _habitParameters['dailyTarget'],
         unit: _habitParameters['unit'],
+        lastLoggedData: _lastLoggedData,
       );
     }
   }
