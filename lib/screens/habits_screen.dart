@@ -133,8 +133,10 @@ class HabitsScreen extends StatelessWidget {
                       category: habitData['category'],
                       strategy: habitData['strategy'],
                     );
+                    final habitParameters = habitData['habitParameters'];
                     return HabitItem(
                       habit: habit,
+                      habitParameters: habitParameters,
                       onTap: () {},
                     );
                   },

@@ -9,9 +9,11 @@ class HabitItem extends StatelessWidget {
     super.key,
     required this.habit,
     required this.onTap,
+    required this.habitParameters,
   });
 
   final Habit habit;
+  final Map<String, dynamic> habitParameters;
   final void Function() onTap;
 
   void _showMenuAction(BuildContext context) {
@@ -46,6 +48,7 @@ class HabitItem extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (ctx) => RegisterHabit(
                       habit: habit,
+                      habitParameters: habitParameters,
                     ),
                   ),
                 );
