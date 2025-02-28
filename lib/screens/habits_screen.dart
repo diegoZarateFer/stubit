@@ -132,7 +132,6 @@ class HabitsScreen extends StatelessWidget {
                       description: habitData['description'],
                       category: habitData['category'],
                       strategy: habitData['strategy'],
-                      unit: habitData['unit'],
                     );
                     return HabitItem(
                       habit: habit,

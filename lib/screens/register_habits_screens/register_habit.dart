@@ -101,6 +101,7 @@ class _RegisterHabitState extends State<RegisterHabit> {
                 return RegisterCofHabit(
                   habit: widget.habit,
                   dailyTarget: loadedHabitData['dailyTarget'],
+                  unit: "páginas", // TODO: cargar parámetros del hábito.
                 );
               } else {
                 return const Apology(message: 'ERROR: Estrategia no válida.');

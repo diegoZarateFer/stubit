@@ -31,9 +31,11 @@ class CreateCofHabitScreen extends StatefulWidget {
   const CreateCofHabitScreen({
     super.key,
     required this.habit,
+    this.unit,
   });
 
   final Habit habit;
+  final String? unit;
 
   @override
   State<CreateCofHabitScreen> createState() => _CreateCofHabitScreenState();
@@ -53,6 +55,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
   User? _currentUser;
   final _formKey = GlobalKey<FormState>();
 
+  late String? _unit;
   List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
   int _selectedUnitIndex = 0;
@@ -103,6 +106,13 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         return;
       }
 
+      final Map<String, dynamic> habitParameters = {
+        "dailyTarget": int.tryParse(_dailyTargetController.text),
+        "days": _selectedDaysOfWeek,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+        "unit": _unit ?? _units[_selectedUnitIndex],
+      };
+
       try {
         // Saving habit information.
         await FirebaseFirestore.instance
@@ -111,14 +121,11 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "dailyTarget": int.tryParse(_dailyTargetController.text),
-          "days": _selectedDaysOfWeek,
-          "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
-          "unit": widget.habit.unit ?? _units[_selectedUnitIndex],
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +135,6 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         );
         Navigator.pop(context, true);
       } catch (error) {
-        ;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -144,6 +150,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
   void initState() {
     super.initState();
     _currentUser = FirebaseAuth.instance.currentUser;
+    _unit = widget.unit;
   }
 
   @override
@@ -230,7 +237,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                           ),
                         ),
                         Expanded(
-                          child: widget.habit.unit == null
+                          child: _unit == null
                               ? CupertinoPicker(
                                   itemExtent: 64,
                                   onSelectedItemChanged: (index) {
@@ -251,7 +258,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                                 )
                               : Center(
                                   child: Text(
-                                    widget.habit.unit!,
+                                    _unit!,
                                     style: GoogleFonts.poppins(
                                       color: Colors.white,
                                       fontSize: 16,

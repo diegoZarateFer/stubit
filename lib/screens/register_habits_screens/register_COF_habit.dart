@@ -15,10 +15,12 @@ class RegisterCofHabit extends StatefulWidget {
     super.key,
     required this.habit,
     required this.dailyTarget,
+    required this.unit,
   });
 
   final Habit habit;
   final int dailyTarget;
+  final String unit;
 
   @override
   State<RegisterCofHabit> createState() => _CreateFtHabitScreenState();
@@ -31,6 +33,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
 
   late int _dailyTarget;
   int _counter = 0;
+  late String _unit;
 
   void _registerHabit() async {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -58,7 +61,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
           .doc(date)
           .set({
         "counter": _counter,
-        "unit": widget.habit.unit,
+        "unit": _unit,
         "dailyTarget": _dailyTarget,
       });
 
@@ -85,6 +88,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
   void initState() {
     super.initState();
     _dailyTarget = widget.dailyTarget;
+    _unit = widget.unit;
   }
 
   @override
@@ -146,7 +150,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                     width: 8,
                   ),
                   Text(
-                    "$_dailyTarget ${widget.habit.unit}.",
+                    "$_dailyTarget $_unit.",
                     textAlign: TextAlign.center,
                     style: GoogleFonts.dmSans(
                       fontSize: 14,

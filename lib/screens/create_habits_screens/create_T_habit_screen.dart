@@ -89,6 +89,11 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      final Map<String, dynamic> habitParameters = {
+        "allotedTime": selectedTotalMinutes,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+      };
+
       try {
         // Saving habit information.
         await FirebaseFirestore.instance
@@ -97,12 +102,11 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "allotedTime": selectedTotalMinutes,
-          "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
