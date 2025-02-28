@@ -70,8 +70,11 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
   }
 
   void _saveForm() async {
-    int selectedTotalMinutes = _scrollHoursController.selectedItem * 60 +
-        _scrollMinutesController.selectedItem;
+    int selectedHours = _scrollHoursController.selectedItem % _hours.length;
+    int selectedMinutes =
+        _scrollMinutesController.selectedItem % _minutes.length;
+
+    int selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
 
     ScaffoldMessenger.of(context).clearSnackBars();
     if (selectedTotalMinutes < 15) {
@@ -98,6 +101,8 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
           "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -109,8 +114,9 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text('Ha ocurrido un error inesperado. Intentalo más tarde.'),
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
           ),
         );
       }
