@@ -121,9 +121,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   @override
   void initState() {
     super.initState();
-    _workInterval = widget.workInterval;
-    _restInterval = widget.restInterval;
-    _remainingSeconds = widget.remainingTime;
+    _workInterval = widget.workInterval * 60;
+    _restInterval = widget.restInterval * 60;
+    _remainingSeconds = widget.remainingTime * 60;
     _completedCycles = widget.completedCycles;
     _workIntervalIsActive = widget.workIntervalIsActive;
     _targetCompleted = widget.completedCycles == widget.targetNumberOfCycles;
