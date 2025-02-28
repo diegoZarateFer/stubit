@@ -37,7 +37,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
   int _counter = 0;
   late String _unit;
 
-  void _registerHabit() async {
+  Future<void> _registerHabit() async {
     ScaffoldMessenger.of(context).clearSnackBars();
 
     if (!_confirmationBoxIsSelected) {
@@ -102,7 +102,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
     }
   }
 
-  void _saveFormData() async {
+  Future<void> _saveFormData() async {
     final userId = _currentUser.uid.toString();
     final now = Timestamp.now();
     try {

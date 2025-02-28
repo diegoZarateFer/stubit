@@ -13,11 +13,23 @@ class PomodoroTimer extends StatefulWidget {
     required this.workInterval,
     required this.restInterval,
     required this.targetNumberOfCycles,
+    required this.completedCycles,
+    required this.remainingTime,
+    required this.workIntervalIsActive,
+    required this.onCycleComplete,
     required this.onFinish,
+    required this.onUpdateTimer,
   });
 
-  final int workInterval, restInterval, targetNumberOfCycles;
+  final int workInterval,
+      restInterval,
+      targetNumberOfCycles,
+      completedCycles,
+      remainingTime;
+  final bool workIntervalIsActive;
   final void Function(int) onFinish;
+  final void Function(int) onCycleComplete;
+  final void Function(bool, int) onUpdateTimer;
 
   @override
   State<StatefulWidget> createState() {
@@ -29,13 +41,11 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   bool _hastStarted = false,
       _workIntervalIsActive = true,
       _timerIsPaused = true,
-      _targetCompleted = false,
       _runningAditionalCycle = false;
 
   Timer? _timer;
-  int _completedCycles = 0;
-
-  late int _remainingSeconds, _workInterval, _restInterval;
+  late int _completedCycles, _remainingSeconds, _workInterval, _restInterval;
+  late bool _targetCompleted;
 
   void _playAlertSound() async {
     await player.setSourceAsset('sounds/ding.wav');
@@ -72,6 +82,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
           setState(() {
             _completedCycles++;
           });
+          widget.onCycleComplete(_completedCycles);
         }
 
         _workIntervalIsActive = !_workIntervalIsActive;
@@ -81,6 +92,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
         });
 
         if (_completedCycles < widget.targetNumberOfCycles) {
+          widget.onUpdateTimer(_workIntervalIsActive, _remainingSeconds);
           _startTimer();
         } else {
           setState(() {
@@ -88,6 +100,10 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
             widget.onFinish(_completedCycles);
           });
         }
+      }
+
+      if (_remainingSeconds % 10 == 0) {
+        widget.onUpdateTimer(_workIntervalIsActive, _remainingSeconds);
       }
     });
   }
@@ -105,9 +121,12 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   @override
   void initState() {
     super.initState();
-    _workInterval = widget.workInterval * 60;
-    _restInterval = widget.restInterval * 60;
-    _remainingSeconds = _workInterval;
+    _workInterval = widget.workInterval;
+    _restInterval = widget.restInterval;
+    _remainingSeconds = widget.remainingTime;
+    _completedCycles = widget.completedCycles;
+    _workIntervalIsActive = widget.workIntervalIsActive;
+    _targetCompleted = widget.completedCycles == widget.targetNumberOfCycles;
   }
 
   @override
