@@ -181,7 +181,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
     }
   }
 
-  void _handleCancelButtonPressed() async {
+  Future<bool> _handleCancelButtonPressed() async {
     if (_changesWereMade) {
       final bool? confirmation = await showConfirmationDialog(
           context,
@@ -189,12 +189,9 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
           "Se perderán los cambios realizados.",
           "Continuar",
           "Cancelar");
-      if (confirmation ?? false) {
-        Navigator.of(context).pop();
-      }
-    } else {
-      Navigator.of(context).pop();
+      return confirmation ?? false;
     }
+    return true;
   }
 
   @override
@@ -213,216 +210,239 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         ? 1
         : _counter.toDouble() / _dailyTarget;
 
-    return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Column(
-                  children: [
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "REGISTRO DE HÁBITO",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Image.asset(
-                      "assets/images/calendar.png",
-                      height: 60,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "Lectura",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Objetivo diario: ",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.dmSans(
-                              fontSize: 14,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "$_dailyTarget $_unit.",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    CircularPercentIndicator(
-                      radius: 75,
-                      lineWidth: 5,
-                      percent: targetPercentage,
-                      center: Text(
-                        "$_counter",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
-                      progressColor: const Color.fromARGB(255, 228, 200, 247),
-                    ),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_counter > 0) {
-                              setState(() {
-                                _counter--;
-                                _changesWereMade = true;
-                              });
-                            }
-
-                            if (_counter < _dailyTarget) {
-                              setState(() {
-                                _confirmationBoxIsSelected = false;
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            backgroundColor: Colors.white,
-                          ),
-                          child: const Icon(
-                            Icons.remove,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _counter++;
-                              _changesWereMade = true;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            backgroundColor: Colors.white,
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    if (isCompleted)
-                      Row(
+    return WillPopScope(
+      onWillPop: () async {
+        return _handleCancelButtonPressed();
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(139, 34, 227, 1),
+                Colors.black,
+              ],
+            ),
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Column(
                         children: [
-                          Expanded(
-                            child: Checkbox(
-                              shape: const CircleBorder(),
-                              value: _confirmationBoxIsSelected,
-                              onChanged: (bool? isSelected) {
-                                setState(() {
-                                  _confirmationBoxIsSelected =
-                                      isSelected ?? false;
-                                });
-                              },
-                            ),
+                          const SizedBox(
+                            height: 16,
                           ),
                           Text(
-                            "Confirmo que hoy realicé este hábito",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14,
+                            "REGISTRO DE HÁBITO",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                               color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Image.asset(
+                            "assets/images/calendar.png",
+                            height: 60,
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            "Lectura",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Objetivo diario: ",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                "$_dailyTarget $_unit.",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          CircularPercentIndicator(
+                            radius: 75,
+                            lineWidth: 5,
+                            percent: targetPercentage,
+                            center: Text(
+                              "$_counter",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            backgroundColor:
+                                const Color.fromARGB(178, 158, 158, 158),
+                            progressColor:
+                                const Color.fromARGB(255, 228, 200, 247),
+                          ),
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_counter > 0) {
+                                    setState(() {
+                                      _counter--;
+                                      _changesWereMade = true;
+                                    });
+                                  }
+
+                                  if (_counter < _dailyTarget) {
+                                    setState(() {
+                                      _confirmationBoxIsSelected = false;
+                                    });
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                ),
+                                child: const Icon(
+                                  Icons.remove,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _counter++;
+                                    _changesWereMade = true;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          if (isCompleted)
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Checkbox(
+                                    shape: const CircleBorder(),
+                                    value: _confirmationBoxIsSelected,
+                                    onChanged: (bool? isSelected) {
+                                      setState(() {
+                                        _confirmationBoxIsSelected =
+                                            isSelected ?? false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Text(
+                                  "Confirmo que hoy realicé este hábito",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          if (isCompleted)
+                            const SizedBox(
+                              height: 16,
+                            ),
+                          ElevatedButton(
+                            onPressed:
+                                isCompleted ? _registerHabit : _saveFormData,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor:
+                                  const Color.fromRGBO(121, 30, 198, 1),
+                            ),
+                            child: Text(
+                              isCompleted ? "Completar" : "Guardar",
+                              style: GoogleFonts.openSans(
+                                color: Colors.white,
+                                decorationColor: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          ElevatedButton(
+                            onPressed: _handleCancelButtonPressed,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor: Colors.white,
+                            ),
+                            child: Text(
+                              "Cancelar",
+                              style: GoogleFonts.openSans(
+                                color: Colors.black,
+                                decorationColor: Colors.black,
+                                fontSize: 18,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    if (isCompleted)
-                      const SizedBox(
-                        height: 16,
-                      ),
-                    ElevatedButton(
-                      onPressed: isCompleted ? _registerHabit : _saveFormData,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
-                      ),
-                      child: Text(
-                        isCompleted ? "Completar" : "Guardar",
-                        style: GoogleFonts.openSans(
-                          color: Colors.white,
-                          decorationColor: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    ElevatedButton(
-                      onPressed: _handleCancelButtonPressed,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: Text(
-                        "Cancelar",
-                        style: GoogleFonts.openSans(
-                          color: Colors.black,
-                          decorationColor: Colors.black,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
