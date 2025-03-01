@@ -177,7 +177,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
     }
   }
 
-  void _handleCancelButtonPressed() async {
+  Future<bool> _handleBackButtonPressed() async {
     if (_changesWereMade) {
       final bool? confirmation = await showConfirmationDialog(
         context,
@@ -186,12 +186,11 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
         "Continuar",
         "Cancelar",
       );
-      if (confirmation ?? false) {
-        Navigator.of(context).pop();
-      }
-    } else {
-      Navigator.of(context).pop();
+
+      return confirmation ?? false;
     }
+
+    return true;
   }
 
   @override
@@ -203,246 +202,268 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(
-            16,
+    return WillPopScope(
+      onWillPop: () async {
+        return await _handleBackButtonPressed();
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(139, 34, 227, 1),
+                Colors.black,
+              ],
+            ),
           ),
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Column(
-                  children: [
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "REGISTRO DE HÁBITO",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Image.asset(
-                      "assets/images/calendar.png",
-                      height: 60,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      widget.habit.name,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF181A25),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _listItems.length,
-                            itemBuilder: (ctx, index) {
-                              return ListTile(
-                                onTap: _textEditingController.text
-                                        .trim()
-                                        .isNotEmpty
-                                    ? () {}
-                                    : () {
-                                        _textEditingController.text =
-                                            _listItems[index];
-                                        setState(() {
-                                          _editingList = true;
-                                          _listItems.removeAt(index);
-                                        });
-                                      },
-                                leading: const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                ),
-                                title: Text(_listItems[index]),
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _listItems.removeAt(index);
-                                    });
-                                  },
-                                  icon: const Icon(Icons.delete),
-                                ),
-                              );
-                            },
-                          ),
-                          const Divider(),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          TextFormField(
-                            maxLines: 2,
-                            maxLength: 250,
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                            decoration: const InputDecoration(
-                              labelText: 'Me siento agradecido por:',
-                              counterText: '',
-                            ),
-                            controller: _textEditingController,
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              String enteredText =
-                                  _textEditingController.text.trim();
-
-                              if (enteredText.trim().isNotEmpty) {
-                                setState(() {
-                                  _listItems = [..._listItems, enteredText];
-                                });
-
-                                _changesWereMade = true;
-                                _textEditingController.text = "";
-                                setState(() {
-                                  _editingList = false;
-                                });
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              backgroundColor: Colors.white,
-                            ),
-                            child: Icon(
-                              _editingList ? Icons.check : Icons.add,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Del 1 al 5 que tanto trabajo te costó realizar hoy este hábito",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          RatingBar.builder(
-                            itemCount: 5,
-                            unratedColor: Colors.white,
-                            initialRating: _selectedDifficulty.toDouble(),
-                            itemBuilder: (ctx, _) => const Icon(
-                              Icons.local_fire_department,
-                              color: Colors.amber,
-                            ),
-                            onRatingUpdate: (difficulty) {
-                              setState(() {
-                                _selectedDifficulty = difficulty.toInt();
-                              });
-                              _changesWereMade = true;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Checkbox(
-                                  shape: const CircleBorder(),
-                                  value: _confirmationBoxIsSelected,
-                                  onChanged: (bool? isSelected) {
-                                    setState(() {
-                                      _confirmationBoxIsSelected =
-                                          isSelected ?? false;
-                                    });
-                                  },
-                                ),
-                              ),
-                              Text(
-                                "Confirmo que hoy realicé este hábito",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          ElevatedButton(
-                            onPressed: _registerHabit,
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              backgroundColor:
-                                  const Color.fromRGBO(121, 30, 198, 1),
-                            ),
-                            child: Text(
-                              "Completar",
-                              style: GoogleFonts.openSans(
-                                color: Colors.white,
-                                decorationColor: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          ElevatedButton(
-                            onPressed: _handleCancelButtonPressed,
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              backgroundColor: Colors.white,
-                            ),
-                            child: Text(
-                              "Cancelar",
-                              style: GoogleFonts.openSans(
-                                color: Colors.black,
-                                decorationColor: Colors.black,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(
+                  16,
                 ),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Column(
+                        children: [
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            "REGISTRO DE HÁBITO",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Image.asset(
+                            "assets/images/calendar.png",
+                            height: 60,
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            widget.habit.name,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF181A25),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: _listItems.length,
+                                  itemBuilder: (ctx, index) {
+                                    return ListTile(
+                                      onTap: _textEditingController.text
+                                              .trim()
+                                              .isNotEmpty
+                                          ? () {}
+                                          : () {
+                                              _textEditingController.text =
+                                                  _listItems[index];
+                                              setState(() {
+                                                _editingList = true;
+                                                _listItems.removeAt(index);
+                                              });
+                                            },
+                                      leading: const Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                      ),
+                                      title: Text(_listItems[index]),
+                                      trailing: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _listItems.removeAt(index);
+                                          });
+                                        },
+                                        icon: const Icon(Icons.delete),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const Divider(),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                TextFormField(
+                                  maxLines: 2,
+                                  maxLength: 250,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Me siento agradecido por:',
+                                    counterText: '',
+                                  ),
+                                  controller: _textEditingController,
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    String enteredText =
+                                        _textEditingController.text.trim();
+
+                                    if (enteredText.trim().isNotEmpty) {
+                                      setState(() {
+                                        _listItems = [
+                                          ..._listItems,
+                                          enteredText
+                                        ];
+                                      });
+
+                                      _changesWereMade = true;
+                                      _textEditingController.text = "";
+                                      setState(() {
+                                        _editingList = false;
+                                      });
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  child: Icon(
+                                    _editingList ? Icons.check : Icons.add,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Del 1 al 5 que tanto trabajo te costó realizar hoy este hábito",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                RatingBar.builder(
+                                  itemCount: 5,
+                                  unratedColor: Colors.white,
+                                  initialRating: _selectedDifficulty.toDouble(),
+                                  itemBuilder: (ctx, _) => const Icon(
+                                    Icons.local_fire_department,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (difficulty) {
+                                    setState(() {
+                                      _selectedDifficulty = difficulty.toInt();
+                                    });
+                                    _changesWereMade = true;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Checkbox(
+                                        shape: const CircleBorder(),
+                                        value: _confirmationBoxIsSelected,
+                                        onChanged: (bool? isSelected) {
+                                          setState(() {
+                                            _confirmationBoxIsSelected =
+                                                isSelected ?? false;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    Text(
+                                      "Confirmo que hoy realicé este hábito",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                ElevatedButton(
+                                  onPressed: _registerHabit,
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    backgroundColor:
+                                        const Color.fromRGBO(121, 30, 198, 1),
+                                  ),
+                                  child: Text(
+                                    "Completar",
+                                    style: GoogleFonts.openSans(
+                                      color: Colors.white,
+                                      decorationColor: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                ElevatedButton(
+                                  onPressed: _handleBackButtonPressed,
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  child: Text(
+                                    "Cancelar",
+                                    style: GoogleFonts.openSans(
+                                      color: Colors.black,
+                                      decorationColor: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
         ),
       ),
     );
