@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
 
 class HabitItem extends StatelessWidget {
@@ -8,9 +9,11 @@ class HabitItem extends StatelessWidget {
     super.key,
     required this.habit,
     required this.onTap,
+    required this.habitParameters,
   });
 
   final Habit habit;
+  final Map<String, dynamic> habitParameters;
   final void Function() onTap;
 
   void _showMenuAction(BuildContext context) {
@@ -39,7 +42,19 @@ class HabitItem extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.check),
               title: const Text('Registrar día'),
-              onTap: () {},
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => RegisterHabit(
+                      habit: habit,
+                      habitParameters: habitParameters,
+                    ),
+                  ),
+                );
+
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading: const Icon(Icons.calendar_month),

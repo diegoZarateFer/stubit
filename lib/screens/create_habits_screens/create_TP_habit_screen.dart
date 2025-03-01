@@ -121,6 +121,14 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
       }
 
       int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
+      final Map<String, dynamic> habitParameters = {
+        "workInterval": _workInterval,
+        "restInterval": _restInterval,
+        "cycles": cycles,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+        "days": _selectedDaysOfWeek,
+      };
+
       try {
         // Saving habit information.
         await FirebaseFirestore.instance
@@ -129,15 +137,11 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "workInterval": _workInterval,
-          "restInterval": _restInterval,
-          "cycles": cycles,
-          "numberOfWeeks": _selectedNumberOfWeeks,
-          "days": _selectedDaysOfWeek,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
