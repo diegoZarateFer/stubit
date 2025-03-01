@@ -77,20 +77,6 @@ class _RegisterHabitState extends State<RegisterHabit> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromRGBO(139, 34, 227, 1),
-              Colors.black,
-            ],
-          ),
-        ),
-        child: _loadRegisterHabitForm(),
-      ),
-    );
+    return _loadRegisterHabitForm();
   }
 }
