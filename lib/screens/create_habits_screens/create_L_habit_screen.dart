@@ -88,6 +88,11 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
         return;
       }
 
+      final Map<String, dynamic> habitParameters = {
+        "days": _selectedDaysOfWeek,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+      };
+
       try {
         // Saving habit information.
         await FirebaseFirestore.instance
@@ -96,12 +101,11 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "days": _selectedDaysOfWeek,
-          "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

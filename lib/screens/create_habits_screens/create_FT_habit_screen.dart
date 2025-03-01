@@ -77,10 +77,10 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
         _selectedNumberOfHours * 60 + _selectedNumberOfMinutes;
 
     ScaffoldMessenger.of(context).clearSnackBars();
-    if (selectedTotalMinutes < 15) {
+    if (selectedTotalMinutes < 10) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Debes dedicar al menos 15 minutos a esta actividad.'),
+          content: Text('Debes dedicar al menos 10 minutos a esta actividad.'),
         ),
       );
       return;
@@ -111,21 +111,26 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
         return;
       }
 
+      final Map<String, dynamic> habitParameters = {
+        "allotedTime": selectedTotalMinutes,
+        "days": _selectedDaysOfWeek,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+      };
+
       try {
         // Saving habit information.
+
         await FirebaseFirestore.instance
             .collection("user_data")
             .doc(_currentUser!.uid.toString())
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "allotedTime": selectedTotalMinutes,
-          "days": _selectedDaysOfWeek,
-          "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -222,7 +227,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfHours = value % _hours.length;
+                                  _selectedNumberOfHours =
+                                      value % _hours.length;
                                 },
                                 children: _hours
                                     .map(
@@ -249,7 +255,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfMinutes = value % _minutes.length;
+                                  _selectedNumberOfMinutes =
+                                      value % _minutes.length;
                                 },
                                 children: _minutes
                                     .map(

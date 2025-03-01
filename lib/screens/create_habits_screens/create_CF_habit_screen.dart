@@ -105,6 +105,12 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
         return;
       }
 
+      final Map<String, dynamic> habitParameters = {
+        "numberOfdays": _selectedNumberOfDays,
+        "days": _selectedDaysOfWeek,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+      };
+
       try {
         // Saving habit information.
         await FirebaseFirestore.instance
@@ -113,13 +119,11 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "numberOfdays": _selectedNumberOfDays,
-          "days": _selectedDaysOfWeek,
-          "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
