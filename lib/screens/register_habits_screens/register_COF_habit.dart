@@ -28,14 +28,13 @@ class RegisterCofHabit extends StatefulWidget {
 class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
-  late String _date;
   bool _confirmationBoxIsSelected = false,
       _isLoading = true,
       _changesWereMade = false;
 
   late int _dailyTarget;
   int _counter = 0;
-  late String _unit;
+  late String _unit, _date;
 
   Future<void> _registerHabit() async {
     ScaffoldMessenger.of(context).clearSnackBars();
