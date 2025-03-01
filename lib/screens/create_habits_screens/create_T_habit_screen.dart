@@ -1,18 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stubit/models/habit.dart';
 
-final List<String> _options = [
-  "3 semanas",
-  "4 semanas",
-  "5 semanas",
-  "6 semanas",
-  "7 semanas",
-  "8 semanas",
-  "9 semanas",
-  "10 semanas",
-  "Indefinidamente"
-];
+Map<String, num> _numberOfWeeksOptions = {
+  "3 semanas": 3,
+  "4 semanas": 4,
+  "5 semanas": 5,
+  "6 semanas": 6,
+  "7 semanas": 7,
+  "8 semanas": 8,
+  "9 semanas": 9,
+  "10 semanas": 10,
+  "Indefinidamente": double.infinity,
+};
 
 final List<String> _hours = List.generate(
   13,
@@ -25,14 +28,104 @@ final List<String> _minutes = List.generate(
 );
 
 class CreateTHabitScreen extends StatefulWidget {
-  const CreateTHabitScreen({super.key});
+  const CreateTHabitScreen({
+    super.key,
+    required this.habit,
+    this.initialNumberOfMinutes = 0,
+    this.initialNumberOfHours = 7,
+  });
+
+  final Habit habit;
+  final int initialNumberOfMinutes, initialNumberOfHours;
 
   @override
   State<CreateTHabitScreen> createState() => _CreateFtHabitScreenState();
 }
 
 class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
+  User? _currentUser;
   final _formKey = GlobalKey<FormState>();
+
+  num? _selectedNumberOfWeeks;
+
+  late FixedExtentScrollController _scrollHoursController,
+      _scrollMinutesController;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+    _scrollHoursController =
+        FixedExtentScrollController(initialItem: widget.initialNumberOfHours);
+    _scrollMinutesController =
+        FixedExtentScrollController(initialItem: widget.initialNumberOfMinutes);
+  }
+
+  String? _habitDurationValidator(selectedDuration) {
+    if (selectedDuration == null) {
+      return "Campo obligatorio";
+    }
+
+    return null;
+  }
+
+  void _saveForm() async {
+    int selectedHours = _scrollHoursController.selectedItem % _hours.length;
+    int selectedMinutes =
+        _scrollMinutesController.selectedItem % _minutes.length;
+
+    int selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (selectedTotalMinutes < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes dedicar al menos 10 minutos a esta actividad.'),
+        ),
+      );
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      final Map<String, dynamic> habitParameters = {
+        "allotedTime": selectedTotalMinutes,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+      };
+
+      try {
+        // Saving habit information.
+        await FirebaseFirestore.instance
+            .collection("user_data")
+            .doc(_currentUser!.uid.toString())
+            .collection("habits")
+            .doc(widget.habit.id)
+            .set({
+          "name": widget.habit.name,
+          "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
+          "habitParameters": habitParameters,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Hábito agregado correctamente!'),
+          ),
+        );
+        Navigator.pop(context, true);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +171,7 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                       height: 16,
                     ),
                     Text(
-                      "Dormir adecuadamente.",
+                      widget.habit.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
@@ -109,7 +202,8 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                               child: CupertinoPicker(
                                 looping: true,
                                 itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
+                                scrollController: _scrollHoursController,
+                                onSelectedItemChanged: (value) {},
                                 children: _hours
                                     .map(
                                       (hour) => Center(
@@ -134,7 +228,8 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                               child: CupertinoPicker(
                                 looping: true,
                                 itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
+                                scrollController: _scrollMinutesController,
+                                onSelectedItemChanged: (value) {},
                                 children: _minutes
                                     .map(
                                       (minute) => Center(
@@ -161,9 +256,10 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                     ),
                     DropdownButtonFormField(
                       dropdownColor: Colors.black,
-                      items: _options.map((option) {
+                      validator: _habitDurationValidator,
+                      items: _numberOfWeeksOptions.keys.toList().map((option) {
                         return DropdownMenuItem(
-                          value: option,
+                          value: _numberOfWeeksOptions[option],
                           child: Text(
                             option,
                             style: const TextStyle(
@@ -174,7 +270,9 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (priority) {},
+                      onChanged: (numberOfWeeks) {
+                        _selectedNumberOfWeeks = numberOfWeeks!;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
@@ -184,7 +282,7 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _saveForm,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

@@ -1,29 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
 import 'package:stubit/models/habit.dart';
 
-final List<DayInWeek> _days = [
-  DayInWeek("D", dayKey: "monday"),
-  DayInWeek("L", dayKey: "tuesday"),
-  DayInWeek("M", dayKey: "wednesday"),
-  DayInWeek("M", dayKey: "thursday"),
-  DayInWeek("J", dayKey: "friday"),
-  DayInWeek("V", dayKey: "saturday"),
-  DayInWeek("S", dayKey: "sunday"),
-];
-
-final List<String> _options = [
-  "3 semanas",
-  "4 semanas",
-  "5 semanas",
-  "6 semanas",
-  "7 semanas",
-  "9 semanas",
-  "10 semanas",
-  "Indefinidamente"
-];
+Map<String, num> _numberOfWeeksOptions = {
+  "3 semanas": 3,
+  "4 semanas": 4,
+  "5 semanas": 5,
+  "6 semanas": 6,
+  "7 semanas": 7,
+  "8 semanas": 8,
+  "9 semanas": 9,
+  "10 semanas": 10,
+  "Indefinidamente": double.infinity,
+};
 
 final List<String> _hours = List.generate(
   13,
@@ -48,7 +41,115 @@ class CreateFtHabitScreen extends StatefulWidget {
 }
 
 class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
+  final List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "monday"),
+    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("M", dayKey: "thursday"),
+    DayInWeek("J", dayKey: "friday"),
+    DayInWeek("V", dayKey: "saturday"),
+    DayInWeek("S", dayKey: "sunday"),
+  ];
+
+  User? _currentUser;
   final _formKey = GlobalKey<FormState>();
+
+  List<String> _selectedDaysOfWeek = [];
+  int _selectedNumberOfHours = 0, _selectedNumberOfMinutes = 0;
+  num? _selectedNumberOfWeeks;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
+
+  String? _habitDurationValidator(selectedDuration) {
+    if (selectedDuration == null) {
+      return "Campo obligatorio.";
+    }
+
+    return null;
+  }
+
+  void _saveForm() async {
+    int selectedTotalMinutes =
+        _selectedNumberOfHours * 60 + _selectedNumberOfMinutes;
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (selectedTotalMinutes < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes dedicar al menos 10 minutos a esta actividad.'),
+        ),
+      );
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      if (_selectedNumberOfWeeks == double.infinity &&
+          _selectedDaysOfWeek.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Selecciona los días a la semana que dedicarás a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      if (_selectedNumberOfWeeks != double.infinity &&
+          _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'En total debes dedicar al menos 21 días a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      final Map<String, dynamic> habitParameters = {
+        "allotedTime": selectedTotalMinutes,
+        "days": _selectedDaysOfWeek,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+      };
+
+      try {
+        // Saving habit information.
+
+        await FirebaseFirestore.instance
+            .collection("user_data")
+            .doc(_currentUser!.uid.toString())
+            .collection("habits")
+            .doc(widget.habit.id)
+            .set({
+          "name": widget.habit.name,
+          "strategy": widget.habit.strategy,
+          "category": widget.habit.category,
+          "description": widget.habit.description,
+          "habitParameters": habitParameters,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Hábito agregado correctamente!'),
+          ),
+        );
+        Navigator.pop(context, true);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +226,10 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                               child: CupertinoPicker(
                                 looping: true,
                                 itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
+                                onSelectedItemChanged: (value) {
+                                  _selectedNumberOfHours =
+                                      value % _hours.length;
+                                },
                                 children: _hours
                                     .map(
                                       (hour) => Center(
@@ -150,7 +254,10 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                               child: CupertinoPicker(
                                 looping: true,
                                 itemExtent: 32,
-                                onSelectedItemChanged: (index) {},
+                                onSelectedItemChanged: (value) {
+                                  _selectedNumberOfMinutes =
+                                      value % _minutes.length;
+                                },
                                 children: _minutes
                                     .map(
                                       (minute) => Center(
@@ -177,9 +284,10 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                     ),
                     DropdownButtonFormField(
                       dropdownColor: Colors.black,
-                      items: _options.map((option) {
+                      validator: _habitDurationValidator,
+                      items: _numberOfWeeksOptions.keys.toList().map((option) {
                         return DropdownMenuItem(
-                          value: option,
+                          value: _numberOfWeeksOptions[option],
                           child: Text(
                             option,
                             style: const TextStyle(
@@ -190,7 +298,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                           ),
                         );
                       }).toList(),
-                      onChanged: (priority) {},
+                      onChanged: (numberOfWeeks) {
+                        _selectedNumberOfWeeks = numberOfWeeks!;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Duración del hábito.',
                       ),
@@ -212,7 +322,9 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                     ),
                     SelectWeekDays(
                       fontSize: 16,
-                      onSelect: (value) {},
+                      onSelect: (value) {
+                        _selectedDaysOfWeek = value;
+                      },
                       days: _days,
                       unselectedDaysFillColor: const Color(0xFFA6A6A6),
                       unselectedDaysBorderColor: Colors.black,
@@ -227,7 +339,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _saveForm,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -248,7 +360,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context, false);
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

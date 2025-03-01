@@ -1,7 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/create_habits_screens/create_CF_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_COF_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_FT_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_L_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_TP_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_T_habit_screen.dart';
 
 class HabitCategoryDetails extends StatefulWidget {
   const HabitCategoryDetails({
@@ -10,21 +17,41 @@ class HabitCategoryDetails extends StatefulWidget {
     required this.description,
     required this.habits,
     required this.image,
+    required this.onHabitCreated,
   });
 
   final String categoryName;
   final String description;
   final List<Habit> habits;
   final AssetImage image;
+  final void Function() onHabitCreated;
 
   @override
   State<HabitCategoryDetails> createState() => _HabitCategoryDetailsState();
 }
 
 class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
+  User? _currentUser;
   Habit? _selectedHabit;
 
-  void _loadCreatingHabitForm() {
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
+
+  Future<bool> isExistingHabit(String habitId) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection("user_data")
+        .doc(_currentUser!.uid.toString())
+        .collection("habits")
+        .doc(habitId)
+        .get();
+
+    return doc.exists;
+  }
+
+  void _loadCreatingHabitForm() async {
     ScaffoldMessenger.of(context).clearSnackBars();
     if (_selectedHabit == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -35,20 +62,92 @@ class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
       return;
     }
 
-    final habitStrategy = _selectedHabit!.strategy;
-    if (habitStrategy == "TF") {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (ctx) => CreateFtHabitScreen(
-            habit: _selectedHabit!,
+    if (await isExistingHabit(_selectedHabit!.id)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            '¡Ya estás desarrollando este hábito!',
+          ),
+          action: SnackBarAction(
+            label: "Ver",
+            onPressed: () {
+              // TODO: Redirigir a la pantalla de progeso del hábito.
+            },
           ),
         ),
       );
+      return;
+    }
+
+    final habitStrategy = _selectedHabit!.strategy;
+    bool habitWasCreated = false;
+
+    if (habitStrategy == "TF") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateFtHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
     } else if (habitStrategy == "T") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateTHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
     } else if (habitStrategy == "CF") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateCfHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
     } else if (habitStrategy == "L") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateLHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
     } else if (habitStrategy == "COF") {
-    } else if (habitStrategy == "TP") {}
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateCofHabitScreen(
+                habit: _selectedHabit!,
+                unit: _selectedHabit!.unit,
+              ),
+            ),
+          ) ??
+          false;
+    } else if (habitStrategy == "TP") {
+      habitWasCreated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => CreateTpHabitScreen(
+                habit: _selectedHabit!,
+              ),
+            ),
+          ) ??
+          false;
+    }
+
+    if (habitWasCreated) {
+      widget.onHabitCreated();
+    }
   }
 
   @override

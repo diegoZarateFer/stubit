@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stubit/screens/board_screen.dart';
 import 'package:stubit/screens/create_task_screen.dart';
-import 'package:stubit/screens/habits_menu_screen.dart';
+import 'package:stubit/screens/habits_menu.dart';
 import 'package:stubit/screens/habits_screen.dart';
 import 'package:stubit/widgets/bottom_navigator.dart';
 import 'package:stubit/widgets/image_button.dart';
