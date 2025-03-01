@@ -1,8 +1,6 @@
 import 'package:concentric_transition/concentric_transition.dart';
 import 'package:flutter/material.dart';
 
-import 'create_habit_custom2.dart'; // Asegúrate de importar tu pantalla aquí
-
 final pages = [
   const PageData(
     icon: Icons.add,
@@ -74,8 +72,8 @@ final pages = [
   )
 ];
 
-class ConcentricAnimationOnboarding extends StatelessWidget {
-  const ConcentricAnimationOnboarding({Key? key}) : super(key: key);
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -93,17 +91,6 @@ class ConcentricAnimationOnboarding extends StatelessWidget {
         ),
         itemBuilder: (index) {
           final page = pages[index % pages.length];
-
-          // Si es el último índice, redirige a la nueva pantalla
-          if (index == pages.length - 1) {
-            Future.delayed(const Duration(milliseconds: 500), () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HeroListPage()),
-              );
-            });
-          }
-
           return SafeArea(
             child: _Page(page: page),
           );

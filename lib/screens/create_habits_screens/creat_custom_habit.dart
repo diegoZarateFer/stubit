@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/widgets/image_button.dart';
 import 'package:stubit/widgets/user_button.dart';
 
-class HeroListPage extends StatelessWidget {
-  const HeroListPage({super.key});
+class CreatCustomHabit extends StatelessWidget {
+  const CreatCustomHabit({super.key});
 
   @override
   Widget build(BuildContext context) {
