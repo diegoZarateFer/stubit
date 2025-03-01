@@ -166,7 +166,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
     }
   }
 
-  Future<bool> _handleCancelButtonPressed() async {
+  Future<bool> _handleBackButtonPressed() async {
     if (_changesWereMade) {
       final bool? confirmation = await showConfirmationDialog(
         context,
@@ -192,7 +192,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return await _handleCancelButtonPressed();
+        return await _handleBackButtonPressed();
       },
       child: Scaffold(
         body: Container(
@@ -365,7 +365,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
                               height: 8,
                             ),
                             ElevatedButton(
-                              onPressed: _handleCancelButtonPressed,
+                              onPressed: _handleBackButtonPressed,
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),

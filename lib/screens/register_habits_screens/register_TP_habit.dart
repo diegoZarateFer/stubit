@@ -182,7 +182,7 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
     _targetIsCompleted = _completedCycles >= widget.targetNumberOfCycles;
   }
 
-  void _handleCancelButtonPressed() async {
+  Future<bool> _handleBackButtonPressed() async {
     final bool? confirmation = await showConfirmationDialog(
       context,
       "Salir del registro",
@@ -193,8 +193,10 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
 
     if (confirmation ?? false) {
       await _saveFormData();
-      Navigator.of(context).pop();
+      return true;
     }
+
+    return false;
   }
 
   @override
@@ -206,164 +208,185 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Column(
-                  children: [
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "REGISTRO DE HÁBITO",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Image.asset(
-                      "assets/images/calendar.png",
-                      height: 60,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      widget.habit.name,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Tiempo para trabajo:",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+    return WillPopScope(
+      onWillPop: () async {
+        return await _handleBackButtonPressed();
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(139, 34, 227, 1),
+                Colors.black,
+              ],
+            ),
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Column(
+                        children: [
+                          const SizedBox(
+                            height: 16,
                           ),
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          "${widget.workInterval} mins.",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            color: Colors.white,
+                          Text(
+                            "REGISTRO DE HÁBITO",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Tiempo de descanso:",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(
+                            height: 8,
                           ),
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          "${widget.restInterval} mins.",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            color: Colors.white,
+                          Image.asset(
+                            "assets/images/calendar.png",
+                            height: 60,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    PomodoroTimer(
-                      workInterval: widget.workInterval,
-                      restInterval: widget.restInterval,
-                      completedCycles: _completedCycles,
-                      remainingTime: _remainingSeconds,
-                      workIntervalIsActive: _workIntervalIsActive,
-                      onUpdateTimer:
-                          (bool workIntervalIsActive, int remainingSeconds) {
-                        _remainingSeconds = remainingSeconds;
-                        _workIntervalIsActive = workIntervalIsActive;
-                      },
-                      onCycleComplete: (int completedCycles) {
-                        _completedCycles = completedCycles;
-                      },
-                      targetNumberOfCycles: widget.targetNumberOfCycles,
-                      onFinish: (int completedCycles) {
-                        setState(() {
-                          _targetIsCompleted = true;
-                        });
-                        _completedCycles = completedCycles;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    ElevatedButton(
-                      onPressed: _targetIsCompleted ? _registerHabit : null,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            widget.habit.name,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Tiempo para trabajo:",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                "${widget.workInterval} mins.",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Tiempo de descanso:",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                "${widget.restInterval} mins.",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          PomodoroTimer(
+                            workInterval: widget.workInterval,
+                            restInterval: widget.restInterval,
+                            completedCycles: _completedCycles,
+                            remainingTime: _remainingSeconds,
+                            workIntervalIsActive: _workIntervalIsActive,
+                            onUpdateTimer: (bool workIntervalIsActive,
+                                int remainingSeconds) {
+                              _remainingSeconds = remainingSeconds;
+                              _workIntervalIsActive = workIntervalIsActive;
+                            },
+                            onCycleComplete: (int completedCycles) {
+                              _completedCycles = completedCycles;
+                            },
+                            targetNumberOfCycles: widget.targetNumberOfCycles,
+                            onFinish: (int completedCycles) {
+                              setState(() {
+                                _targetIsCompleted = true;
+                              });
+                              _completedCycles = completedCycles;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ElevatedButton(
+                            onPressed:
+                                _targetIsCompleted ? _registerHabit : null,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor:
+                                  const Color.fromRGBO(121, 30, 198, 1),
+                            ),
+                            child: Text(
+                              "Completar",
+                              style: GoogleFonts.openSans(
+                                color: Colors.white,
+                                decorationColor: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          ElevatedButton(
+                            onPressed: _handleBackButtonPressed,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor: Colors.white,
+                            ),
+                            child: Text(
+                              "Cancelar",
+                              style: GoogleFonts.openSans(
+                                color: Colors.black,
+                                decorationColor: Colors.black,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        "Completar",
-                        style: GoogleFonts.openSans(
-                          color: Colors.white,
-                          decorationColor: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    ElevatedButton(
-                      onPressed: _handleCancelButtonPressed,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: Text(
-                        "Cancelar",
-                        style: GoogleFonts.openSans(
-                          color: Colors.black,
-                          decorationColor: Colors.black,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
