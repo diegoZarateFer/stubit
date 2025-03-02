@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/create_habits_screens/create_CF_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_COF_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_FT_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_L_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_TP_habit_screen.dart';
+import 'package:stubit/screens/create_habits_screens/create_T_habit_screen.dart';
 import 'package:stubit/widgets/image_button.dart';
 import 'package:stubit/widgets/user_button.dart';
+import 'package:uuid/uuid.dart';
 
-class CreatCustomHabit extends StatelessWidget {
-  const CreatCustomHabit({super.key});
+const _uuid = Uuid();
+
+class CreateCustomHabit extends StatelessWidget {
+  const CreateCustomHabit({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +69,13 @@ class CreatCustomHabit extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 500),
             child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Escoge tu técnica",
-                    style: TextStyle(
-                      fontSize: 20,
+                    "Selecciona una técnica",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -73,10 +86,20 @@ class CreatCustomHabit extends StatelessWidget {
                     itemCount: _images.length,
                     itemBuilder: (BuildContext context, int index) {
                       return InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SecondPage(heroTag: index),
-                          ));
+                        onTap: () async {
+                          final habitWasCreated = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (ctx) => SecondPage(
+                                    heroTag: index,
+                                  ),
+                                ),
+                              ) ??
+                              false;
+
+                          if (habitWasCreated) {
+                            Navigator.pop(context, true);
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -96,12 +119,12 @@ class CreatCustomHabit extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   _titles[index],
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                      ),
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ],
@@ -123,7 +146,10 @@ class CreatCustomHabit extends StatelessWidget {
 class SecondPage extends StatefulWidget {
   final int heroTag;
 
-  const SecondPage({super.key, required this.heroTag});
+  const SecondPage({
+    super.key,
+    required this.heroTag,
+  });
 
   @override
   _SecondPageState createState() => _SecondPageState();
@@ -132,6 +158,100 @@ class SecondPage extends StatefulWidget {
 class _SecondPageState extends State<SecondPage> {
   final TextEditingController _activityController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  void _loadCreatingHabitForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      String habitStrategy = "TP";
+      if (widget.heroTag == 1) {
+        habitStrategy = "TF";
+      } else if (widget.heroTag == 2) {
+        habitStrategy = "T";
+      } else if (widget.heroTag == 3) {
+        habitStrategy = "CF";
+      } else if (widget.heroTag == 4) {
+        habitStrategy = "L";
+      } else if (widget.heroTag == 5) {
+        habitStrategy = "COF";
+      }
+
+      Habit customHabit = Habit(
+        id: _uuid.v4(),
+        name: _activityController.text.toString(),
+        description: "",
+        category: "custom",
+        strategy: habitStrategy,
+      );
+
+      bool habitWasCreated = false;
+      if (habitStrategy == "TP") {
+        habitWasCreated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => CreateTpHabitScreen(
+                  habit: customHabit,
+                ),
+              ),
+            ) ??
+            false;
+      } else if (habitStrategy == "TF") {
+        habitWasCreated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => CreateFtHabitScreen(
+                  habit: customHabit,
+                ),
+              ),
+            ) ??
+            false;
+      } else if (habitStrategy == "T") {
+        habitWasCreated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => CreateTHabitScreen(
+                  habit: customHabit,
+                ),
+              ),
+            ) ??
+            false;
+      } else if (habitStrategy == "L") {
+        habitWasCreated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => CreateLHabitScreen(
+                  habit: customHabit,
+                ),
+              ),
+            ) ??
+            false;
+      } else if (habitStrategy == "CF") {
+        habitWasCreated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => CreateCfHabitScreen(
+                  habit: customHabit,
+                ),
+              ),
+            ) ??
+            false;
+      } else if (habitStrategy == "COF") {
+        habitWasCreated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => CreateCofHabitScreen(
+                  habit: customHabit,
+                ),
+              ),
+            ) ??
+            false;
+      }
+
+      if (habitWasCreated) {
+        Navigator.pop(context, habitWasCreated);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,28 +320,20 @@ class _SecondPageState extends State<SecondPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     _titles[widget.heroTag],
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                        ),
                     textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Text(
                     _resume[widget.heroTag],
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 24.0,
-                          color: Colors.white,
-                        ),
                     textAlign: TextAlign.center,
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Escribe el nombre de tu actividad:",
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       fontSize: 18,
                       color: Colors.white,
                     ),
@@ -232,37 +344,43 @@ class _SecondPageState extends State<SecondPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
-                      controller: _activityController,
                       maxLength: 30,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
                       decoration: const InputDecoration(
                         labelText: 'Nombre de la actividad',
-                        hintText: 'Ej. Reunión semanal',
                         counterText: '',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white10,
                       ),
+                      controller: _activityController,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo obligatorio';
+                        if (value == null || value.trim().length < 3) {
+                          return 'El nombre debe contener al menos 3 caracteres.';
                         }
+
                         return null;
                       },
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        print(
-                            "Nombre de la actividad para bd ${_activityController.text}");
-                      }
-                    },
-                    child: const Text("CREAR"),
+                const SizedBox(
+                  height: 16,
+                ),
+                ElevatedButton(
+                  onPressed: _loadCreatingHabitForm,
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                  ),
+                  child: Text(
+                    "Crear",
+                    style: GoogleFonts.openSans(
+                      color: Colors.white,
+                      decorationColor: Colors.white,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ],

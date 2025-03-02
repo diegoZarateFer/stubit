@@ -282,7 +282,7 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
                             height: 16,
                           ),
                           Text(
-                            "Realizar estiramientos al despertar",
+                            widget.habit.name,
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               fontSize: 18,
@@ -487,7 +487,12 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
                             height: 8,
                           ),
                           ElevatedButton(
-                            onPressed: _handleBackButtonPressed,
+                            onPressed: () async {
+                              final confirmation = await _handleBackButtonPressed();
+                              if(confirmation) {
+                                Navigator.of(context).pop();
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),

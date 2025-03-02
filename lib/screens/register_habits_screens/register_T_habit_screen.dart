@@ -452,7 +452,13 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
                             height: 8,
                           ),
                           ElevatedButton(
-                            onPressed: _handleBackButtonPressed,
+                            onPressed: () async {
+                              final confirmation =
+                                  await _handleBackButtonPressed();
+                              if (confirmation) {
+                                Navigator.of(context).pop();
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
