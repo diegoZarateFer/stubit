@@ -1,10 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
+import 'package:stubit/util/util.dart';
 
-class HabitItem extends StatelessWidget {
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+class HabitItem extends StatefulWidget {
   const HabitItem({
     super.key,
     required this.habit,
@@ -16,6 +21,55 @@ class HabitItem extends StatelessWidget {
   final Map<String, dynamic> habitParameters;
   final void Function() onTap;
 
+  @override
+  State<HabitItem> createState() => _HabitItemState();
+}
+
+class _HabitItemState extends State<HabitItem> {
+  bool _isCompleted = false;
+  final _currentUser = FirebaseAuth.instance.currentUser!;
+
+  Future<void> _loadHabitData() async {
+    final userId = _currentUser.uid.toString();
+    final date = getDateAsString();
+    final doc = await _firestore
+        .collection("user_data")
+        .doc(userId)
+        .collection("habits")
+        .doc(widget.habit.id)
+        .collection("habit_log")
+        .doc(date)
+        .get();
+
+    if (doc.exists) {
+      setState(() {
+        _isCompleted = true;
+      });
+    }
+  }
+
+  String _getRegisterHabitText() {
+    if (widget.habit.strategy == 'TP') {
+      return _isCompleted ? "Agregar ciclo" : "Registrar";
+    }
+
+    if (widget.habit.strategy == 'COF') {
+      return "Agregar a registro";
+    }
+    return _isCompleted ? "Modificar registro" : "Registrar";
+  }
+
+  Icon _getRegisterHabitIcon() {
+    if (widget.habit.strategy == 'TP') {
+      return Icon(_isCompleted ? Icons.add : Icons.check);
+    }
+
+    if (widget.habit.strategy == 'COF') {
+      return const Icon(Icons.add);
+    }
+    return Icon(_isCompleted ? Icons.edit_calendar_outlined : Icons.check);
+  }
+
   void _showMenuAction(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -25,13 +79,15 @@ class HabitItem extends StatelessWidget {
         ),
       ),
       builder: (ctx) {
+        final registerHabitText = _getRegisterHabitText();
+        final registerHabitIcon = _getRegisterHabitIcon();
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
               padding: const EdgeInsets.all(8),
               child: Text(
-                habit.name,
+                widget.habit.name,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 14,
@@ -40,15 +96,15 @@ class HabitItem extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.check),
-              title: const Text('Registrar día'),
+              leading: registerHabitIcon,
+              title: Text(registerHabitText),
               onTap: () async {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (ctx) => RegisterHabit(
-                      habit: habit,
-                      habitParameters: habitParameters,
+                      habit: widget.habit,
+                      habitParameters: widget.habitParameters,
                     ),
                   ),
                 );
@@ -84,6 +140,12 @@ class HabitItem extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadHabitData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -103,18 +165,21 @@ class HabitItem extends StatelessWidget {
             Expanded(
               child: Text(
                 textAlign: TextAlign.center,
-                habit.name,
+                widget.habit.name,
                 softWrap: true,
                 maxLines: 2,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 14,
+                  decoration: _isCompleted ? TextDecoration.lineThrough : null,
+                  decorationColor: Colors.white,
+                  decorationThickness: 3,
                 ),
               ),
             ),
-            const Icon(
+            Icon(
               Icons.local_fire_department,
-              color: Colors.grey,
+              color: _isCompleted ? Colors.amber : Colors.grey,
               size: 32,
             ),
           ],
