@@ -6,6 +6,7 @@ import 'package:stubit/models/habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
 import 'package:stubit/util/util.dart';
+import 'package:stubit/widgets/confirmation_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -13,13 +14,11 @@ class HabitItem extends StatefulWidget {
   const HabitItem({
     super.key,
     required this.habit,
-    required this.onTap,
     required this.habitParameters,
   });
 
   final Habit habit;
   final Map<String, dynamic> habitParameters;
-  final void Function() onTap;
 
   @override
   State<HabitItem> createState() => _HabitItemState();
@@ -129,9 +128,59 @@ class _HabitItemState extends State<HabitItem> {
               onTap: () {},
             ),
             ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Eliminar hábito'),
-              onTap: () {},
+              leading: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+              title: const Text(
+                'Eliminar hábito',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onTap: () async {
+                bool deleteConfirmation = await showConfirmationDialog(
+                      ctx,
+                      "Eliminar hábito",
+                      "Se borrará toda la información de tu hábito permanentemente.",
+                      "Eliminar",
+                      "Cancelar",
+                    ) ??
+                    false;
+
+                ScaffoldMessenger.of(context).clearSnackBars();
+                final userId = _currentUser.uid.toString();
+                if (deleteConfirmation) {
+                  Navigator.of(ctx).pop();
+                  final rootContext =
+                      Navigator.of(context, rootNavigator: true).context;
+                  try {
+                    await _firestore
+                        .collection("user_data")
+                        .doc(userId)
+                        .collection("habits")
+                        .doc(widget.habit.id)
+                        .delete();
+
+                    ScaffoldMessenger.of(rootContext).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Se ha eliminado el hábito.',
+                        ),
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(rootContext).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'No se ha podido completar la acción. Por favor, inténtalo más tarde',
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
             ),
           ],
         );
