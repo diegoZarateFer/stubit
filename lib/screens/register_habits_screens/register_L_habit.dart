@@ -30,6 +30,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
   bool _confirmationBoxIsSelected = false,
       _editingList = false,
       _isLoading = true,
+      _isFirstRegister = true,
       _changesWereMade = false;
   int _selectedDifficulty = 0;
 
@@ -164,6 +165,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
           _listItems = list.map((e) => e.toString()).toList();
           _selectedDifficulty = doc.data()?['selectedDifficulty'];
           _confirmationBoxIsSelected = doc.data()?['confirmation'];
+          _isFirstRegister = false;
           _isLoading = false;
         });
       }
@@ -428,7 +430,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
                                         const Color.fromRGBO(121, 30, 198, 1),
                                   ),
                                   child: Text(
-                                    "Completar",
+                                    _isFirstRegister ? "Completar" : "Guardar",
                                     style: GoogleFonts.openSans(
                                       color: Colors.white,
                                       decorationColor: Colors.white,

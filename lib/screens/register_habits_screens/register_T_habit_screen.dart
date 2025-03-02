@@ -40,6 +40,7 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
   bool _confirmationBoxIsSelected = false,
       _isLoading = false,
+      _isFirstRegister = true,
       _changesWereMade = false;
   int _selectedDifficulty = 0, _selectedTotalMinutes = 0;
 
@@ -172,6 +173,7 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
           _confirmationBoxIsSelected = doc.data()?['confirmation'];
           _selectedDifficulty = doc.data()?['difficulty'];
           _isLoading = false;
+          _isFirstRegister = false;
         });
 
         _scrollHoursController.animateToItem(
@@ -450,7 +452,7 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
                                   const Color.fromRGBO(121, 30, 198, 1),
                             ),
                             child: Text(
-                              "Completar",
+                              _isFirstRegister ? "Completar" : "Guardar",
                               style: GoogleFonts.openSans(
                                 color: Colors.white,
                                 decorationColor: Colors.white,
