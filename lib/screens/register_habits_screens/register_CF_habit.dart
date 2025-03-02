@@ -368,7 +368,11 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
+
                                 if (await _handleBackButtonPressed()) {
+                                final confirmation =
+                                    await _handleBackButtonPressed();
+                                if (confirmation) {
                                   Navigator.of(context).pop();
                                 }
                               },

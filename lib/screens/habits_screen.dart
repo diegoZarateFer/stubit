@@ -137,7 +137,6 @@ class HabitsScreen extends StatelessWidget {
                     return HabitItem(
                       habit: habit,
                       habitParameters: habitParameters,
-                      onTap: () {},
                     );
                   },
                 ),
