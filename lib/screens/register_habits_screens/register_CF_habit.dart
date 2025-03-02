@@ -28,6 +28,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
   late String _date;
   bool _confirmationBoxIsSelected = false,
       _isLoading = true,
+      _isFirstRegister = true,
       _changesWereMade = false;
   int _selectedDifficulty = 0;
 
@@ -154,6 +155,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
           _confirmationBoxIsSelected = doc.data()?['confirmation'];
           _selectedDifficulty = doc.data()?['difficulty'];
           _isLoading = false;
+          _isFirstRegister = false;
         });
 
         _answerOneController.text = doc.data()?['answerOne'];
@@ -353,7 +355,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
                                     const Color.fromRGBO(121, 30, 198, 1),
                               ),
                               child: Text(
-                                "Completar",
+                                _isFirstRegister ? "Completar" : "Guardar",
                                 style: GoogleFonts.openSans(
                                   color: Colors.white,
                                   decorationColor: Colors.white,
@@ -366,6 +368,8 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
+
+                                if (await _handleBackButtonPressed()) {
                                 final confirmation =
                                     await _handleBackButtonPressed();
                                 if (confirmation) {
