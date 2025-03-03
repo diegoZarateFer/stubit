@@ -69,6 +69,24 @@ class _HabitItemState extends State<HabitItem> {
     return Icon(_isCompleted ? Icons.edit_calendar_outlined : Icons.check);
   }
 
+  Future<void> _deleteHabitLog(String userId) async {
+    try {
+      CollectionReference logRef = _firestore
+          .collection("user_data")
+          .doc(userId)
+          .collection("habits")
+          .doc(widget.habit.id)
+          .collection("habit_log");
+
+      var snapshot = await logRef.get();
+      for (var doc in snapshot.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      throw Exception('Falló la eliminación del LOG.');
+    }
+  }
+
   void _showMenuAction(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -155,6 +173,7 @@ class _HabitItemState extends State<HabitItem> {
                   final rootContext =
                       Navigator.of(context, rootNavigator: true).context;
                   try {
+                    await _deleteHabitLog(userId);
                     await _firestore
                         .collection("user_data")
                         .doc(userId)
