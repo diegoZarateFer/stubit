@@ -34,38 +34,6 @@ class HabitsScreen extends StatelessWidget {
           );
         }
 
-        if (!boardSnapshots.hasData || boardSnapshots.data!.docs.isEmpty) {
-          return Center(
-            child: Column(
-              children: [
-                const Spacer(),
-                Text(
-                  'Aún no tienes hábitos creados',
-                  style: GoogleFonts.dmSans(
-                    textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 180,
-                ),
-                Text(
-                  "Da click en \"+\" para añadir un nuevo hábito",
-                  style: GoogleFonts.dmSans(
-                    textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
-          );
-        }
-
         if (boardSnapshots.hasError) {
           return const Apology(
             message: "Lo sentimos pero algo salió mal :(",
@@ -73,7 +41,7 @@ class HabitsScreen extends StatelessWidget {
         }
 
         final loadedHabits = boardSnapshots.data!.docs;
-        if (loadedHabits.isEmpty) {
+        if (!boardSnapshots.hasData || boardSnapshots.data!.docs.isEmpty) {
           return Center(
             child: Column(
               children: [
@@ -135,6 +103,7 @@ class HabitsScreen extends StatelessWidget {
                     );
                     final habitParameters = habitData['habitParameters'];
                     return HabitItem(
+                      key: ValueKey(habitId),
                       habit: habit,
                       habitParameters: habitParameters,
                     );
