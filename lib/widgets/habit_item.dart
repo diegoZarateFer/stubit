@@ -125,7 +125,7 @@ class _HabitItemState extends State<HabitItem> {
                     ),
                   ),
                 );
-
+                await _loadHabitData();
                 Navigator.pop(context);
               },
             ),
