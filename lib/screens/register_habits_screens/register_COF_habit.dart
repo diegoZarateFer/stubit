@@ -183,11 +183,12 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
   Future<bool> _handleBackButtonPressed() async {
     if (_changesWereMade) {
       final bool? confirmation = await showConfirmationDialog(
-          context,
-          "Salir del registro",
-          "Se perderán los cambios realizados.",
-          "Continuar",
-          "Cancelar");
+        context,
+        "Salir del registro",
+        "Se perderán los cambios realizados.",
+        "Continuar",
+        "Cancelar",
+      );
       return confirmation ?? false;
     }
     return true;
