@@ -73,13 +73,15 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
 
       try {
         await Future.wait([
-          _firestore
-              .collection("user_data")
-              .doc(userId)
-              .collection("user_gems")
-              .add({
-            "collectedGems": FieldValue.increment(givenGems),
-          }),
+          if (_isFirstRegister)
+            _firestore
+                .collection("user_data")
+                .doc(userId)
+                .collection("gems")
+                .doc("user_gems")
+                .set({
+              "collectedGems": FieldValue.increment(givenGems),
+            }),
           _firestore
               .collection("user_data")
               .doc(userId)
@@ -115,14 +117,16 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
 
         // TODO: mostrar la frase motivacional.
 
-        await showDialog(
-          context: context,
-          builder: (ctx) => GemsDialog(
-            title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
-            message:
-                "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
-          ),
-        );
+        if (_isFirstRegister) {
+          await showDialog(
+            context: context,
+            builder: (ctx) => GemsDialog(
+              title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
+              message:
+                  "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+            ),
+          );
+        }
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
