@@ -79,7 +79,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
                 .doc(userId)
                 .collection("gems")
                 .doc("user_gems")
-                .set({
+                .update({
               "collectedGems": FieldValue.increment(givenGems),
             }),
           _firestore
