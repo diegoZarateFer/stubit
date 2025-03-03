@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/gems_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -62,6 +63,8 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
         return;
       }
 
+      final givenGems = assignGems();
+
       final answerOne = _answerOneController.text.toString();
       final answerTwo = _answerTwoController.text.toString();
 
@@ -70,6 +73,13 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
 
       try {
         await Future.wait([
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("user_gems")
+              .add({
+            "collectedGems": FieldValue.increment(givenGems),
+          }),
           _firestore
               .collection("user_data")
               .doc(userId)
@@ -103,10 +113,24 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
           })
         ]);
 
-        // TODO: mostrar las gemas obtenidas con la frase motivacional.
+        // TODO: mostrar la frase motivacional.
+
+        await showDialog(
+          context: context,
+          builder: (ctx) => GemsDialog(
+            title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
+            message:
+                "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+          ),
+        );
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("¡Felicidades! Registro del día completado."),
+          SnackBar(
+            content: Text(
+              _isFirstRegister
+                  ? "¡Felicidades! Registro del día completado."
+                  : "Se han guardado los cambios.",
+            ),
           ),
         );
 

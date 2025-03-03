@@ -8,7 +8,6 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
-import 'package:stubit/widgets/gems_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -113,15 +112,6 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
           "minutes": selectedMinutes,
         }),
       ]);
-
-      await showDialog(
-        context: context,
-        builder: (ctx) => const GemsDialog(
-          title: "¡Felicidades, obtuviste 8 libros de estudio!",
-          message:
-              "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
-        ),
-      );
 
       // TODO: mostrar las gemas obtenidas con la frase motivacional.
       ScaffoldMessenger.of(context).showSnackBar(
