@@ -7,8 +7,6 @@ import 'package:stubit/screens/create_habits_screens/create_FT_habit_screen.dart
 import 'package:stubit/screens/create_habits_screens/create_L_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_TP_habit_screen.dart';
 import 'package:stubit/screens/create_habits_screens/create_T_habit_screen.dart';
-import 'package:stubit/widgets/image_button.dart';
-import 'package:stubit/widgets/user_button.dart';
 import 'package:uuid/uuid.dart';
 
 const _uuid = Uuid();
@@ -21,36 +19,6 @@ class CreateCustomHabit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
-        actions: [
-          ImageButton(
-            imagePath: "assets/images/book.png",
-            onPressed: () {},
-          ),
-          Text(
-            '0',
-            style: GoogleFonts.dmSans(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-              ),
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'Stu - Bit',
-            style: GoogleFonts.satisfy(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 40,
-              ),
-            ),
-          ),
-          const Spacer(),
-          const UserButton(),
-        ],
-      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -67,11 +35,11 @@ class CreateCustomHabit extends StatelessWidget {
         child: Center(
           child: Container(
             constraints: const BoxConstraints(maxWidth: 500),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 64),
+              child: Column(
+                children: [
+                  Text(
                     "Selecciona una técnica",
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
@@ -80,61 +48,61 @@ class CreateCustomHabit extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _images.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return InkWell(
-                        onTap: () async {
-                          final habitWasCreated = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (ctx) => SecondPage(
-                                    heroTag: index,
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _images.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return InkWell(
+                          onTap: () async {
+                            final habitWasCreated = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (ctx) => SecondPage(
+                                      heroTag: index,
+                                    ),
                                   ),
-                                ),
-                              ) ??
-                              false;
+                                ) ??
+                                false;
 
-                          if (habitWasCreated) {
-                            Navigator.pop(context, true);
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Hero(
-                                tag: index,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    _images[index],
-                                    width: 200,
+                            if (habitWasCreated) {
+                              Navigator.pop(context, true);
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Hero(
+                                  tag: index,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.asset(
+                                      _images[index],
+                                      width: 200,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  _titles[index],
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _titles[index],
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -256,36 +224,6 @@ class _SecondPageState extends State<SecondPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
-        actions: [
-          ImageButton(
-            imagePath: "assets/images/book.png",
-            onPressed: () {},
-          ),
-          Text(
-            '0',
-            style: GoogleFonts.dmSans(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-              ),
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'Stu - Bit',
-            style: GoogleFonts.satisfy(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 40,
-              ),
-            ),
-          ),
-          const Spacer(),
-          const UserButton(),
-        ],
-      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -301,7 +239,7 @@ class _SecondPageState extends State<SecondPage> {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(32.0),
             child: Column(
               children: [
                 Hero(
