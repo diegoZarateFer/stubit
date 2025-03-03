@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stubit/widgets/image_button.dart';
+import 'package:stubit/widgets/books_counter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/widgets/user_button.dart';
 
@@ -18,19 +18,7 @@ class _FaqScreenState extends State<FaqScreen>
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
         actions: [
-          ImageButton(
-            imagePath: "assets/images/book.png",
-            onPressed: () {},
-          ),
-          Text(
-            '0',
-            style: GoogleFonts.dmSans(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-              ),
-            ),
-          ),
+          const BooksCounter(),
           const Spacer(),
           Text(
             'Stu - Bit',
