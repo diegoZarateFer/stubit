@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/gems_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -73,10 +74,21 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
       return;
     }
 
+    final givenGems = assignGems();
+
     final userId = _currentUser.uid.toString();
     final now = Timestamp.now();
     try {
       Future.wait([
+        if (_isFirstRegister)
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("gems")
+              .doc("user_gems")
+              .update({
+            "collectedGems": FieldValue.increment(givenGems),
+          }),
         _firestore
             .collection("user_data")
             .doc(userId)
@@ -110,6 +122,17 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
         ),
       ]);
 
+      if (_isFirstRegister) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => GemsDialog(
+            title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
+            message:
+                "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+          ),
+        );
+      }
+
       // TODO: mostrar las gemas obtenidas con la frase motivacional.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -120,10 +143,10 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
       Navigator.of(context).pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Hubo un problema al guardar el registro. Inténtalo más tarde.",
-          ),
+        SnackBar(
+          content: Text(_isFirstRegister
+              ? "Hubo un problema al guardar el registro. Inténtalo más tarde."
+              : "Se han guardado los cambios."),
         ),
       );
     }
