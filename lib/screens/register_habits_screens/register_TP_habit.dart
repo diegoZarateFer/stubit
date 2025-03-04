@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/gems_dialog.dart';
 import 'package:stubit/widgets/pomodoro_timer.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -33,7 +34,7 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
   late bool _workIntervalIsActive;
 
   int _completedCycles = 0;
-  bool _isLoading = true;
+  bool _isLoading = true, _hasBeenCompleted = false;
 
   late bool _targetIsCompleted;
 
@@ -43,8 +44,19 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
     final userId = _currentUser.uid.toString();
     final now = Timestamp.now();
 
+    final givenGems = assignGems();
+
     try {
       await Future.wait([
+        if (!_hasBeenCompleted)
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("gems")
+              .doc("user_gems")
+              .update({
+            "collectedGems": FieldValue.increment(givenGems),
+          }),
         _firestore
             .collection("user_data")
             .doc(userId)
@@ -56,6 +68,7 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
           {
             "createdAt": now,
             "completedCycles": _completedCycles,
+            "hasBeenCompleted": true,
             "remainingSeconds": _remainingSeconds,
             "workIntervalIsActive": _workIntervalIsActive,
           },
@@ -78,10 +91,25 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
         })
       ]);
 
-      // TODO: mostrar las gemas obtenidas con la frase motivacional.
+      if (!_hasBeenCompleted) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => GemsDialog(
+            title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
+            message:
+                "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+          ),
+        );
+      }
+
+      // TODO: mostrar la frase motivacional.
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("¡Felicidades! Registro del día completado."),
+        SnackBar(
+          content: Text(
+            !_hasBeenCompleted
+                ? "¡Felicidades! Registro del día completado."
+                : "Se han guardado los cambios.",
+          ),
         ),
       );
 
@@ -113,6 +141,7 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
           "createdAt": now,
           "completedCycles": _completedCycles,
           "remainingSeconds": _remainingSeconds,
+          "hasBeenCompleted": false,
           "workIntervalIsActive": _workIntervalIsActive,
         },
         SetOptions(
@@ -167,6 +196,7 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
           _completedCycles = doc.data()?['completedCycles'];
           _remainingSeconds = doc.data()?['remainingSeconds'];
           _workIntervalIsActive = doc.data()?['workIntervalIsActive'];
+          _hasBeenCompleted = doc.data()?['hasBeenCompleted'];
           _isLoading = false;
         });
       }

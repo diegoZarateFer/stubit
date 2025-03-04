@@ -6,6 +6,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/gems_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -30,6 +31,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
 
   bool _confirmationBoxIsSelected = false,
       _isLoading = true,
+      habitHasBeenCompleted = true,
       _changesWereMade = false;
 
   late int _dailyTarget;
@@ -50,10 +52,22 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
       return;
     }
 
+    bool isCompleted = _counter >= _dailyTarget;
+    final givenGems = assignGems();
+
     final userId = _currentUser.uid.toString();
     final now = Timestamp.now();
     try {
       await Future.wait([
+        if (!habitHasBeenCompleted && isCompleted)
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("gems")
+              .doc("user_gems")
+              .update({
+            "collectedGems": FieldValue.increment(givenGems),
+          }),
         _firestore
             .collection("user_data")
             .doc(userId)
@@ -66,6 +80,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
             "createdAt": now,
             "counter": _counter,
             "confirmation": _confirmationBoxIsSelected,
+            "hasBeenCompleted": true,
           },
           SetOptions(
             merge: true,
@@ -85,9 +100,25 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         }),
       ]);
 
+      if (!habitHasBeenCompleted && isCompleted) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => GemsDialog(
+            title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
+            message:
+                "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+          ),
+        );
+      }
+
+      // TODO: mostrar la frase motivacional.
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("¡Felicidades! Registro del día completado."),
+        SnackBar(
+          content: Text(
+            !habitHasBeenCompleted && isCompleted
+                ? "¡Felicidades! Registro del día completado."
+                : "Se han guardado los cambios.",
+          ),
         ),
       );
 
@@ -117,6 +148,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
           "createdAt": now,
           "counter": _counter,
           "confirmation": _confirmationBoxIsSelected,
+          "hasBeenCompleted": false,
         },
         SetOptions(
           merge: true,
@@ -170,6 +202,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         setState(() {
           _counter = doc.data()?['counter'];
           _confirmationBoxIsSelected = doc.data()?['confirmation'];
+          habitHasBeenCompleted = doc.data()?['hasBeenCompleted'];
           _isLoading = false;
         });
       }

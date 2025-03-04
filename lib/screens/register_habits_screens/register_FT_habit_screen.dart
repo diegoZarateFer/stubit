@@ -8,6 +8,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/gems_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -74,6 +75,7 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
       return;
     }
 
+    final givenGems = assignGems();
     final userId = _currentUser.uid.toString();
     final now = Timestamp.now();
 
@@ -107,6 +109,15 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
 
     try {
       await Future.wait([
+        if (_isFirstRegister)
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("gems")
+              .doc("user_gems")
+              .update({
+            "collectedGems": FieldValue.increment(givenGems),
+          }),
         _firestore
             .collection("user_data")
             .doc(userId)
@@ -130,10 +141,25 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
             .set(registeredData),
       ]);
 
-      // TODO: mostrar las gemas obtenidas con la frase motivacional.
+      // TODO: mostrar la frase motivacional.
+      if (_isFirstRegister) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => GemsDialog(
+            title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
+            message:
+                "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+          ),
+        );
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("¡Felicidades! Registro del día completado."),
+        SnackBar(
+          content: Text(
+            _isFirstRegister
+                ? "¡Felicidades! Registro del día completado."
+                : "Se han guardado los cambios.",
+          ),
         ),
       );
 
@@ -490,8 +516,9 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
                           ),
                           ElevatedButton(
                             onPressed: () async {
-                              final confirmation = await _handleBackButtonPressed();
-                              if(confirmation) {
+                              final confirmation =
+                                  await _handleBackButtonPressed();
+                              if (confirmation) {
                                 Navigator.of(context).pop();
                               }
                             },

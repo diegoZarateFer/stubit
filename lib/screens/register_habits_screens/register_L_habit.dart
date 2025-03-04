@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/gems_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -73,10 +74,21 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
       return;
     }
 
+    final givenGems = assignGems();
+
     final userId = _currentUser.uid.toString();
     final now = Timestamp.now();
     try {
       Future.wait([
+        if (_isFirstRegister)
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("gems")
+              .doc("user_gems")
+              .update({
+            "collectedGems": FieldValue.increment(givenGems),
+          }),
         _firestore
             .collection("user_data")
             .doc(userId)
@@ -110,10 +122,25 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
         ),
       ]);
 
-      // TODO: mostrar las gemas obtenidas con la frase motivacional.
+      if (_isFirstRegister) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => GemsDialog(
+            title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
+            message:
+                "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+          ),
+        );
+      }
+
+      // TODO: mostrar la frase motivacional.
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("¡Felicidades! Registro del día completado."),
+        SnackBar(
+          content: Text(
+            _isFirstRegister
+                ? "¡Felicidades! Registro del día completado."
+                : "Se han guardado los cambios.",
+          ),
         ),
       );
 
@@ -122,8 +149,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            "Hubo un problema al guardar el registro. Inténtalo más tarde.",
-          ),
+              "Hubo un problema al guardar el registro. Inténtalo más tarde."),
         ),
       );
     }
