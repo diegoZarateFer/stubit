@@ -133,20 +133,23 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
         );
       }
 
-      // TODO: mostrar las gemas obtenidas con la frase motivacional.
+      // TODO: mostrar la frase motivacional.
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("¡Felicidades! Registro del día completado."),
+        SnackBar(
+          content: Text(
+            _isFirstRegister
+                ? "¡Felicidades! Registro del día completado."
+                : "Se han guardado los cambios.",
+          ),
         ),
       );
 
       Navigator.of(context).pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_isFirstRegister
-              ? "Hubo un problema al guardar el registro. Inténtalo más tarde."
-              : "Se han guardado los cambios."),
+        const SnackBar(
+          content: Text(
+              "Hubo un problema al guardar el registro. Inténtalo más tarde."),
         ),
       );
     }
