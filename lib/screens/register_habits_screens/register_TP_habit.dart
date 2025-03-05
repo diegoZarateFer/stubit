@@ -141,7 +141,7 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
           "createdAt": now,
           "completedCycles": _completedCycles,
           "remainingSeconds": _remainingSeconds,
-          "hasBeenCompleted": false,
+          "hasBeenCompleted": _hasBeenCompleted,
           "workIntervalIsActive": _workIntervalIsActive,
         },
         SetOptions(

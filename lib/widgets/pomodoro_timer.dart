@@ -40,8 +40,8 @@ class PomodoroTimer extends StatefulWidget {
 class _PomodoroTimerState extends State<PomodoroTimer> {
   bool _hastStarted = false,
       _workIntervalIsActive = true,
-      _timerIsPaused = true,
-      _runningAditionalCycle = false;
+      _runningAditionalCycle = false,
+      _timerIsPaused = true;
 
   Timer? _timer;
   late int _completedCycles, _remainingSeconds, _workInterval, _restInterval;
@@ -73,6 +73,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
             _completedCycles++;
           });
 
+          _remainingSeconds = _workInterval;
           widget.onFinish(_completedCycles);
           return;
         }
@@ -121,12 +122,14 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   @override
   void initState() {
     super.initState();
+    _targetCompleted = widget.completedCycles >= widget.targetNumberOfCycles;
     _workInterval = widget.workInterval; // * 60
     _restInterval = widget.restInterval; // * 60
-    _remainingSeconds = widget.remainingTime;
+    _remainingSeconds =
+        _targetCompleted ? widget.workInterval : widget.remainingTime;
     _completedCycles = widget.completedCycles;
-    _workIntervalIsActive = widget.workIntervalIsActive;
-    _targetCompleted = widget.completedCycles == widget.targetNumberOfCycles;
+    _workIntervalIsActive =
+        _targetCompleted ? true : widget.workIntervalIsActive;
   }
 
   @override
