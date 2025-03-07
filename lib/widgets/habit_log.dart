@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/widgets/apology.dart';
 
@@ -147,7 +148,52 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             );
           }
 
-          if (widget.habit.strategy == 'COF') {}
+          if (widget.habit.strategy == 'COF') {
+            int fetchedCounter = snapshot.data!['counter'];
+            int fetchedDailyTarget = snapshot.data!['dailyTarget'];
+            final unit = snapshot.data!['unit'];
+
+            double counter = fetchedCounter.toDouble();
+            double dailyTarget = fetchedDailyTarget.toDouble();
+
+            double percent =
+                counter / dailyTarget > 1 ? 1 : counter / dailyTarget;
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Center(
+                    child: CircularPercentIndicator(
+                      radius: 50,
+                      lineWidth: 5,
+                      percent: percent,
+                      center: Text(
+                        "$fetchedCounter / $fetchedDailyTarget",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+                      progressColor: const Color.fromARGB(255, 228, 200, 247),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "$unit",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
 
           if (widget.habit.strategy == 'TP') {}
 
