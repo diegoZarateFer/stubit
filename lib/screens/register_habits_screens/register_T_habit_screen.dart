@@ -122,6 +122,7 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
           "difficulty": _selectedDifficulty,
           "hours": selectedHours,
           "minutes": selectedMinutes,
+          "targetTime": widget.targetNumberOfMinutes,
         }),
       ]);
 

@@ -304,7 +304,60 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             );
           }
 
-          if (widget.habit.strategy == 'T') {}
+          if (widget.habit.strategy == 'T') {
+            final minutes = snapshot.data!['minutes'];
+            final hours = snapshot.data!['hours'];
+            int fetchedTotalTime = snapshot.data!['time'];
+            int fetchedTargetTime = snapshot.data!['targetTime'];
+            final selectedDifficulty = snapshot.data!['difficulty'];
+
+            double targetTime = fetchedTargetTime.toDouble();
+            double totalTime = fetchedTotalTime.toDouble();
+
+            double percent =
+                totalTime / targetTime > 1 ? 1 : totalTime / targetTime;
+
+            String legend = (hours == 0)
+                ? "Dedicaste $minutes a esta actividad"
+                : "Dedicaste $hours horas con $minutes minutos a esta actividad.";
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Center(
+                    child: CircularPercentIndicator(
+                      radius: 50,
+                      lineWidth: 5,
+                      percent: percent,
+                      center: Text(
+                        "${(percent * 100).toStringAsFixed(1)}%",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+                      progressColor: const Color.fromARGB(255, 228, 200, 247),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    legend,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  RatingSelector(
+                    selectedDifficulty: selectedDifficulty,
+                  ),
+                ],
+              ),
+            );
+          }
 
           if (widget.habit.strategy == 'TF') {}
 
