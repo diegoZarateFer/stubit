@@ -7,8 +7,6 @@ import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/apology.dart';
 import 'package:stubit/widgets/calendar.dart';
 import 'package:stubit/widgets/habit_log.dart';
-import 'package:stubit/widgets/image_button.dart';
-import 'package:stubit/widgets/user_button.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -115,33 +113,21 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
-        actions: [
-          ImageButton(
-            imagePath: "assets/images/book.png",
-            onPressed: () {},
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+        ),
+        centerTitle: true,
+        title: Text(
+          "Seguimiento",
+          style: GoogleFonts.dmSans(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          Text(
-            '0',
-            style: GoogleFonts.dmSans(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-              ),
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'Stu - Bit',
-            style: GoogleFonts.satisfy(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 40,
-              ),
-            ),
-          ),
-          const Spacer(),
-          const UserButton(),
-        ],
+        ),
       ),
       body: FutureBuilder(
         future: fetchLogDates(),
@@ -191,6 +177,7 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
                       ),
                       Text(
                         widget.habit.name,
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 18,
                           color: Colors.white,
