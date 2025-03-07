@@ -195,7 +195,114 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             );
           }
 
-          if (widget.habit.strategy == 'TP') {}
+          if (widget.habit.strategy == 'TP') {
+            int fetchedCompletedCycles = snapshot.data!['completedCycles'];
+            final restInterval = snapshot.data!['restInterval'];
+            final workInterval = snapshot.data!['workInterval'];
+            int fetchedTargetCycles = snapshot.data!['targetCycles'];
+
+            final completedCycles = fetchedCompletedCycles.toDouble();
+            final targetCycles = fetchedTargetCycles.toDouble();
+            double percent = completedCycles / targetCycles > 1
+                ? 1
+                : completedCycles / targetCycles;
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Center(
+                    child: CircularPercentIndicator(
+                      radius: 50,
+                      lineWidth: 5,
+                      percent: percent,
+                      center: Text(
+                        "$fetchedTargetCycles / $fetchedTargetCycles",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+                      progressColor: const Color.fromARGB(255, 228, 200, 247),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Ciclos completados:",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "$fetchedCompletedCycles de $fetchedTargetCycles.",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Intervalo de trabajo:",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "$workInterval.",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Intervalo de descanso:",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "$restInterval.",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
 
           if (widget.habit.strategy == 'T') {}
 
