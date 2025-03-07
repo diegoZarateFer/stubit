@@ -62,89 +62,13 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             final questionOne = snapshot.data!['questionOne'];
             final questionTwo = snapshot.data!['questionOne'];
 
-            final selectedDifficulty = snapshot.data!['difficulty'];
-            return Column(
-              children: [
-                Text(
-                  questionOne,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                  height: 4,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "R: ",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      answerOne,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Colors.white,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.white,
-                        decorationThickness: 2,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Text(
-                  questionTwo,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                  height: 4,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "R: ",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      answerTwo,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Colors.white,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.white,
-                        decorationThickness: 2,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                RatingSelector(
-                  selectedDifficulty: selectedDifficulty,
-                ),
-              ],
+            int selectedDifficulty = snapshot.data!['difficulty'];
+            return CFLog(
+              questionOne: questionOne,
+              questionTwo: questionTwo,
+              answerOne: answerOne,
+              answerTwo: answerTwo,
+              selectedDifficulty: selectedDifficulty,
             );
           }
 
@@ -153,45 +77,10 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             int fetchedDailyTarget = snapshot.data!['dailyTarget'];
             final unit = snapshot.data!['unit'];
 
-            double counter = fetchedCounter.toDouble();
-            double dailyTarget = fetchedDailyTarget.toDouble();
-
-            double percent =
-                counter / dailyTarget > 1 ? 1 : counter / dailyTarget;
-
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Center(
-                    child: CircularPercentIndicator(
-                      radius: 50,
-                      lineWidth: 5,
-                      percent: percent,
-                      center: Text(
-                        "$fetchedCounter / $fetchedDailyTarget",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
-                      progressColor: const Color.fromARGB(255, 228, 200, 247),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "$unit",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+            return COFLog(
+              fetchedCounter: fetchedCounter,
+              fetchedDailyTarget: fetchedDailyTarget,
+              unit: unit,
             );
           }
 
@@ -201,106 +90,11 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             final workInterval = snapshot.data!['workInterval'];
             int fetchedTargetCycles = snapshot.data!['targetCycles'];
 
-            final completedCycles = fetchedCompletedCycles.toDouble();
-            final targetCycles = fetchedTargetCycles.toDouble();
-            double percent = completedCycles / targetCycles > 1
-                ? 1
-                : completedCycles / targetCycles;
-
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Center(
-                    child: CircularPercentIndicator(
-                      radius: 50,
-                      lineWidth: 5,
-                      percent: percent,
-                      center: Text(
-                        "$fetchedTargetCycles / $fetchedTargetCycles",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
-                      progressColor: const Color.fromARGB(255, 228, 200, 247),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Ciclos completados:",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "$fetchedCompletedCycles de $fetchedTargetCycles.",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Intervalo de trabajo:",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "$workInterval.",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Intervalo de descanso:",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "$restInterval.",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            return TPLog(
+              fetchedCompletedCycles: fetchedCompletedCycles,
+              fetchedTargetCycles: fetchedTargetCycles,
+              restInterval: restInterval,
+              workInterval: workInterval,
             );
           }
 
@@ -311,51 +105,12 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             int fetchedTargetTime = snapshot.data!['targetTime'];
             final selectedDifficulty = snapshot.data!['difficulty'];
 
-            double targetTime = fetchedTargetTime.toDouble();
-            double totalTime = fetchedTotalTime.toDouble();
-
-            double percent =
-                totalTime / targetTime > 1 ? 1 : totalTime / targetTime;
-
-            String legend = (hours == 0)
-                ? "Dedicaste $minutes a esta actividad"
-                : "Dedicaste $hours horas con $minutes minutos a esta actividad.";
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Center(
-                    child: CircularPercentIndicator(
-                      radius: 50,
-                      lineWidth: 5,
-                      percent: percent,
-                      center: Text(
-                        "${(percent * 100).toStringAsFixed(1)}%",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
-                      progressColor: const Color.fromARGB(255, 228, 200, 247),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    legend,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  RatingSelector(
-                    selectedDifficulty: selectedDifficulty,
-                  ),
-                ],
-              ),
+            return TLOG(
+              hours: hours,
+              minutes: minutes,
+              fetchedTargetTime: fetchedTargetTime,
+              fetchedTotalTime: fetchedTotalTime,
+              selectedDifficulty: selectedDifficulty,
             );
           }
 
@@ -369,98 +124,25 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
             final selectedDifficulty = snapshot.data!['difficulty'];
             String activityDescription = snapshot.data!['activityDescription'];
 
-            double targetTime = fetchedTargetTime.toDouble();
-            double totalTime = fetchedTotalTime.toDouble();
-
-            double percent =
-                totalTime / targetTime > 1 ? 1 : totalTime / targetTime;
-
-            String legend = (hours == 0)
-                ? "Dedicaste $minutes a esta actividad"
-                : "Dedicaste $hours horas con $minutes minutos a esta actividad.";
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Center(
-                    child: CircularPercentIndicator(
-                      radius: 50,
-                      lineWidth: 5,
-                      percent: percent,
-                      center: Text(
-                        "${(percent * 100).toStringAsFixed(1)}%",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                      backgroundColor: const Color.fromARGB(178, 158, 158, 158),
-                      progressColor: const Color.fromARGB(255, 228, 200, 247),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    legend,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                  if (activityDescription.isNotEmpty)
-                    const SizedBox(
-                      height: 8,
-                    ),
-                  if (activityDescription.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Descripción:",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          activityDescription,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  RatingSelector(
-                    selectedDifficulty: selectedDifficulty,
-                  ),
-                ],
-              ),
+            return TFLog(
+              hours: hours,
+              minutes: minutes,
+              fetchedTargetTime: fetchedTargetTime,
+              fetchedTotalTime: fetchedTotalTime,
+              activityDescription: activityDescription,
+              selectedDifficulty: selectedDifficulty,
             );
           }
 
           // L
-          final list = snapshot.data!['list'];
+          List<dynamic> fetchedList = snapshot.data!['list'];
           final selectedDifficulty = snapshot.data!['difficulty'];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var item in list)
-                ListTile(
-                  leading: const Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                  title: Text(item.toString()),
-                ),
-              RatingSelector(
-                selectedDifficulty: selectedDifficulty,
-              ),
-            ],
+
+          final list = fetchedList.map((item) => item.toString()).toList();
+
+          return LLog(
+            list: list,
+            selectedDifficulty: selectedDifficulty,
           );
         }
 
@@ -476,6 +158,469 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
           ),
         );
       },
+    );
+  }
+}
+
+class LLog extends StatelessWidget {
+  const LLog({
+    super.key,
+    required this.list,
+    required this.selectedDifficulty,
+  });
+
+  final List<String> list;
+  final int selectedDifficulty;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var item in list)
+          ListTile(
+            leading: const Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+            title: Text(item.toString()),
+          ),
+        RatingSelector(
+          selectedDifficulty: selectedDifficulty,
+        ),
+      ],
+    );
+  }
+}
+
+class TLOG extends StatelessWidget {
+  const TLOG({
+    super.key,
+    required this.hours,
+    required this.minutes,
+    required this.fetchedTargetTime,
+    required this.fetchedTotalTime,
+    required this.selectedDifficulty,
+  });
+
+  final int fetchedTargetTime,
+      fetchedTotalTime,
+      hours,
+      minutes,
+      selectedDifficulty;
+
+  @override
+  Widget build(BuildContext context) {
+    double targetTime = fetchedTargetTime.toDouble();
+    double totalTime = fetchedTotalTime.toDouble();
+
+    double percent = totalTime / targetTime > 1 ? 1 : totalTime / targetTime;
+
+    String legend = (hours == 0)
+        ? "Dedicaste $minutes a esta actividad"
+        : "Dedicaste $hours horas con $minutes minutos a esta actividad.";
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Center(
+            child: CircularPercentIndicator(
+              radius: 50,
+              lineWidth: 5,
+              percent: percent,
+              center: Text(
+                "${(percent * 100).toStringAsFixed(1)}%",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+              progressColor: const Color.fromARGB(255, 228, 200, 247),
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            legend,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          RatingSelector(
+            selectedDifficulty: selectedDifficulty,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TFLog extends StatelessWidget {
+  const TFLog({
+    super.key,
+    required this.hours,
+    required this.minutes,
+    required this.fetchedTargetTime,
+    required this.fetchedTotalTime,
+    required this.activityDescription,
+    required this.selectedDifficulty,
+  });
+
+  final int hours,
+      minutes,
+      fetchedTargetTime,
+      fetchedTotalTime,
+      selectedDifficulty;
+  final String activityDescription;
+
+  @override
+  Widget build(BuildContext context) {
+    double targetTime = fetchedTargetTime.toDouble();
+    double totalTime = fetchedTotalTime.toDouble();
+
+    double percent = totalTime / targetTime > 1 ? 1 : totalTime / targetTime;
+
+    String legend = (hours == 0)
+        ? "Dedicaste $minutes a esta actividad"
+        : "Dedicaste $hours horas con $minutes minutos a esta actividad.";
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Center(
+            child: CircularPercentIndicator(
+              radius: 50,
+              lineWidth: 5,
+              percent: percent,
+              center: Text(
+                "${(percent * 100).toStringAsFixed(1)}%",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+              progressColor: const Color.fromARGB(255, 228, 200, 247),
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            legend,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: Colors.white,
+            ),
+          ),
+          if (activityDescription.isNotEmpty)
+            const SizedBox(
+              height: 8,
+            ),
+          if (activityDescription.isNotEmpty)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Descripción:",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  activityDescription,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          RatingSelector(
+            selectedDifficulty: selectedDifficulty,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TPLog extends StatelessWidget {
+  const TPLog({
+    super.key,
+    required this.fetchedCompletedCycles,
+    required this.fetchedTargetCycles,
+    required this.restInterval,
+    required this.workInterval,
+  });
+
+  final int fetchedCompletedCycles,
+      fetchedTargetCycles,
+      workInterval,
+      restInterval;
+
+  @override
+  Widget build(BuildContext context) {
+    final completedCycles = fetchedCompletedCycles.toDouble();
+    final targetCycles = fetchedTargetCycles.toDouble();
+    double percent =
+        completedCycles / targetCycles > 1 ? 1 : completedCycles / targetCycles;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Center(
+            child: CircularPercentIndicator(
+              radius: 50,
+              lineWidth: 5,
+              percent: percent,
+              center: Text(
+                "$fetchedTargetCycles / $fetchedTargetCycles",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+              progressColor: const Color.fromARGB(255, 228, 200, 247),
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Ciclos completados:",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                "$fetchedCompletedCycles de $fetchedTargetCycles.",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Intervalo de trabajo:",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                "$workInterval.",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Intervalo de descanso:",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                "$restInterval.",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class COFLog extends StatelessWidget {
+  const COFLog({
+    super.key,
+    required this.fetchedCounter,
+    required this.fetchedDailyTarget,
+    required this.unit,
+  });
+
+  final int fetchedCounter, fetchedDailyTarget;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    double counter = fetchedCounter.toDouble();
+    double dailyTarget = fetchedDailyTarget.toDouble();
+    double percent = counter / dailyTarget > 1 ? 1 : counter / dailyTarget;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Center(
+            child: CircularPercentIndicator(
+              radius: 50,
+              lineWidth: 5,
+              percent: percent,
+              center: Text(
+                "$fetchedCounter / $fetchedDailyTarget",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              backgroundColor: const Color.fromARGB(178, 158, 158, 158),
+              progressColor: const Color.fromARGB(255, 228, 200, 247),
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            unit,
+            style: GoogleFonts.dmSans(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CFLog extends StatelessWidget {
+  const CFLog(
+      {super.key,
+      required this.questionOne,
+      required this.questionTwo,
+      required this.answerOne,
+      required this.answerTwo,
+      required this.selectedDifficulty});
+
+  final int selectedDifficulty;
+  final String questionOne, questionTwo, answerOne, answerTwo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          questionOne,
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(
+          height: 4,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "R: ",
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              answerOne,
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Colors.white,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.white,
+                decorationThickness: 2,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Text(
+          questionTwo,
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(
+          height: 4,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "R: ",
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              answerTwo,
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Colors.white,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.white,
+                decorationThickness: 2,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        RatingSelector(
+          selectedDifficulty: selectedDifficulty,
+        ),
+      ],
     );
   }
 }
