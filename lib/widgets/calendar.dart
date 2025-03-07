@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:stubit/util/util.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({
     super.key,
     required this.dates,
+    required this.onSelectDay,
   });
 
   final Set<DateTime> dates;
+  final void Function(DateTime date) onSelectDay;
 
   @override
   State<Calendar> createState() => _CalendarState();
@@ -34,56 +34,9 @@ class _CalendarState extends State<Calendar> {
       _focusedDay = focusedDay;
     });
 
-    _showHabitLogDay(context);
-  }
-
-  void _showHabitLogDay(BuildContext context) {
-    if (!_dates.any((d) => isSameDay(d, _selectedDay))) {
-      return;
+    if (_dates.any((d) => isSameDay(d, _selectedDay))) {
+      widget.onSelectDay(_selectedDay);
     }
-
-    String formatedDate = formatDate(_selectedDay);
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(16),
-        ),
-      ),
-      builder: (ctx) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    formatedDate,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            const Divider(),
-          ],
-        );
-      },
-    );
   }
 
   @override

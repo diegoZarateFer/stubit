@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/apology.dart';
 import 'package:stubit/widgets/calendar.dart';
+import 'package:stubit/widgets/habit_log.dart';
 import 'package:stubit/widgets/image_button.dart';
 import 'package:stubit/widgets/user_button.dart';
 
@@ -54,6 +56,58 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
     } catch (e) {
       throw Exception('Falló la eliminación del LOG.');
     }
+  }
+
+  void _showHabitLogDay(DateTime selectedDay) {
+    String formatedDate = formatDate(selectedDay);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
+      ),
+      builder: (ctx) {
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      formatedDate,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(),
+              HabitLogInformation(
+                habit: widget.habit,
+                selectedDay: selectedDay,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -136,7 +190,7 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
                         height: 16,
                       ),
                       Text(
-                        "Lectura",
+                        widget.habit.name,
                         style: GoogleFonts.poppins(
                           fontSize: 18,
                           color: Colors.white,
@@ -148,6 +202,7 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
                       ),
                       Calendar(
                         dates: logDates,
+                        onSelectDay: _showHabitLogDay,
                       ),
                       const SizedBox(height: 16),
                       Container(
