@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:stubit/util/util.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
@@ -21,7 +23,7 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    _dates = widget.dates ?? {};
+    _dates = widget.dates;
     _focusedDay = DateTime.now();
     _selectedDay = DateTime.now();
   }
@@ -31,6 +33,57 @@ class _CalendarState extends State<Calendar> {
       _selectedDay = selectedDay;
       _focusedDay = focusedDay;
     });
+
+    _showHabitLogDay(context);
+  }
+
+  void _showHabitLogDay(BuildContext context) {
+    if (!_dates.any((d) => isSameDay(d, _selectedDay))) {
+      return;
+    }
+
+    String formatedDate = formatDate(_selectedDay);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
+      ),
+      builder: (ctx) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    formatedDate,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(),
+          ],
+        );
+      },
+    );
   }
 
   @override
