@@ -83,20 +83,14 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
     final selectedHours = _scrollHoursController.selectedItem % _hours.length;
     final selectedMinutes =
         _scrollMinutesController.selectedItem % _minutes.length;
-    Map<String, dynamic> registeredData = activityDescription.trim().isEmpty
-        ? {
-            "time": _selectedTotalMinutes,
-            "difficulty": _selectedDifficulty,
-            "hours": selectedHours,
-            "minutes": selectedMinutes,
-          }
-        : {
-            "time": _selectedTotalMinutes,
-            "difficulty": _selectedDifficulty,
-            "activityDescription": activityDescription,
-            "hours": selectedHours,
-            "minutes": selectedMinutes,
-          };
+    Map<String, dynamic> registeredData = {
+      "time": _selectedTotalMinutes,
+      "difficulty": _selectedDifficulty,
+      "activityDescription": activityDescription,
+      "hours": selectedHours,
+      "minutes": selectedMinutes,
+      "targetTime": widget.targetNumberOfMinutes,
+    };
 
     Map<String, dynamic> lastRegisteredData = {
       "createdAt": now,

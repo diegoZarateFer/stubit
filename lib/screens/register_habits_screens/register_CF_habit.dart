@@ -26,7 +26,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
   final _formKey = GlobalKey<FormState>();
 
-  late String _date;
+  late String _date, _questionOne, _questionTwo;
   bool _confirmationBoxIsSelected = false,
       _isLoading = true,
       _isFirstRegister = true,
@@ -96,6 +96,8 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
               "answerTwo": answerTwo,
               "confirmation": _confirmationBoxIsSelected,
               "difficulty": _selectedDifficulty,
+              "questionOne": _questionOne,
+              "questionTwo": _questionTwo
             },
             SetOptions(
               merge: true,
@@ -110,8 +112,10 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
               .doc(_date)
               .set({
             "difficulty": _selectedDifficulty,
-            "answeOne": answerOne,
+            "answerOne": answerOne,
             "answerTwo": answerTwo,
+            "questionOne": _questionOne,
+            "questionTwo": _questionTwo
           })
         ]);
 
@@ -182,6 +186,8 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
         setState(() {
           _confirmationBoxIsSelected = doc.data()?['confirmation'];
           _selectedDifficulty = doc.data()?['difficulty'];
+          _questionOne = doc.data()?['questionOne'];
+          _questionTwo = doc.data()?['questionTwo'];
           _isLoading = false;
           _isFirstRegister = false;
         });
@@ -216,6 +222,8 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
     super.initState();
     _loadFormData();
     _date = getDateAsString();
+    _questionOne = "Describe brevemente lo que hiciste";
+    _questionTwo = "¿Qué aprendiste durante la actividad?";
   }
 
   @override
@@ -285,8 +293,8 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
                               style: const TextStyle(
                                 color: Colors.white,
                               ),
-                              decoration: const InputDecoration(
-                                labelText: 'Describe brevemente lo que hiciste',
+                              decoration: InputDecoration(
+                                labelText: _questionOne,
                                 counterText: '',
                               ),
                               onChanged: (value) {
@@ -306,9 +314,8 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
                               onChanged: (value) {
                                 _changesWereMade = true;
                               },
-                              decoration: const InputDecoration(
-                                labelText:
-                                    '¿Qué aprendiste durante la actividad?',
+                              decoration: InputDecoration(
+                                labelText: _questionTwo,
                                 counterText: '',
                               ),
                               controller: _answerTwoController,

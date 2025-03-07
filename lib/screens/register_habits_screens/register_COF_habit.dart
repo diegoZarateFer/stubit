@@ -31,7 +31,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
 
   bool _confirmationBoxIsSelected = false,
       _isLoading = true,
-      habitHasBeenCompleted = true,
+      _habitHasBeenCompleted = false,
       _changesWereMade = false;
 
   late int _dailyTarget;
@@ -59,7 +59,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
     final now = Timestamp.now();
     try {
       await Future.wait([
-        if (!habitHasBeenCompleted && isCompleted)
+        if (!_habitHasBeenCompleted && isCompleted)
           _firestore
               .collection("user_data")
               .doc(userId)
@@ -100,7 +100,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         }),
       ]);
 
-      if (!habitHasBeenCompleted && isCompleted) {
+      if (!_habitHasBeenCompleted && isCompleted) {
         await showDialog(
           context: context,
           builder: (ctx) => GemsDialog(
@@ -115,7 +115,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            !habitHasBeenCompleted && isCompleted
+            !_habitHasBeenCompleted && isCompleted
                 ? "¡Felicidades! Registro del día completado."
                 : "Se han guardado los cambios.",
           ),
@@ -202,7 +202,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         setState(() {
           _counter = doc.data()?['counter'];
           _confirmationBoxIsSelected = doc.data()?['confirmation'];
-          habitHasBeenCompleted = doc.data()?['hasBeenCompleted'];
+          _habitHasBeenCompleted = doc.data()?['hasBeenCompleted'];
           _isLoading = false;
         });
       }

@@ -84,10 +84,10 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
             .collection("habit_log")
             .doc(_date)
             .set({
-          "createdAt": now,
           "completedCycles": _completedCycles,
           "restInterval": widget.restInterval,
           "workInterval": widget.workInterval,
+          "targetCycles": widget.targetNumberOfCycles,
         })
       ]);
 
