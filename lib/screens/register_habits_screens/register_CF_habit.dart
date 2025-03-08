@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stubit/data/phrases.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
@@ -27,7 +27,6 @@ class RegisterCfHabit extends StatefulWidget {
 
 class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
-  final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -51,19 +50,9 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
     return null;
   }
 
-  Future<String?> _getPhrase() async {
-    try {
-      int randomIndex = Random().nextInt(5);
-      DatabaseEvent event =
-          await _database.child("${widget.habit.category}/$randomIndex").once();
-      if (event.snapshot.value != null) {
-        return event.snapshot.value.toString();
-      }
-    } catch (e) {
-      print(e);
-    }
-
-    return null;
+  String _getPhrase() {
+    int randomIndex = Random().nextInt(5);
+    return motivationalPhrases[widget.habit.name]![randomIndex];
   }
 
   void _registerHabit() async {
@@ -140,13 +129,12 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
         ]);
 
         if (_isFirstRegister) {
-          final phrase = await _getPhrase();
+          final phrase = _getPhrase();
           await showDialog(
             context: context,
             builder: (ctx) => GemsDialog(
               title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
-              message: phrase ??
-                  "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
+              message: phrase,
             ),
           );
         }
