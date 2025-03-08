@@ -310,7 +310,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
                             height: 16,
                           ),
                           Text(
-                            "Lectura",
+                            widget.habit.name,
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               fontSize: 18,
