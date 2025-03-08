@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -38,6 +41,8 @@ class RegisterFtHabitScreen extends StatefulWidget {
 
 class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();
+
   bool _confirmationBoxIsSelected = false,
       _isLoading = false,
       _isFirstRegister = true,
@@ -59,6 +64,21 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
     setState(() {
       _selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
     });
+  }
+
+  Future<String?> _getPhrase() async {
+    try {
+      int randomIndex = Random().nextInt(5);
+      DatabaseEvent event =
+          await _database.child("${widget.habit.category}/$randomIndex").once();
+      if (event.snapshot.value != null) {
+        return event.snapshot.value.toString();
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return null;
   }
 
   void _registerHabit() async {
@@ -135,13 +155,13 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
             .set(registeredData),
       ]);
 
-      // TODO: mostrar la frase motivacional.
+      final phrase = await _getPhrase();
       if (_isFirstRegister) {
         await showDialog(
           context: context,
           builder: (ctx) => GemsDialog(
             title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
-            message:
+            message: phrase ??
                 "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
           ),
         );
