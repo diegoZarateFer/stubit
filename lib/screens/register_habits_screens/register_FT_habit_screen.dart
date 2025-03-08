@@ -155,8 +155,8 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
             .set(registeredData),
       ]);
 
-      final phrase = await _getPhrase();
       if (_isFirstRegister) {
+        final phrase = await _getPhrase();
         await showDialog(
           context: context,
           builder: (ctx) => GemsDialog(

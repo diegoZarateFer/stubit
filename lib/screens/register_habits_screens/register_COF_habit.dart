@@ -119,8 +119,8 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
         }),
       ]);
 
-      final phrase = await _getPhrase();
       if (!_habitHasBeenCompleted && isCompleted) {
+        final phrase = await _getPhrase();
         await showDialog(
           context: context,
           builder: (ctx) => GemsDialog(
