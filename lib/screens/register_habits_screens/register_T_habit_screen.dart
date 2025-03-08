@@ -64,7 +64,8 @@ class _CreateFtHabitScreenState extends State<RegisterTHabitScreen> {
 
   String _getPhrase() {
     int randomIndex = Random().nextInt(5);
-    return motivationalPhrases[widget.habit.name]![randomIndex];
+    return motivationalPhrases[widget.habit.category]?[randomIndex] ??
+        "El único fracaso real es rendirse.";
   }
 
   void _registerHabit() async {
