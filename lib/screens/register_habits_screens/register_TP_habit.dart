@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/habit.dart';
@@ -28,6 +31,7 @@ class RegisterTpHabit extends StatefulWidget {
 
 class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
   late String _date;
   late int _remainingSeconds;
@@ -37,6 +41,21 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
   bool _isLoading = true, _hasBeenCompleted = false;
 
   late bool _targetIsCompleted;
+
+  Future<String?> _getPhrase() async {
+    try {
+      int randomIndex = Random().nextInt(5);
+      DatabaseEvent event =
+          await _database.child("${widget.habit.category}/$randomIndex").once();
+      if (event.snapshot.value != null) {
+        return event.snapshot.value.toString();
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return null;
+  }
 
   Future<void> _registerHabit() async {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -92,17 +111,17 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
       ]);
 
       if (!_hasBeenCompleted) {
+        final phrase = await _getPhrase();
         await showDialog(
           context: context,
           builder: (ctx) => GemsDialog(
             title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
-            message:
+            message: phrase ??
                 "¡Sigue así! Y recuerda si fuera fácil, ¡cualquiera lo lograría!",
           ),
         );
       }
 
-      // TODO: mostrar la frase motivacional.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
