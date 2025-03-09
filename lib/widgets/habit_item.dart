@@ -149,6 +149,19 @@ class _HabitItemState extends State<HabitItem> {
             ),
             ListTile(
               leading: const Icon(
+                Icons.emoji_events,
+                color: Colors.amber,
+              ),
+              title: const Text(
+                '¡Mantén tu racha!',
+                style: TextStyle(
+                  color: Colors.amber,
+                ),
+              ),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(
                 Icons.delete,
                 color: Colors.red,
               ),
