@@ -282,7 +282,7 @@ class _SecondPageState extends State<SecondPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
-                      maxLength: 30,
+                      maxLength: 40,
                       style: const TextStyle(
                         color: Colors.white,
                       ),
