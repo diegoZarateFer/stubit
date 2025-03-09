@@ -78,7 +78,7 @@ class _HabitsListState extends State<HabitsList> {
             const SizedBox(width: 8),
             FilterChip(
               label: const Text(
-                "Mi semana",
+                "Todos",
                 style: TextStyle(
                   color: Colors.white,
                 ),
