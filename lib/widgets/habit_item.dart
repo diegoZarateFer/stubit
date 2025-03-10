@@ -90,7 +90,11 @@ class _HabitItemState extends State<HabitItem> {
 
   bool _habitIsActiveToday() {
     final dayOfWeek = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
-    List<dynamic> loadedDays = widget.habitParameters['days'];
+    List<dynamic>? loadedDays = widget.habitParameters['days'];
+    if (loadedDays == null) {
+      return true;
+    }
+
     List<String> days = loadedDays.map((item) => item.toString()).toList();
     return days.contains(dayOfWeek);
   }
