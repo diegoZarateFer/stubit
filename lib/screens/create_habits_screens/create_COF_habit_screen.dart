@@ -43,13 +43,13 @@ class CreateCofHabitScreen extends StatefulWidget {
 
 class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
   final List<DayInWeek> _days = [
-    DayInWeek("D", dayKey: "monday"),
-    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("D", dayKey: "sunday"),
+    DayInWeek("L", dayKey: "mondat"),
+    DayInWeek("M", dayKey: "tuesday"),
     DayInWeek("M", dayKey: "wednesday"),
-    DayInWeek("M", dayKey: "thursday"),
-    DayInWeek("J", dayKey: "friday"),
-    DayInWeek("V", dayKey: "saturday"),
-    DayInWeek("S", dayKey: "sunday"),
+    DayInWeek("J", dayKey: "thursday"),
+    DayInWeek("V", dayKey: "friday"),
+    DayInWeek("S", dayKey: "saturday"),
   ];
 
   User? _currentUser;
