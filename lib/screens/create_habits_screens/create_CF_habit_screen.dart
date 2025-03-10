@@ -42,7 +42,7 @@ class CreateCfHabitScreen extends StatefulWidget {
 class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
   final List<DayInWeek> _days = [
     DayInWeek("D", dayKey: "sunday"),
-    DayInWeek("L", dayKey: "mondat"),
+    DayInWeek("L", dayKey: "monday"),
     DayInWeek("M", dayKey: "tuesday"),
     DayInWeek("M", dayKey: "wednesday"),
     DayInWeek("J", dayKey: "thursday"),

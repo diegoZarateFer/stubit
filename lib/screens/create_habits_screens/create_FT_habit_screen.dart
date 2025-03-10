@@ -43,7 +43,7 @@ class CreateFtHabitScreen extends StatefulWidget {
 class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
   final List<DayInWeek> _days = [
     DayInWeek("D", dayKey: "sunday"),
-    DayInWeek("L", dayKey: "mondat"),
+    DayInWeek("L", dayKey: "monday"),
     DayInWeek("M", dayKey: "tuesday"),
     DayInWeek("M", dayKey: "wednesday"),
     DayInWeek("J", dayKey: "thursday"),
