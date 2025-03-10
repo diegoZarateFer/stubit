@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stubit/models/habit.dart';
 import 'package:stubit/widgets/apology.dart';
-import 'package:stubit/widgets/habits_list.dart';
+import 'package:stubit/widgets/habit_item.dart';
 
 String apology = """
   Lo sentimos mucho pero no se ha podido conectar al servidor.
@@ -74,7 +75,29 @@ class HabitsScreen extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.only(top: 16),
-          child: HabitsList(loadedHabits: loadedHabits),
+          child: Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(24),
+              itemCount: loadedHabits.length,
+              itemBuilder: (ctx, index) {
+                final habitData = loadedHabits[index].data();
+                final habitId = habitData['id'].toString();
+                final Habit habit = Habit(
+                  id: habitId,
+                  name: habitData['name'],
+                  description: habitData['description'],
+                  category: habitData['category'],
+                  strategy: habitData['strategy'],
+                );
+                final habitParameters = habitData['habitParameters'];
+                return HabitItem(
+                  key: ValueKey(habitId),
+                  habit: habit,
+                  habitParameters: habitParameters,
+                );
+              },
+            ),
+          ),
         );
       },
     );
