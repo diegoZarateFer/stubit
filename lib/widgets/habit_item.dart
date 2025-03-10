@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
@@ -87,7 +88,15 @@ class _HabitItemState extends State<HabitItem> {
     }
   }
 
+  bool _habitIsActiveToday() {
+    final dayOfWeek = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
+    List<dynamic> loadedDays = widget.habitParameters['days'];
+    List<String> days = loadedDays.map((item) => item.toString()).toList();
+    return days.contains(dayOfWeek);
+  }
+
   void _showMenuAction(BuildContext context) {
+    final bool isActive = _habitIsActiveToday();
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -147,6 +156,20 @@ class _HabitItemState extends State<HabitItem> {
               title: const Text('Editar hábito'),
               onTap: () {},
             ),
+            if (isActive && !_isCompleted)
+              ListTile(
+                leading: const Icon(
+                  Icons.emoji_events,
+                  color: Colors.amber,
+                ),
+                title: const Text(
+                  '¡Mantén tu racha!',
+                  style: TextStyle(
+                    color: Colors.amber,
+                  ),
+                ),
+                onTap: () {},
+              ),
             ListTile(
               leading: const Icon(
                 Icons.delete,
