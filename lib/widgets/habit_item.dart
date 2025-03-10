@@ -205,7 +205,6 @@ class _HabitItemState extends State<HabitItem> {
                         .collection("habits")
                         .doc(widget.habit.id)
                         .delete();
-
                     ScaffoldMessenger.of(rootContext).showSnackBar(
                       const SnackBar(
                         content: Text(

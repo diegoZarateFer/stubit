@@ -34,6 +34,38 @@ class HabitsScreen extends StatelessWidget {
           );
         }
 
+        if (!boardSnapshots.hasData || boardSnapshots.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              children: [
+                const Spacer(),
+                Text(
+                  'Aún no tienes hábitos creados',
+                  style: GoogleFonts.dmSans(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 180,
+                ),
+                Text(
+                  "Da click en \"+\" para añadir un nuevo hábito",
+                  style: GoogleFonts.dmSans(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+              ],
+            ),
+          );
+        }
+
         if (boardSnapshots.hasError) {
           return const Apology(
             message: "Lo sentimos pero algo salió mal :(",
@@ -41,7 +73,7 @@ class HabitsScreen extends StatelessWidget {
         }
 
         final loadedHabits = boardSnapshots.data!.docs;
-        if (!boardSnapshots.hasData || boardSnapshots.data!.docs.isEmpty) {
+        if (loadedHabits.isEmpty) {
           return Center(
             child: Column(
               children: [
@@ -75,28 +107,42 @@ class HabitsScreen extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.only(top: 16),
-          child: Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(24),
-              itemCount: loadedHabits.length,
-              itemBuilder: (ctx, index) {
-                final habitData = loadedHabits[index].data();
-                final habitId = habitData['id'].toString();
-                final Habit habit = Habit(
-                  id: habitId,
-                  name: habitData['name'],
-                  description: habitData['description'],
-                  category: habitData['category'],
-                  strategy: habitData['strategy'],
-                );
-                final habitParameters = habitData['habitParameters'];
-                return HabitItem(
-                  key: ValueKey(habitId),
-                  habit: habit,
-                  habitParameters: habitParameters,
-                );
-              },
-            ),
+          child: Column(
+            children: [
+              Text(
+                "Mis Hábitos",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24),
+                  itemCount: loadedHabits.length,
+                  itemBuilder: (ctx, index) {
+                    final habitData = loadedHabits[index].data();
+                    final habitId = loadedHabits[index].id.toString();
+                    final Habit habit = Habit(
+                      id: habitId,
+                      name: habitData['name'],
+                      description: habitData['description'],
+                      category: habitData['category'],
+                      strategy: habitData['strategy'],
+                    );
+                    final habitParameters = habitData['habitParameters'];
+                    return HabitItem(
+                      key: ValueKey(habitId),
+                      habit: habit,
+                      habitParameters: habitParameters,
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         );
       },
