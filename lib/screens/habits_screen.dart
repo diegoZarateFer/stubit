@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/widgets/apology.dart';
 import 'package:stubit/widgets/habit_item.dart';
@@ -105,6 +106,38 @@ class HabitsScreen extends StatelessWidget {
           );
         }
 
+        final today = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
+        final filteredHabits = loadedHabits.where((habit) {
+          final habitParameters = habit.data()["habitParameters"];
+          if (habitParameters["days"] == null) {
+            return true;
+          }
+
+          List<dynamic> days = habitParameters["days"];
+          final daysAsString = days.map((d) => d.toString()).toList();
+          return daysAsString.contains(today);
+        }).toList();
+
+        if (filteredHabits.isEmpty) {
+          return Center(
+            child: Column(
+              children: [
+                const Spacer(),
+                Text(
+                  '¡Hoy tienes el día libre! No hay actividades programadas.',
+                  style: GoogleFonts.dmSans(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+              ],
+            ),
+          );
+        }
+
         return Padding(
           padding: const EdgeInsets.only(top: 16),
           child: Column(
@@ -122,10 +155,10 @@ class HabitsScreen extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(24),
-                  itemCount: loadedHabits.length,
+                  itemCount: filteredHabits.length,
                   itemBuilder: (ctx, index) {
-                    final habitData = loadedHabits[index].data();
-                    final habitId = loadedHabits[index].id.toString();
+                    final habitData = filteredHabits[index].data();
+                    final habitId = filteredHabits[index].id.toString();
                     final Habit habit = Habit(
                       id: habitId,
                       name: habitData['name'],
