@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:day_picker/day_picker.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/widgets/apology.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
@@ -19,53 +20,153 @@ Map<String, num> _numberOfWeeksOptions = {
   "Indefinidamente": double.infinity,
 };
 
-final List<String> _hours = List.generate(
-  13,
-  (index) => index > 9 ? index.toString() : "0${index.toString()}",
+final List<String> _minutesForWork = List.generate(
+  46,
+  (index) => "${index + 15}",
 );
 
-final List<String> _minutes = List.generate(
-  60,
-  (index) => index > 9 ? index.toString() : "0${index.toString()}",
+final List<String> _minutesForRest = List.generate(
+  56,
+  (index) => index + 5 <= 9 ? "0${index + 5}" : "${index + 5}",
 );
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-class EditTHabitScreen extends StatefulWidget {
-  const EditTHabitScreen({
+class EditHabitTpScreen extends StatefulWidget {
+  const EditHabitTpScreen({
     super.key,
     required this.habit,
-    this.initialNumberOfMinutes = 0,
-    this.initialNumberOfHours = 7,
   });
 
   final Habit habit;
-  final int initialNumberOfMinutes, initialNumberOfHours;
 
   @override
-  State<EditTHabitScreen> createState() => _CreateFtHabitScreenState();
+  State<EditHabitTpScreen> createState() => _EditHabitTpScreenState();
 }
 
-class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
+class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
+
+  List<DayInWeek> _days = [
+    DayInWeek("D", dayKey: "sunday"),
+    DayInWeek("L", dayKey: "monday"),
+    DayInWeek("M", dayKey: "tuesday"),
+    DayInWeek("M", dayKey: "wednesday"),
+    DayInWeek("J", dayKey: "thursday"),
+    DayInWeek("V", dayKey: "friday"),
+    DayInWeek("S", dayKey: "saturday"),
+  ];
 
   final _formKey = GlobalKey<FormState>();
 
+  final TextEditingController _selectedNumberOfCylcesController =
+      TextEditingController();
+
+  List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
 
-  late FixedExtentScrollController _scrollHoursController,
-      _scrollMinutesController;
-
   bool _isLoading = true, _hasError = false, _changesWereMade = false;
+
+  int _totalTime = 0;
+  int _workInterval = 15, _restInterval = 5;
+
+  late FixedExtentScrollController _scrollWorkIntervalController,
+      _scrollRestIntervalController;
 
   @override
   void initState() {
     super.initState();
-    _scrollHoursController =
-        FixedExtentScrollController(initialItem: widget.initialNumberOfHours);
-    _scrollMinutesController =
-        FixedExtentScrollController(initialItem: widget.initialNumberOfMinutes);
+    _scrollWorkIntervalController = FixedExtentScrollController();
+    _scrollRestIntervalController = FixedExtentScrollController();
     _loadFormData();
+  }
+
+  Future<void> _loadFormData() async {
+    final userId = _currentUser.uid.toString();
+    final doc = await _firestore
+        .collection("user_data")
+        .doc(userId)
+        .collection("habits")
+        .doc(widget.habit.id)
+        .get();
+
+    if (doc.exists) {
+      final habitParameters = doc.data()?['habitParameters'];
+      _scrollWorkIntervalController.animateToItem(
+        habitParameters['workInterval'],
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOut,
+      );
+
+      _scrollRestIntervalController.animateToItem(
+        habitParameters['restInterval'],
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOut,
+      );
+
+      _selectedNumberOfCylcesController.text =
+          habitParameters['cycles'].toString();
+      List<dynamic> fetchedDaysOfWeek = habitParameters['days'];
+      setState(() {
+        _selectedDaysOfWeek =
+            fetchedDaysOfWeek.map((item) => item.toString()).toList();
+
+        _days = [
+          DayInWeek(
+            "D",
+            dayKey: "sunday",
+            isSelected: _selectedDaysOfWeek.contains("sunday"),
+          ),
+          DayInWeek(
+            "L",
+            dayKey: "monday",
+            isSelected: _selectedDaysOfWeek.contains("monday"),
+          ),
+          DayInWeek(
+            "M",
+            dayKey: "tuesday",
+            isSelected: _selectedDaysOfWeek.contains("tuesday"),
+          ),
+          DayInWeek(
+            "M",
+            dayKey: "wednesday",
+            isSelected: _selectedDaysOfWeek.contains("wednesday"),
+          ),
+          DayInWeek(
+            "J",
+            dayKey: "thursday",
+            isSelected: _selectedDaysOfWeek.contains("thursday"),
+          ),
+          DayInWeek(
+            "V",
+            dayKey: "friday",
+            isSelected: _selectedDaysOfWeek.contains("friday"),
+          ),
+          DayInWeek(
+            "S",
+            dayKey: "saturday",
+            isSelected: _selectedDaysOfWeek.contains("saturday"),
+          ),
+        ];
+
+        _selectedNumberOfWeeks = habitParameters['numberOfWeeks'];
+        _isLoading = false;
+      });
+      _updateTotalTime();
+    } else {
+      setState(() {
+        _hasError = false;
+        _isLoading = false;
+      });
+    }
+  }
+
+  String? _numberOfCyclesValidator(selectedDailyTarget) {
+    if (selectedDailyTarget == null ||
+        selectedDailyTarget.toString().trim() == '') {
+      return 'Campo obligatorio.';
+    }
+    return null;
   }
 
   String? _habitDurationValidator(selectedDuration) {
@@ -76,31 +177,62 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
     return null;
   }
 
+  void _updateTotalTime() {
+    int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
+    setState(() {
+      _totalTime = (_restInterval + _workInterval) * cycles;
+    });
+  }
+
+  String? _getKeyFromValue() {
+    return _numberOfWeeksOptions.entries
+            .firstWhere(
+              (entry) => entry.value == _selectedNumberOfWeeks,
+              orElse: () => const MapEntry("", -1),
+            )
+            .key
+            .isNotEmpty
+        ? _numberOfWeeksOptions.entries
+            .firstWhere((entry) => entry.value == _selectedNumberOfWeeks)
+            .key
+        : null;
+  }
+
   void _saveForm() async {
-    int selectedHours = _scrollHoursController.selectedItem % _hours.length;
-    int selectedMinutes =
-        _scrollMinutesController.selectedItem % _minutes.length;
-
-    int selectedTotalMinutes = selectedHours * 60 + selectedMinutes;
-
-    ScaffoldMessenger.of(context).clearSnackBars();
-    if (selectedTotalMinutes < 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes dedicar al menos 10 minutos a esta actividad.'),
-        ),
-      );
-      return;
-    }
-
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      ScaffoldMessenger.of(context).clearSnackBars();
+      if (_selectedNumberOfWeeks == double.infinity &&
+          _selectedDaysOfWeek.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Debes seleccionar los días a la semana que dedicarás a esta actividad.'),
+          ),
+        );
+        return;
+      }
+
+      if (_selectedNumberOfWeeks != double.infinity &&
+          _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'En total debes dedicar al menos 21 días a esta actividad.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
       final Map<String, dynamic> habitParameters = {
-        "allotedTime": selectedTotalMinutes,
+        "workInterval": _workInterval,
+        "restInterval": _restInterval,
+        "cycles": cycles,
         "numberOfWeeks": _selectedNumberOfWeeks,
-        "minutes": selectedMinutes,
-        "hours": selectedHours,
+        "days": _selectedDaysOfWeek,
       };
 
       try {
@@ -120,7 +252,7 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Se ha guardado los cambios!'),
+            content: Text('Se han guardado los cambios!'),
           ),
         );
         Navigator.pop(context, true);
@@ -133,41 +265,6 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
           ),
         );
       }
-    }
-  }
-
-  Future<void> _loadFormData() async {
-    final userId = _currentUser.uid.toString();
-    final doc = await _firestore
-        .collection("user_data")
-        .doc(userId)
-        .collection("habits")
-        .doc(widget.habit.id)
-        .get();
-
-    if (doc.exists) {
-      final habitParameters = doc.data()?['habitParameters'];
-      _scrollHoursController.animateToItem(
-        habitParameters['hours'],
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut,
-      );
-
-      _scrollMinutesController.animateToItem(
-        habitParameters['minutes'],
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut,
-      );
-
-      setState(() {
-        _selectedNumberOfWeeks = habitParameters['numberOfWeeks'];
-        _isLoading = false;
-      });
-    } else {
-      setState(() {
-        _hasError = false;
-        _isLoading = false;
-      });
     }
   }
 
@@ -184,20 +281,6 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
     }
 
     return true;
-  }
-
-  String? _getKeyFromValue() {
-    return _numberOfWeeksOptions.entries
-            .firstWhere(
-              (entry) => entry.value == _selectedNumberOfWeeks,
-              orElse: () => const MapEntry("", -1),
-            )
-            .key
-            .isNotEmpty
-        ? _numberOfWeeksOptions.entries
-            .firstWhere((entry) => entry.value == _selectedNumberOfWeeks)
-            .key
-        : null;
   }
 
   @override
@@ -265,18 +348,33 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  height: 16,
+                                  height: 32,
                                 ),
-                                Text(
-                                  "¿Cuánto tiempo quieres dedicar a la actividad por día?",
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
+                                const Row(
+                                  children: [
+                                    Text(
+                                      "Bloque de trabajo",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 60,
+                                    ),
+                                    Text(
+                                      "Bloque de descanso",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(
-                                  height: 16,
+                                  height: 8,
                                 ),
                                 CupertinoPageScaffold(
                                   backgroundColor: Colors.transparent,
@@ -288,15 +386,16 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
                                           child: CupertinoPicker(
                                             looping: true,
                                             itemExtent: 32,
-                                            scrollController:
-                                                _scrollHoursController,
-                                            onSelectedItemChanged: (value) {
-                                              _changesWereMade = true;
+                                            onSelectedItemChanged: (index) {
+                                              _workInterval = int.tryParse(
+                                                  _minutesForWork[index %
+                                                      _minutesForWork.length])!;
+                                              _updateTotalTime();
                                             },
-                                            children: _hours
+                                            children: _minutesForWork
                                                 .map(
-                                                  (hour) => Center(
-                                                    child: Text(hour),
+                                                  (minute) => Center(
+                                                    child: Text(minute),
                                                   ),
                                                 )
                                                 .toList(),
@@ -304,25 +403,29 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
                                         ),
                                       ),
                                       const Text(
-                                        "horas",
+                                        "min.",
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
                                       Expanded(
                                         child: SizedBox(
                                           height: 128,
                                           child: CupertinoPicker(
-                                            looping: true,
                                             itemExtent: 32,
-                                            scrollController:
-                                                _scrollMinutesController,
-                                            onSelectedItemChanged: (value) {
-                                              _changesWereMade = true;
+                                            looping: true,
+                                            onSelectedItemChanged: (index) {
+                                              _restInterval = int.tryParse(
+                                                  _minutesForRest[index %
+                                                      _minutesForRest.length])!;
+                                              _updateTotalTime();
                                             },
-                                            children: _minutes
+                                            children: _minutesForRest
                                                 .map(
                                                   (minute) => Center(
                                                     child: Text(minute),
@@ -346,12 +449,53 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
                                 const SizedBox(
                                   height: 32,
                                 ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        maxLength: 3,
+                                        textAlign: TextAlign.center,
+                                        keyboardType: TextInputType.number,
+                                        validator: _numberOfCyclesValidator,
+                                        controller:
+                                            _selectedNumberOfCylcesController,
+                                        onChanged: (value) {
+                                          _updateTotalTime();
+                                        },
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        decoration: const InputDecoration(
+                                          counterText: '',
+                                          labelText: 'Número de ciclos',
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        "Tiempo total: $_totalTime minutos por día.",
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 32,
+                                ),
                                 DropdownButtonFormField<String>(
                                   value: _getKeyFromValue(),
                                   dropdownColor: Colors.black,
                                   validator: _habitDurationValidator,
                                   items: _numberOfWeeksOptions.keys
-                                      .map((String option) {
+                                      .toList()
+                                      .map((option) {
                                     return DropdownMenuItem<String>(
                                       value: option,
                                       child: Text(
@@ -377,6 +521,39 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
                                     labelText: 'Duración del hábito.',
                                   ),
                                   menuMaxHeight: 256,
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "¿Que días quieres realizar el hábito?",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                SelectWeekDays(
+                                  fontSize: 16,
+                                  onSelect: (value) {
+                                    setState(() {
+                                      _selectedDaysOfWeek = value;
+                                    });
+                                  },
+                                  days: _days,
+                                  unselectedDaysFillColor:
+                                      const Color(0xFFA6A6A6),
+                                  unselectedDaysBorderColor: Colors.black,
+                                  selectedDaysFillColor:
+                                      const Color(0xFFA557E8),
+                                  selectedDaysBorderColor: Colors.black,
+                                  selectedDayTextColor: Colors.white,
+                                  unSelectedDayTextColor: Colors.white,
+                                  borderWidth: 4,
+                                  backgroundColor: Colors.transparent,
                                 ),
                                 const SizedBox(
                                   height: 16,
