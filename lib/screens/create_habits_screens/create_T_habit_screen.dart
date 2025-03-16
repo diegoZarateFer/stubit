@@ -91,6 +91,8 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
 
       final Map<String, dynamic> habitParameters = {
         "allotedTime": selectedTotalMinutes,
+        "minutes": selectedMinutes,
+        "hours": selectedHours,
         "numberOfWeeks": _selectedNumberOfWeeks,
       };
 

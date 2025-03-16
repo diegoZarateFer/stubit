@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/screens/edit_habits_screens/edit_T_habit_screen.dart';
 import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
 import 'package:stubit/util/util.dart';
@@ -99,6 +100,16 @@ class _HabitItemState extends State<HabitItem> {
     return days.contains(dayOfWeek);
   }
 
+  void _showEditHabitScreen() {
+    if (widget.habit.strategy == 'T') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => EditTHabitScreen(habit: widget.habit),
+        ),
+      );
+    }
+  }
+
   void _showMenuAction(BuildContext context) {
     final bool isActive = _habitIsActiveToday();
     showModalBottomSheet(
@@ -158,7 +169,7 @@ class _HabitItemState extends State<HabitItem> {
             ListTile(
               leading: const Icon(Icons.edit),
               title: const Text('Editar hábito'),
-              onTap: () {},
+              onTap: _showEditHabitScreen,
             ),
             if (isActive && !_isCompleted)
               ListTile(
