@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/screens/edit_habits_screens/edit_T_habit_screen.dart';
+import 'package:stubit/screens/edit_habits_screens/edit_habit_L_screen.dart';
 import 'package:stubit/screens/edit_habits_screens/edit_habit_TP_screen.dart';
 import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
@@ -112,6 +113,12 @@ class _HabitItemState extends State<HabitItem> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitTpScreen(habit: widget.habit),
+        ),
+      );
+    } else if (widget.habit.strategy == 'L') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => EditHabitLScreen(habit: widget.habit),
         ),
       );
     }
