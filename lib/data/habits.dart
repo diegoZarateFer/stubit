@@ -11,7 +11,7 @@ const habits = [
   ),
   Habit(
     id: "h2",
-    name: "Realizar con mis tareas académicas",
+    name: "Realizar mis tareas académicas",
     description: "Crear y cumplir con las tareas académicas.",
     category: "c1",
     strategy: "TF",

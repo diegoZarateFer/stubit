@@ -61,10 +61,6 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
   @override
   void initState() {
     super.initState();
-    _scrollHoursController =
-        FixedExtentScrollController(initialItem: widget.initialNumberOfHours);
-    _scrollMinutesController =
-        FixedExtentScrollController(initialItem: widget.initialNumberOfMinutes);
     _loadFormData();
   }
 
@@ -147,17 +143,11 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
 
     if (doc.exists) {
       final habitParameters = doc.data()?['habitParameters'];
-      _scrollHoursController.animateToItem(
-        habitParameters['hours'],
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut,
+      _scrollHoursController = FixedExtentScrollController(
+        initialItem: habitParameters['hours'],
       );
-
-      _scrollMinutesController.animateToItem(
-        habitParameters['minutes'],
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut,
-      );
+      _scrollMinutesController =
+          FixedExtentScrollController(initialItem: habitParameters['minutes']);
 
       setState(() {
         _selectedNumberOfWeeks = habitParameters['numberOfWeeks'];
@@ -365,8 +355,8 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
                                     );
                                   }).toList(),
                                   onChanged: (String? selectedKey) {
+                                    _changesWereMade = true;
                                     setState(() {
-                                      _changesWereMade = true;
                                       if (selectedKey != null) {
                                         _selectedNumberOfWeeks =
                                             _numberOfWeeksOptions[selectedKey]!;
