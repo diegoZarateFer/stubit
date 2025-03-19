@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/screens/edit_habits_screens/edit_T_habit_screen.dart';
 import 'package:stubit/screens/edit_habits_screens/edit_habit_COF_screen.dart';
+import 'package:stubit/screens/edit_habits_screens/edit_habit_FT_screen.dart';
 import 'package:stubit/screens/edit_habits_screens/edit_habit_L_screen.dart';
 import 'package:stubit/screens/edit_habits_screens/edit_habit_TP_screen.dart';
 import 'package:stubit/screens/register_habits_screens/register_habit.dart';
@@ -128,6 +129,14 @@ class _HabitItemState extends State<HabitItem> {
           builder: (ctx) => EditHabitCofScreen(
             habit: widget.habit,
             unit: widget.habit.unit,
+          ),
+        ),
+      );
+    } else if (widget.habit.strategy == 'TF') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => EditHabitFtScreen(
+            habit: widget.habit,
           ),
         ),
       );
