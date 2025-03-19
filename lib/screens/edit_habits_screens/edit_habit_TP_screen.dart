@@ -76,8 +76,6 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
   @override
   void initState() {
     super.initState();
-    _scrollWorkIntervalController = FixedExtentScrollController();
-    _scrollRestIntervalController = FixedExtentScrollController();
     _loadFormData();
   }
 
@@ -92,16 +90,12 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
 
     if (doc.exists) {
       final habitParameters = doc.data()?['habitParameters'];
-      _scrollWorkIntervalController.animateToItem(
-        habitParameters['workInterval'],
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut,
-      );
 
-      _scrollRestIntervalController.animateToItem(
-        habitParameters['restInterval'],
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut,
+      _scrollWorkIntervalController = FixedExtentScrollController(
+        initialItem: habitParameters['workInterval'],
+      );
+      _scrollRestIntervalController = FixedExtentScrollController(
+        initialItem: habitParameters['restInterval'],
       );
 
       _selectedNumberOfCylcesController.text =
@@ -384,6 +378,7 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
                                         child: SizedBox(
                                           height: 128,
                                           child: CupertinoPicker(
+                                            scrollController: _scrollWorkIntervalController,
                                             looping: true,
                                             itemExtent: 32,
                                             onSelectedItemChanged: (index) {
@@ -417,6 +412,7 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
                                         child: SizedBox(
                                           height: 128,
                                           child: CupertinoPicker(
+                                            scrollController: _scrollRestIntervalController,
                                             itemExtent: 32,
                                             looping: true,
                                             onSelectedItemChanged: (index) {
