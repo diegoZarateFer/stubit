@@ -47,16 +47,15 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
   ];
 
   final _formKey = GlobalKey<FormState>();
-
+  late String _habitName;
   List<String> _selectedDaysOfWeek = [];
-
   num? _selectedNumberOfWeeks;
-
   bool _isLoading = true, _hasError = false, _changesWereMade = false;
 
   @override
   void initState() {
     super.initState();
+    _habitName = widget.habit.name;
     _loadFormData();
   }
 
@@ -108,7 +107,7 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "name": widget.habit.name,
+          "name": _habitName,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
@@ -213,6 +212,62 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
     return true;
   }
 
+  Future<void> _showEditNameDialog() async {
+    final dialogFormKey = GlobalKey<FormState>();
+    TextEditingController nameController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Form(
+            key: dialogFormKey,
+            child: TextFormField(
+              maxLength: 40,
+              textAlign: TextAlign.center,
+              controller: nameController,
+              validator: (value) {
+                if (value == null || value.trim().length <= 3) {
+                  return 'Debe contener al menos 4 caracteres';
+                }
+
+                return null;
+              },
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+              decoration: const InputDecoration(
+                counterText: '',
+                labelText: 'Renombar hábito',
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                if (dialogFormKey.currentState!.validate()) {
+                  dialogFormKey.currentState!.save();
+
+                  setState(() {
+                    _habitName = nameController.text;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text("Aceptar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   String? _getKeyFromValue() {
     return _numberOfWeeksOptions.entries
             .firstWhere(
@@ -283,13 +338,30 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                Text(
-                                  widget.habit.name,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _habitName,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    if (widget.habit.category == 'custom')
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                    if (widget.habit.category == 'custom')
+                                      IconButton(
+                                        onPressed: _showEditNameDialog,
+                                        icon: const Icon(
+                                          Icons.drive_file_rename_outline,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 16,
