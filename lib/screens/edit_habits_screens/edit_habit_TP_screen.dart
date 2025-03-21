@@ -66,6 +66,7 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
   num? _selectedNumberOfWeeks;
 
   bool _isLoading = true, _hasError = false, _changesWereMade = false;
+  late String _habitName;
 
   int _totalTime = 0;
   int _workInterval = 15, _restInterval = 5;
@@ -76,6 +77,7 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
   @override
   void initState() {
     super.initState();
+    _habitName = widget.habit.name;
     _loadFormData();
   }
 
@@ -92,11 +94,14 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
       final habitParameters = doc.data()?['habitParameters'];
 
       _scrollWorkIntervalController = FixedExtentScrollController(
-        initialItem: habitParameters['workInterval'],
+        initialItem: habitParameters['workInterval'] - 15,
       );
       _scrollRestIntervalController = FixedExtentScrollController(
-        initialItem: habitParameters['restInterval'],
+        initialItem: habitParameters['restInterval'] - 5,
       );
+
+      _workInterval = habitParameters['workInterval'];
+      _restInterval = habitParameters['restInterval'];
 
       _selectedNumberOfCylcesController.text =
           habitParameters['cycles'].toString();
@@ -237,7 +242,7 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "name": widget.habit.name,
+          "name": _habitName,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
@@ -275,6 +280,62 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
     }
 
     return true;
+  }
+
+  Future<void> _showEditNameDialog() async {
+    final dialogFormKey = GlobalKey<FormState>();
+    TextEditingController nameController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Form(
+            key: dialogFormKey,
+            child: TextFormField(
+              maxLength: 40,
+              textAlign: TextAlign.center,
+              controller: nameController,
+              validator: (value) {
+                if (value == null || value.trim().length <= 3) {
+                  return 'Debe contener al menos 4 caracteres';
+                }
+
+                return null;
+              },
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+              decoration: const InputDecoration(
+                counterText: '',
+                labelText: 'Renombar hábito',
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                if (dialogFormKey.currentState!.validate()) {
+                  dialogFormKey.currentState!.save();
+
+                  setState(() {
+                    _habitName = nameController.text;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text("Aceptar"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -333,13 +394,30 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                Text(
-                                  widget.habit.name,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _habitName,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    if (widget.habit.category == 'custom')
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                    if (widget.habit.category == 'custom')
+                                      IconButton(
+                                        onPressed: _showEditNameDialog,
+                                        icon: const Icon(
+                                          Icons.drive_file_rename_outline,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 32,
@@ -378,7 +456,8 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
                                         child: SizedBox(
                                           height: 128,
                                           child: CupertinoPicker(
-                                            scrollController: _scrollWorkIntervalController,
+                                            scrollController:
+                                                _scrollWorkIntervalController,
                                             looping: true,
                                             itemExtent: 32,
                                             onSelectedItemChanged: (index) {
@@ -412,7 +491,8 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
                                         child: SizedBox(
                                           height: 128,
                                           child: CupertinoPicker(
-                                            scrollController: _scrollRestIntervalController,
+                                            scrollController:
+                                                _scrollRestIntervalController,
                                             itemExtent: 32,
                                             looping: true,
                                             onSelectedItemChanged: (index) {
