@@ -57,10 +57,12 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
       _scrollMinutesController;
 
   bool _isLoading = true, _hasError = false, _changesWereMade = false;
+  late String _habitName;
 
   @override
   void initState() {
     super.initState();
+    _habitName = widget.habit.name;
     _loadFormData();
   }
 
@@ -107,7 +109,7 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "name": widget.habit.name,
+          "name": _habitName,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
@@ -190,6 +192,62 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
         : null;
   }
 
+  Future<void> _showEditNameDialog() async {
+    final dialogFormKey = GlobalKey<FormState>();
+    TextEditingController nameController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Form(
+            key: dialogFormKey,
+            child: TextFormField(
+              maxLength: 40,
+              textAlign: TextAlign.center,
+              controller: nameController,
+              validator: (value) {
+                if (value == null || value.trim().length <= 3) {
+                  return 'Debe contener al menos 4 caracteres';
+                }
+
+                return null;
+              },
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+              decoration: const InputDecoration(
+                counterText: '',
+                labelText: 'Renombar hábito',
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                if (dialogFormKey.currentState!.validate()) {
+                  dialogFormKey.currentState!.save();
+
+                  setState(() {
+                    _habitName = nameController.text;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text("Aceptar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -246,13 +304,30 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                Text(
-                                  widget.habit.name,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _habitName,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    if (widget.habit.category == 'custom')
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                    if (widget.habit.category == 'custom')
+                                      IconButton(
+                                        onPressed: _showEditNameDialog,
+                                        icon: const Icon(
+                                          Icons.drive_file_rename_outline,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 16,
