@@ -42,15 +42,14 @@ class CreateTpHabitScreen extends StatefulWidget {
 
 class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
   final List<DayInWeek> _days = [
-    DayInWeek("D", dayKey: "monday"),
-    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("D", dayKey: "sunday"),
+    DayInWeek("L", dayKey: "monday"),
+    DayInWeek("M", dayKey: "tuesday"),
     DayInWeek("M", dayKey: "wednesday"),
-    DayInWeek("M", dayKey: "thursday"),
-    DayInWeek("J", dayKey: "friday"),
-    DayInWeek("V", dayKey: "saturday"),
-    DayInWeek("S", dayKey: "sunday"),
+    DayInWeek("J", dayKey: "thursday"),
+    DayInWeek("V", dayKey: "friday"),
+    DayInWeek("S", dayKey: "saturday"),
   ];
-
   User? _currentUser;
   final _formKey = GlobalKey<FormState>();
 
@@ -92,6 +91,74 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
     });
   }
 
+  Future<bool> showRecomendationDialog(
+      BuildContext context, totalNumberOfDays) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                "La magia de los 21 días",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/magic.png',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Con la configuración actual, tu actividad tendrá una duración de $totalNumberOfDays días. Te recomendamos dedicar al menos 21 días para obtener mejores resultados.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    "Ahora no",
+                    style: TextStyle(
+                      color: Color.fromRGBO(121, 30, 198, 1),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                  ),
+                  child: Text(
+                    "¡Acepto el reto!",
+                    style: GoogleFonts.openSans(
+                      color: Colors.white,
+                      decorationColor: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -110,17 +177,23 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
 
       if (_selectedNumberOfWeeks != double.infinity &&
           _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'En total debes dedicar al menos 21 días a esta actividad.',
-            ),
-          ),
-        );
+        final bool confirmation = await showRecomendationDialog(
+            context, _selectedNumberOfWeeks! * _selectedDaysOfWeek.length);
+        if (confirmation) {
+          return;
+        }
         return;
       }
 
       int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
+      final Map<String, dynamic> habitParameters = {
+        "workInterval": _workInterval,
+        "restInterval": _restInterval,
+        "cycles": cycles,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+        "days": _selectedDaysOfWeek,
+      };
+
       try {
         // Saving habit information.
         await FirebaseFirestore.instance
@@ -129,15 +202,11 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "workInterval": _workInterval,
-          "restInterval": _restInterval,
-          "cycles": cycles,
-          "numberOfWeeks": _selectedNumberOfWeeks,
-          "days": _selectedDaysOfWeek,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

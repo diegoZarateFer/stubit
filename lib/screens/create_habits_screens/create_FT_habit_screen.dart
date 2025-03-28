@@ -42,13 +42,13 @@ class CreateFtHabitScreen extends StatefulWidget {
 
 class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
   final List<DayInWeek> _days = [
-    DayInWeek("D", dayKey: "monday"),
-    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("D", dayKey: "sunday"),
+    DayInWeek("L", dayKey: "monday"),
+    DayInWeek("M", dayKey: "tuesday"),
     DayInWeek("M", dayKey: "wednesday"),
-    DayInWeek("M", dayKey: "thursday"),
-    DayInWeek("J", dayKey: "friday"),
-    DayInWeek("V", dayKey: "saturday"),
-    DayInWeek("S", dayKey: "sunday"),
+    DayInWeek("J", dayKey: "thursday"),
+    DayInWeek("V", dayKey: "friday"),
+    DayInWeek("S", dayKey: "saturday"),
   ];
 
   User? _currentUser;
@@ -72,15 +72,83 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
     return null;
   }
 
+  Future<bool> showRecomendationDialog(
+      BuildContext context, totalNumberOfDays) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                "La magia de los 21 días",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/magic.png',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Con la configuración actual, tu actividad tendrá una duración de $totalNumberOfDays días. Te recomendamos dedicar al menos 21 días para obtener mejores resultados.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    "Ahora no",
+                    style: TextStyle(
+                      color: Color.fromRGBO(121, 30, 198, 1),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                  ),
+                  child: Text(
+                    "¡Acepto el reto!",
+                    style: GoogleFonts.openSans(
+                      color: Colors.white,
+                      decorationColor: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
   void _saveForm() async {
     int selectedTotalMinutes =
         _selectedNumberOfHours * 60 + _selectedNumberOfMinutes;
 
     ScaffoldMessenger.of(context).clearSnackBars();
-    if (selectedTotalMinutes < 15) {
+    if (selectedTotalMinutes < 10) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Debes dedicar al menos 15 minutos a esta actividad.'),
+          content: Text('Debes dedicar al menos 10 minutos a esta actividad.'),
         ),
       );
       return;
@@ -102,30 +170,35 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
 
       if (_selectedNumberOfWeeks != double.infinity &&
           _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'En total debes dedicar al menos 21 días a esta actividad.'),
-          ),
-        );
-        return;
+        final bool confirmation = await showRecomendationDialog(
+            context, _selectedNumberOfWeeks! * _selectedDaysOfWeek.length);
+        if (confirmation) {
+          return;
+        }
       }
+
+      final Map<String, dynamic> habitParameters = {
+        "allotedTime": selectedTotalMinutes,
+        "days": _selectedDaysOfWeek,
+        "minutes": _selectedNumberOfMinutes,
+        "hours": _selectedNumberOfHours,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+      };
 
       try {
         // Saving habit information.
+
         await FirebaseFirestore.instance
             .collection("user_data")
             .doc(_currentUser!.uid.toString())
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "allotedTime": selectedTotalMinutes,
-          "days": _selectedDaysOfWeek,
-          "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -222,7 +295,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfHours = value % _hours.length;
+                                  _selectedNumberOfHours =
+                                      value % _hours.length;
                                 },
                                 children: _hours
                                     .map(
@@ -249,7 +323,8 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
                                 looping: true,
                                 itemExtent: 32,
                                 onSelectedItemChanged: (value) {
-                                  _selectedNumberOfMinutes = value % _minutes.length;
+                                  _selectedNumberOfMinutes =
+                                      value % _minutes.length;
                                 },
                                 children: _minutes
                                     .map(

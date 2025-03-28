@@ -31,9 +31,11 @@ class CreateCofHabitScreen extends StatefulWidget {
   const CreateCofHabitScreen({
     super.key,
     required this.habit,
+    this.unit,
   });
 
   final Habit habit;
+  final String? unit;
 
   @override
   State<CreateCofHabitScreen> createState() => _CreateCofHabitScreenState();
@@ -41,18 +43,19 @@ class CreateCofHabitScreen extends StatefulWidget {
 
 class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
   final List<DayInWeek> _days = [
-    DayInWeek("D", dayKey: "monday"),
-    DayInWeek("L", dayKey: "tuesday"),
+    DayInWeek("D", dayKey: "sunday"),
+    DayInWeek("L", dayKey: "monday"),
+    DayInWeek("M", dayKey: "tuesday"),
     DayInWeek("M", dayKey: "wednesday"),
-    DayInWeek("M", dayKey: "thursday"),
-    DayInWeek("J", dayKey: "friday"),
-    DayInWeek("V", dayKey: "saturday"),
-    DayInWeek("S", dayKey: "sunday"),
+    DayInWeek("J", dayKey: "thursday"),
+    DayInWeek("V", dayKey: "friday"),
+    DayInWeek("S", dayKey: "saturday"),
   ];
 
   User? _currentUser;
   final _formKey = GlobalKey<FormState>();
 
+  late String? _unit;
   List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
   int _selectedUnitIndex = 0;
@@ -75,6 +78,74 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
     return null;
   }
 
+  Future<bool> showRecomendationDialog(
+      BuildContext context, totalNumberOfDays) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                "La magia de los 21 días",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/magic.png',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Con la configuración actual, tu actividad tendrá una duración de $totalNumberOfDays días. Te recomendamos dedicar al menos 21 días para obtener mejores resultados.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    "Ahora no",
+                    style: TextStyle(
+                      color: Color.fromRGBO(121, 30, 198, 1),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                  ),
+                  child: Text(
+                    "¡Acepto el reto!",
+                    style: GoogleFonts.openSans(
+                      color: Colors.white,
+                      decorationColor: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -93,15 +164,19 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
 
       if (_selectedNumberOfWeeks != double.infinity &&
           _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'En total debes dedicar al menos 21 días a esta actividad.',
-            ),
-          ),
-        );
-        return;
+        final bool confirmation = await showRecomendationDialog(
+            context, _selectedNumberOfWeeks! * _selectedDaysOfWeek.length);
+        if (confirmation) {
+          return;
+        }
       }
+
+      final Map<String, dynamic> habitParameters = {
+        "dailyTarget": int.tryParse(_dailyTargetController.text),
+        "days": _selectedDaysOfWeek,
+        "numberOfWeeks": _selectedNumberOfWeeks,
+        "unit": _unit ?? _units[_selectedUnitIndex],
+      };
 
       try {
         // Saving habit information.
@@ -111,14 +186,11 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
             .collection("habits")
             .doc(widget.habit.id)
             .set({
-          "dailyTarget": int.tryParse(_dailyTargetController.text),
-          "days": _selectedDaysOfWeek,
-          "numberOfWeeks": _selectedNumberOfWeeks,
           "name": widget.habit.name,
           "strategy": widget.habit.strategy,
-          "unit": widget.habit.unit ?? _units[_selectedUnitIndex],
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "habitParameters": habitParameters,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +200,6 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         );
         Navigator.pop(context, true);
       } catch (error) {
-        ;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -144,6 +215,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
   void initState() {
     super.initState();
     _currentUser = FirebaseAuth.instance.currentUser;
+    _unit = widget.unit;
   }
 
   @override
@@ -230,7 +302,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                           ),
                         ),
                         Expanded(
-                          child: widget.habit.unit == null
+                          child: _unit == null
                               ? CupertinoPicker(
                                   itemExtent: 64,
                                   onSelectedItemChanged: (index) {
@@ -251,7 +323,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                                 )
                               : Center(
                                   child: Text(
-                                    widget.habit.unit!,
+                                    _unit!,
                                     style: GoogleFonts.poppins(
                                       color: Colors.white,
                                       fontSize: 16,

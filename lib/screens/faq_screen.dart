@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stubit/widgets/image_button.dart';
+import 'package:stubit/widgets/books_counter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/widgets/user_button.dart';
 
@@ -12,39 +12,13 @@ class FaqScreen extends StatefulWidget {
 
 class _FaqScreenState extends State<FaqScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
         actions: [
-          ImageButton(
-            imagePath: "assets/images/book.png",
-            onPressed: () {},
-          ),
-          Text(
-            '0',
-            style: GoogleFonts.dmSans(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-              ),
-            ),
-          ),
+          const BooksCounter(),
           const Spacer(),
           Text(
             'Stu - Bit',
@@ -141,6 +115,26 @@ class _FaqScreenState extends State<FaqScreen>
                     'El costo de recuperación dependerá del número de días consecutivos de tu racha y se pagará con gemas.',
                     'Si no tienes suficientes gemas, lamentablemente no podrás recuperar tu racha en ese momento.',
                   ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: Colors.white,
+                  ),
+                  child: Text(
+                    "Regresar",
+                    style: GoogleFonts.openSans(
+                      color: Colors.black,
+                      decorationColor: Colors.black,
+                      fontSize: 18,
+                    ),
+                  ),
                 ),
               ],
             ),

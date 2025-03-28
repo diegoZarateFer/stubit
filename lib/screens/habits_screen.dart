@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:stubit/models/habit.dart';
+import 'package:stubit/widgets/apology.dart';
 import 'package:stubit/widgets/habit_item.dart';
 
 String apology = """
@@ -12,8 +14,99 @@ String apology = """
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-class HabitsScreen extends StatelessWidget {
+class HabitsScreen extends StatefulWidget {
   const HabitsScreen({super.key});
+
+  @override
+  State<HabitsScreen> createState() => _HabitsScreenState();
+}
+
+class _HabitsScreenState extends State<HabitsScreen> {
+  bool _showTodayHabits = true;
+  bool _showWeekHabits = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 8,
+        ),
+        Wrap(
+          children: [
+            FilterChip(
+              label: const Text(
+                "Hoy",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              selected: _showTodayHabits,
+              selectedColor: const Color(0xFF292D39),
+              backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
+              side: BorderSide(
+                color: _showTodayHabits
+                    ? Colors.black
+                    : const Color.fromRGBO(139, 34, 227, 1),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              onSelected: (_) {
+                setState(() {
+                  _showTodayHabits = true;
+                  _showWeekHabits = false;
+                });
+              },
+            ),
+            const SizedBox(width: 8),
+            FilterChip(
+              label: const Text(
+                "Todos",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              selected: _showWeekHabits,
+              selectedColor: const Color(0xFF292D39),
+              backgroundColor: const Color.fromRGBO(139, 34, 227, 1),
+              side: BorderSide(
+                color: _showWeekHabits
+                    ? Colors.black
+                    : const Color.fromRGBO(139, 34, 227, 1),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              onSelected: (_) {
+                setState(() {
+                  _showTodayHabits = false;
+                  _showWeekHabits = true;
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Expanded(
+          child: ListOfHabits(
+            showTodayHabits: _showTodayHabits,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ListOfHabits extends StatelessWidget {
+  const ListOfHabits({
+    super.key,
+    required this.showTodayHabits,
+  });
+
+  final bool showTodayHabits;
 
   @override
   Widget build(BuildContext context) {
@@ -66,32 +159,8 @@ class HabitsScreen extends StatelessWidget {
         }
 
         if (boardSnapshots.hasError) {
-          return Center(
-            child: Column(
-              children: [
-                const Spacer(),
-                Text(
-                  'Algo salió mal :(',
-                  style: GoogleFonts.poppins(
-                    fontSize: 31,
-                    color: Colors.white,
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.all(30),
-                  child: Text(
-                    apology,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
+          return const Apology(
+            message: "Lo sentimos pero algo salió mal :(",
           );
         }
 
@@ -128,38 +197,64 @@ class HabitsScreen extends StatelessWidget {
           );
         }
 
+        final today = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
+        final filteredHabits = showTodayHabits
+            ? loadedHabits.where((habit) {
+                final habitParameters = habit.data()["habitParameters"];
+                if (habitParameters["days"] == null) {
+                  return true;
+                }
+
+                List<dynamic> days = habitParameters["days"];
+                final daysAsString = days.map((d) => d.toString()).toList();
+                return daysAsString.contains(today);
+              }).toList()
+            : loadedHabits;
+
+        if (filteredHabits.isEmpty) {
+          return Center(
+            child: Column(
+              children: [
+                const Spacer(),
+                Text(
+                  '¡Hoy tienes el día libre! No hay actividades programadas.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.dmSans(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+              ],
+            ),
+          );
+        }
+
         return Padding(
           padding: const EdgeInsets.only(top: 16),
           child: Column(
             children: [
-              Text(
-                "Mis Hábitos",
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(24),
-                  itemCount: loadedHabits.length,
+                  itemCount: filteredHabits.length,
                   itemBuilder: (ctx, index) {
-                    final habitData = loadedHabits[index].data();
-                    final habitId = loadedHabits[index].id.toString();
+                    final habitData = filteredHabits[index].data();
+                    final habitId = filteredHabits[index].id.toString();
                     final Habit habit = Habit(
                       id: habitId,
                       name: habitData['name'],
                       description: habitData['description'],
                       category: habitData['category'],
                       strategy: habitData['strategy'],
-                      unit: habitData['unit'],
                     );
+                    final habitParameters = habitData['habitParameters'];
                     return HabitItem(
+                      key: ValueKey(habitId),
                       habit: habit,
-                      onTap: () {},
+                      habitParameters: habitParameters,
                     );
                   },
                 ),

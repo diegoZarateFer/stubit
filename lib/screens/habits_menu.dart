@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stubit/data/habits.dart';
+import 'package:stubit/widgets/custom_habit_details.dart';
 import 'package:stubit/widgets/habit_category_details.dart';
 
 class HabitsMenuScreen extends StatefulWidget {
@@ -117,11 +118,10 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
                   image: const AssetImage("assets/images/mental_habits.jpg"),
                   onHabitCreated: _closeMenu,
                 ),
-                HabitCategoryDetails(
+                CustomHabitDetails(
                   categoryName: "Crea un hábito a tu medida",
                   description:
                       "¿No encontraste algún hábito para ti? ¡No hay problema! También puedes integrar rutinas que se ajusten a ti.",
-                  habits: [],
                   image: const AssetImage("assets/images/custom_habit.jpg"),
                   onHabitCreated: _closeMenu,
                 ),

@@ -18,7 +18,7 @@ class TaskItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         margin: const EdgeInsets.only(
           bottom: 16,
         ),
@@ -43,11 +43,18 @@ class TaskItem extends StatelessWidget {
             const SizedBox(
               width: 16,
             ),
-            Text(
-              taskTitle,
-              style: GoogleFonts.dmSans(
-                color: Colors.white,
-                fontSize: 14,
+            Expanded(
+              child: Text(
+                taskTitle,
+                textAlign: TextAlign.center,
+                softWrap: true,
+                maxLines: 3,
+                style: GoogleFonts.dmSans(
+                  color: Colors.white,
+                  fontSize: 14,
+                  decorationColor: Colors.white,
+                  decorationThickness: 3,
+                ),
               ),
             ),
           ],

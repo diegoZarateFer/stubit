@@ -128,6 +128,7 @@ class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
             MaterialPageRoute(
               builder: (ctx) => CreateCofHabitScreen(
                 habit: _selectedHabit!,
+                unit: _selectedHabit!.unit,
               ),
             ),
           ) ??
