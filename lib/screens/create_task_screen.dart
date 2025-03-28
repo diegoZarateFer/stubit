@@ -69,13 +69,31 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   }
 
   Future<void> createTask() async {
+    final taskName = _taskNameController.text.trim();
     try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection("user_data")
+          .doc(_currentUser!.uid.toString())
+          .collection("tasks")
+          .where('title', isEqualTo: taskName)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ya existe una tarea con el mismo nombre.'),
+          ),
+        );
+        return;
+      }
+
       await FirebaseFirestore.instance
           .collection("user_data")
           .doc(_currentUser!.uid.toString())
           .collection("tasks")
           .add({
-        "title": _taskNameController.text,
+        "title": taskName,
         "description": _descriptionController.text,
         "priority": _selectedPriority,
         "status": "pendiente",
@@ -151,7 +169,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       height: 16,
                     ),
                     TextFormField(
-                      maxLength: 35,
+                      maxLength: 50,
                       style: const TextStyle(
                         color: Colors.white,
                       ),

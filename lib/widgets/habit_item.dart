@@ -306,7 +306,7 @@ class _HabitItemState extends State<HabitItem> {
           bottom: 16,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF292D39),
+          color: _isCompleted ? const Color.fromARGB(242, 16, 16, 16) : const Color(0xFF292D39),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Row(
@@ -318,9 +318,9 @@ class _HabitItemState extends State<HabitItem> {
                 softWrap: true,
                 maxLines: 2,
                 style: GoogleFonts.poppins(
+                  fontStyle: _isCompleted ? FontStyle.italic : null,
                   color: Colors.white,
                   fontSize: 14,
-                  decoration: _isCompleted ? TextDecoration.lineThrough : null,
                   decorationColor: Colors.white,
                   decorationThickness: 3,
                 ),
