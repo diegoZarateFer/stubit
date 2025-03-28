@@ -150,16 +150,27 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       // Saving user account data.
       final user = credential.user;
       if (user != null) {
-        await _firestore
-            .collection("user_data")
-            .doc(user.uid.toString())
-            .collection("account")
-            .add({
-          "name": _nameController.text.toString(),
-          "last_name": _lastNameController.text.toString(),
-          "gender": _selectedGender,
-          "birthday": _dateController.text.toString(),
-        });
+        final userId = user.uid.toString();
+        await Future.wait([
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("account")
+              .add({
+            "name": _nameController.text.toString(),
+            "last_name": _lastNameController.text.toString(),
+            "gender": _selectedGender,
+            "birthday": _dateController.text.toString(),
+          }),
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("gems")
+              .doc("user_gems")
+              .set({
+            "collectedGems": 0,
+          }),
+        ]);
       }
 
       Navigator.of(context).push(
