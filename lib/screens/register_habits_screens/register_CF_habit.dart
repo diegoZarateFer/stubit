@@ -9,7 +9,7 @@ import 'package:stubit/data/phrases.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
-import 'package:stubit/widgets/gems_dialog.dart';
+import 'package:stubit/widgets/cofre_animation.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -131,13 +131,7 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
 
         if (_isFirstRegister) {
           final phrase = _getPhrase();
-          await showDialog(
-            context: context,
-            builder: (ctx) => GemsDialog(
-              title: "¡Felicidades, obtuviste $givenGems libros de estudio!",
-              message: phrase,
-            ),
-          );
+          await showCofreAndGemsDialog(context, givenGems, phrase);
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
