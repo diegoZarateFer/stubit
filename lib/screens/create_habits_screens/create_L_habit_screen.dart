@@ -152,8 +152,6 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
         if (confirmation) {
           return;
         }
-
-        return;
       }
 
       final Map<String, dynamic> habitParameters = {
