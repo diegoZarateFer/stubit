@@ -36,7 +36,7 @@ dependencies:
   popover: ^0.3.1
   day_picker: 2.3.0
   concentric_transition: ^1.0.3
-
+  rive: ^0.13.20
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -90,7 +90,9 @@ flutter:
     - assets/images/Tec_TyF.png
     - assets/images/fire.png
     - assets/images/magic.png
+    - assets/images/chest.riv
     - assets/sounds/ding.wav
+    
 
   # To add assets to your application, add an assets section, like this:
   # assets:

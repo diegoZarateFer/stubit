@@ -19,6 +19,7 @@ Map<String, num> _numberOfWeeksOptions = {
 };
 
 final List<String> _units = [
+  "Desliza⬇️",
   "páginas",
   "rompecabezas",
   "repeticiones",
