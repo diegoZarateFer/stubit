@@ -343,7 +343,6 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
                                   height: 8,
                                 ),
                                 TextFormField(
-                                  maxLines: 2,
                                   maxLength: 250,
                                   style: const TextStyle(
                                     color: Colors.white,
