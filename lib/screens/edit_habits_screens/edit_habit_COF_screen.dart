@@ -20,15 +20,6 @@ Map<String, num> _numberOfWeeksOptions = {
   "Indefinidamente": double.infinity,
 };
 
-final List<String> _units = [
-  "páginas",
-  "rompecabezas",
-  "repeticiones",
-  "problemas",
-  "litros",
-  "minutos",
-];
-
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class EditHabitCofScreen extends StatefulWidget {
@@ -64,9 +55,9 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
   late String _habitName;
   List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
-  int _selectedUnitIndex = 0;
 
   final TextEditingController _dailyTargetController = TextEditingController();
+  final TextEditingController _unitController = TextEditingController();
 
   String? _dailyTargetvalidator(selectedDailyTarget) {
     if (selectedDailyTarget == null ||
@@ -116,7 +107,7 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
         "dailyTarget": int.tryParse(_dailyTargetController.text),
         "days": _selectedDaysOfWeek,
         "numberOfWeeks": _selectedNumberOfWeeks,
-        "unit": _unit ?? _units[_selectedUnitIndex],
+        "unit": _unit ?? _unitController.text.toString(),
       };
 
       try {
@@ -371,12 +362,14 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      _habitName,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 18,
-                                        color: Colors.white,
+                                    Expanded(
+                                      child: Text(
+                                        _habitName,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                     if (widget.habit.category == 'custom')
@@ -426,36 +419,15 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: _unit == null
-                                          ? CupertinoPicker(
-                                              itemExtent: 64,
-                                              onSelectedItemChanged: (index) {
-                                                _selectedUnitIndex =
-                                                    index % _units.length;
-                                              },
-                                              children: _units
-                                                  .map(
-                                                    (unit) => Center(
-                                                      child: Text(
-                                                        unit,
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  )
-                                                  .toList(),
-                                            )
-                                          : Center(
-                                              child: Text(
-                                                _unit!,
-                                                style: GoogleFonts.poppins(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ),
+                                      child: Center(
+                                        child: Text(
+                                          _unit!,
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

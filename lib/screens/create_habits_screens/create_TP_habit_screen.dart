@@ -270,12 +270,14 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
                     const SizedBox(
                       height: 16,
                     ),
-                    Text(
-                      widget.habit.name,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.white,
+                    Expanded(
+                      child: Text(
+                        widget.habit.name,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(

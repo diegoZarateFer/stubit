@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
@@ -17,16 +16,6 @@ Map<String, num> _numberOfWeeksOptions = {
   "10 semanas": 10,
   "Indefinidamente": double.infinity,
 };
-
-final List<String> _units = [
-  "Desliza⬇️",
-  "páginas",
-  "rompecabezas",
-  "repeticiones",
-  "problemas",
-  "litros",
-  "minutos",
-];
 
 class CreateCofHabitScreen extends StatefulWidget {
   const CreateCofHabitScreen({
@@ -59,9 +48,9 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
   late String? _unit;
   List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
-  int _selectedUnitIndex = 0;
 
   final TextEditingController _dailyTargetController = TextEditingController();
+  final TextEditingController _unitController = TextEditingController();
 
   String? _dailyTargetvalidator(selectedDailyTarget) {
     if (selectedDailyTarget == null ||
@@ -73,6 +62,14 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
 
   String? _habitDurationValidator(selectedDuration) {
     if (selectedDuration == null) {
+      return "Campo obligatorio.";
+    }
+
+    return null;
+  }
+
+  String? _unitValidator(unit) {
+    if (unit == null || unit.toString().trim() == '') {
       return "Campo obligatorio.";
     }
 
@@ -176,7 +173,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         "dailyTarget": int.tryParse(_dailyTargetController.text),
         "days": _selectedDaysOfWeek,
         "numberOfWeeks": _selectedNumberOfWeeks,
-        "unit": _unit ?? _units[_selectedUnitIndex],
+        "unit": _unit ?? _unitController.text.toString(),
       };
 
       try {
@@ -302,25 +299,24 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          width: 8,
+                        ),
                         Expanded(
                           child: _unit == null
-                              ? CupertinoPicker(
-                                  itemExtent: 64,
-                                  onSelectedItemChanged: (index) {
-                                    _selectedUnitIndex = index % _units.length;
-                                  },
-                                  children: _units
-                                      .map(
-                                        (unit) => Center(
-                                          child: Text(
-                                            unit,
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
+                              ? TextFormField(
+                                  maxLength: 30,
+                                  textAlign: TextAlign.center,
+                                  controller: _unitController,
+                                  validator: _unitValidator,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    counterText: '',
+                                    labelText: 'Unidad',
+                                    hintText: 'Ej. Páginas',
+                                  ),
                                 )
                               : Center(
                                   child: Text(
