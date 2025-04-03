@@ -91,6 +91,7 @@ flutter:
     - assets/images/fire.png
     - assets/images/magic.png
     - assets/images/chest.riv
+    - assets/images/streak.riv
     - assets/sounds/ding.wav
     
 
