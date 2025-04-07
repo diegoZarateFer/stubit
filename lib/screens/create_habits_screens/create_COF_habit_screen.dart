@@ -189,6 +189,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
           "category": widget.habit.category,
           "description": widget.habit.description,
           "habitParameters": habitParameters,
+          "streak": 0,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

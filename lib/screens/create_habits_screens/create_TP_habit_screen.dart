@@ -207,6 +207,7 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
           "category": widget.habit.category,
           "description": widget.habit.description,
           "habitParameters": habitParameters,
+          "streak": 0,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

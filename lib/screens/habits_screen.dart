@@ -243,6 +243,7 @@ class ListOfHabits extends StatelessWidget {
                   itemBuilder: (ctx, index) {
                     final habitData = filteredHabits[index].data();
                     final habitId = filteredHabits[index].id.toString();
+                    final lastLog = habitData['last_log'] as Timestamp;
                     final Habit habit = Habit(
                       id: habitId,
                       name: habitData['name'],
@@ -255,6 +256,8 @@ class ListOfHabits extends StatelessWidget {
                       key: ValueKey(habitId),
                       habit: habit,
                       habitParameters: habitParameters,
+                      streak: habitData['streak'],
+                      lastLog: lastLog.toDate(),
                     );
                   },
                 ),

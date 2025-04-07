@@ -172,6 +172,7 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
           "category": widget.habit.category,
           "description": widget.habit.description,
           "habitParameters": habitParameters,
+          "streak": 0,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
