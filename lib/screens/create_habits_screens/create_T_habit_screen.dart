@@ -251,14 +251,12 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
                     const SizedBox(
                       height: 16,
                     ),
-                    Expanded(
-                      child: Text(
-                        widget.habit.name,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                    Text(
+                      widget.habit.name,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(
