@@ -182,7 +182,6 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
         if (confirmation) {
           return;
         }
-        return;
       }
 
       int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
