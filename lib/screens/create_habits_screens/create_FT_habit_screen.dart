@@ -177,6 +177,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
         }
       }
 
+      final now = Timestamp.now();
       final Map<String, dynamic> habitParameters = {
         "allotedTime": selectedTotalMinutes,
         "days": _selectedDaysOfWeek,
@@ -200,6 +201,7 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
           "description": widget.habit.description,
           "habitParameters": habitParameters,
           "streak": 0,
+          "last_log": now,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

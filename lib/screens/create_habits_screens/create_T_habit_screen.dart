@@ -175,6 +175,7 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
         }
       }
 
+      final now = Timestamp.now();
       try {
         // Saving habit information.
         await FirebaseFirestore.instance
@@ -189,6 +190,7 @@ class _CreateFtHabitScreenState extends State<CreateTHabitScreen> {
           "description": widget.habit.description,
           "habitParameters": habitParameters,
           "streak": 0,
+          "last_log": now,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

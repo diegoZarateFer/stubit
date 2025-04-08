@@ -171,6 +171,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
         }
       }
 
+      final now = Timestamp.now();
       final Map<String, dynamic> habitParameters = {
         "numberOfdays": _selectedNumberOfDays,
         "days": _selectedDaysOfWeek,
@@ -191,6 +192,7 @@ class _CreateCfHabitScreenState extends State<CreateCfHabitScreen> {
           "description": widget.habit.description,
           "habitParameters": habitParameters,
           "streak": 0,
+          "last_log": now,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
