@@ -24,13 +24,11 @@ class HabitItem extends StatefulWidget {
     super.key,
     required this.habit,
     required this.habitParameters,
-    required this.lastLog,
     required this.streak,
   });
 
   final Habit habit;
   final Map<String, dynamic> habitParameters;
-  final DateTime lastLog;
   final int streak;
 
   @override
@@ -38,6 +36,7 @@ class HabitItem extends StatefulWidget {
 }
 
 class _HabitItemState extends State<HabitItem> {
+  List<DateTime> _missedDays = [];
   bool _isCompleted = false, _streakIsActive = false;
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
@@ -112,8 +111,10 @@ class _HabitItemState extends State<HabitItem> {
     return days.contains(dayOfWeek);
   }
 
-  void _loadStreakState() {
-    final DateTime date = DateTime.now();
+  Future<void> _loadStreakState() async {
+    _missedDays = [];
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
     List<dynamic> loadedDays = widget.habitParameters['days'] ??
         [
           "monday",
@@ -125,18 +126,29 @@ class _HabitItemState extends State<HabitItem> {
           "sunday"
         ];
 
-    DateTime day = widget.lastLog.add(const Duration(days: 1));
-    while (!day.isAfter(date)) {
+    final userId = _currentUser.uid.toString();
+    final snapshot = await _firestore
+        .collection("user_data")
+        .doc(userId)
+        .collection("habits")
+        .doc(widget.habit.id)
+        .get();
+
+    final lastLog = (snapshot.data()?['last_log'] as Timestamp).toDate();
+    final lastLogDate = DateTime(lastLog.year, lastLog.month, lastLog.day);
+
+    DateTime day = lastLogDate.add(const Duration(days: 1));
+    while (day.isBefore(date)) {
       final dayOfWeek = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
       if (loadedDays.contains(dayOfWeek)) {
-        return;
+        _missedDays.add(day);
       }
 
       day = day.add(const Duration(days: 1));
     }
 
     setState(() {
-      _streakIsActive = true;
+      _streakIsActive = _missedDays.isEmpty;
     });
   }
 
@@ -200,7 +212,12 @@ class _HabitItemState extends State<HabitItem> {
     } else {
       await showDialog(
         context: context,
-        builder: (ctx) => const PayStreakDialog(),
+        builder: (ctx) => PayStreakDialog(
+          habit: widget.habit,
+          habitParameters: widget.habitParameters,
+          currentStreak: widget.streak,
+          missedDays: _missedDays,
+        ),
       );
     }
     await _loadHabitData();
@@ -364,7 +381,7 @@ class _HabitItemState extends State<HabitItem> {
           color: !_streakIsActive
               ? const Color.fromARGB(255, 121, 30, 2)
               : _isCompleted
-                  ? const Color.fromARGB(240, 165, 52, 8)
+                  ? const Color.fromARGB(242, 16, 16, 16)
                   : const Color(0xFF292D39),
           borderRadius: BorderRadius.circular(15),
         ),

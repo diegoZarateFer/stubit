@@ -31,8 +31,14 @@ bool isDifferentDay(DateTime date1, DateTime date2) {
 }
 
 int assignGems() {
-  int gems = Random().nextInt(5 + 1) + 5;
+  int gems = Random().nextInt(6) + 5;
   return gems;
+}
+
+int getStreakCost(int currentStreak) {
+  int randomFactor = Random().nextInt(4) + 3;
+  int cost = randomFactor * currentStreak;
+  return cost;
 }
 
 String formatDate(DateTime date) {

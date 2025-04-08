@@ -120,7 +120,7 @@ class SecondPage extends StatefulWidget {
   });
 
   @override
-  _SecondPageState createState() => _SecondPageState();
+  State<SecondPage> createState() => _SecondPageState();
 }
 
 class _SecondPageState extends State<SecondPage> {

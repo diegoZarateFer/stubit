@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:day_picker/day_picker.dart';
@@ -169,11 +170,13 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         }
       }
 
+      final now = Timestamp.now();
       final Map<String, dynamic> habitParameters = {
         "dailyTarget": int.tryParse(_dailyTargetController.text),
         "days": _selectedDaysOfWeek,
         "numberOfWeeks": _selectedNumberOfWeeks,
         "unit": _unit ?? _unitController.text.toString(),
+        "createdAt": now,
       };
 
       try {
@@ -190,6 +193,7 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
           "description": widget.habit.description,
           "habitParameters": habitParameters,
           "streak": 0,
+          "last_log": now,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
