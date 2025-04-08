@@ -108,7 +108,7 @@ class _CreateFtHabitScreenState extends State<EditTHabitScreen> {
             .doc(_currentUser.uid.toString())
             .collection("habits")
             .doc(widget.habit.id)
-            .set({
+            .update({
           "name": _habitName,
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
