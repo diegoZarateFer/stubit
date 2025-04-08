@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:intl/intl.dart';
+import 'package:stubit/data/phrases.dart';
 
 final Map<int, String> _monthsInSpanish = {
   1: 'enero',
@@ -44,4 +45,11 @@ int getStreakCost(int currentStreak) {
 String formatDate(DateTime date) {
   String monthName = _monthsInSpanish[date.month]!;
   return "${date.day} de $monthName de ${date.year}";
+}
+
+String getPhrase(String category) {
+  final numberOfPhrases = motivationalPhrases[category]?.length ?? 5;
+  int randomIndex = Random().nextInt(numberOfPhrases);
+  return motivationalPhrases[category]?[randomIndex] ??
+      "El único fracaso real es rendirse.";
 }

@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:stubit/data/phrases.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
@@ -40,12 +37,6 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
   late int _dailyTarget;
   int _counter = 0;
   late String _unit, _date;
-
-  String _getPhrase() {
-    int randomIndex = Random().nextInt(5);
-    return motivationalPhrases[widget.habit.category]?[randomIndex] ??
-        "El único fracaso real es rendirse.";
-  }
 
   Future<void> _registerHabit() async {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -120,7 +111,7 @@ class _CreateFtHabitScreenState extends State<RegisterCofHabit> {
       ]);
 
       if (!_habitHasBeenCompleted && isCompleted) {
-        final phrase = _getPhrase();
+        final phrase = getPhrase(widget.habit.category);
         await showCofreAndGemsDialog(context, givenGems, phrase);
       }
 
