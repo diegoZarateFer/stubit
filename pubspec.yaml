@@ -85,6 +85,7 @@ flutter:
     - assets/images/Tec_POM.png
     - assets/images/Tec_CyF.png
     - assets/images/lost_streak.png
+    - assets/images/progress.png
     - assets/images/Tec_FyC.png
     - assets/images/Tec_FyL.png
     - assets/images/Tec_T.png
@@ -93,6 +94,8 @@ flutter:
     - assets/images/magic.png
     - assets/images/chest.riv
     - assets/images/streak.riv
+    - assets/images/congratulations.riv
+    - assets/images/streak_days.riv
     - assets/sounds/ding.wav
     
 
