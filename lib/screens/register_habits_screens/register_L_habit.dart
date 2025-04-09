@@ -9,7 +9,6 @@ import 'package:stubit/data/phrases.dart';
 import 'package:stubit/models/habit.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
-import 'package:stubit/widgets/gems_dialog.dart';
 import 'package:stubit/widgets/cofre_animation.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -338,7 +337,6 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
                                   height: 8,
                                 ),
                                 TextFormField(
-                                  maxLines: 2,
                                   maxLength: 250,
                                   style: const TextStyle(
                                     color: Colors.white,

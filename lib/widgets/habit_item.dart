@@ -14,6 +14,7 @@ import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/streak_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -150,6 +151,18 @@ class _HabitItemState extends State<HabitItem> {
         ),
       );
     }
+  }
+
+  void _showProgressDialog() async {
+    await showDialog(
+      context: context,
+      builder: (ctx) => StreakDialog(
+        isRegistered: _isCompleted,
+        habit: widget.habit,
+        habitParameters: widget.habitParameters,
+      ),
+    );
+    await _loadHabitData();
   }
 
   void _showMenuAction(BuildContext context) {
@@ -297,7 +310,8 @@ class _HabitItemState extends State<HabitItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: _showProgressDialog,
+      onLongPress: () {
         _showMenuAction(context);
       },
       child: Container(
@@ -306,7 +320,9 @@ class _HabitItemState extends State<HabitItem> {
           bottom: 16,
         ),
         decoration: BoxDecoration(
-          color: _isCompleted ? const Color.fromARGB(242, 16, 16, 16) : const Color(0xFF292D39),
+          color: _isCompleted
+              ? const Color.fromARGB(242, 16, 16, 16)
+              : const Color(0xFF292D39),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Row(

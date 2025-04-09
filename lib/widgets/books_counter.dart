@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/widgets/image_button.dart';
+import 'package:stubit/widgets/gemsinfodialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -21,10 +22,6 @@ class BooksCounter extends StatelessWidget {
 
     return Row(
       children: [
-        ImageButton(
-          imagePath: "assets/images/book.png",
-          onPressed: () {},
-        ),
         StreamBuilder(
           stream: docRef.snapshots(),
           builder: (context, snapshot) {
@@ -54,14 +51,29 @@ class BooksCounter extends StatelessWidget {
 
             final data = snapshot.data!.data() as Map<String, dynamic>;
             final collectedGems = data['collectedGems'];
-            return Text(
-              collectedGems.toString(),
-              style: GoogleFonts.dmSans(
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
+
+            return Row(
+              children: [
+                ImageButton(
+                  imagePath: "assets/images/book.png",
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          GemsInfoDialog(gems: collectedGems ?? 0),
+                    );
+                  },
                 ),
-              ),
+                Text(
+                  collectedGems.toString(),
+                  style: GoogleFonts.dmSans(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),

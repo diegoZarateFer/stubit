@@ -20,15 +20,6 @@ Map<String, num> _numberOfWeeksOptions = {
   "Indefinidamente": double.infinity,
 };
 
-final List<String> _units = [
-  "páginas",
-  "rompecabezas",
-  "repeticiones",
-  "problemas",
-  "litros",
-  "minutos",
-];
-
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class EditHabitCofScreen extends StatefulWidget {
@@ -64,9 +55,9 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
   late String _habitName;
   List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
-  int _selectedUnitIndex = 0;
 
   final TextEditingController _dailyTargetController = TextEditingController();
+  final TextEditingController _unitController = TextEditingController();
 
   String? _dailyTargetvalidator(selectedDailyTarget) {
     if (selectedDailyTarget == null ||
@@ -82,6 +73,74 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
     }
 
     return null;
+  }
+
+  Future<bool> showRecomendationDialog(
+      BuildContext context, totalNumberOfDays) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                "La magia de los 21 días",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/magic.png',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Con la configuración actual, tu actividad tendrá una duración de $totalNumberOfDays días. Te recomendamos dedicar al menos 21 días para obtener mejores resultados.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    "Ahora no",
+                    style: TextStyle(
+                      color: Color.fromRGBO(121, 30, 198, 1),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                  ),
+                  child: Text(
+                    "¡Acepto el reto!",
+                    style: GoogleFonts.openSans(
+                      color: Colors.white,
+                      decorationColor: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 
   void _saveForm() async {
@@ -102,21 +161,18 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
 
       if (_selectedNumberOfWeeks != double.infinity &&
           _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'En total debes dedicar al menos 21 días a esta actividad.',
-            ),
-          ),
-        );
-        return;
+        final bool confirmation = await showRecomendationDialog(
+            context, _selectedNumberOfWeeks! * _selectedDaysOfWeek.length);
+        if (confirmation) {
+          return;
+        }
       }
 
       final Map<String, dynamic> habitParameters = {
         "dailyTarget": int.tryParse(_dailyTargetController.text),
         "days": _selectedDaysOfWeek,
         "numberOfWeeks": _selectedNumberOfWeeks,
-        "unit": _unit ?? _units[_selectedUnitIndex],
+        "unit": _unit ?? _unitController.text.toString(),
       };
 
       try {
@@ -371,12 +427,14 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      _habitName,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 18,
-                                        color: Colors.white,
+                                    Expanded(
+                                      child: Text(
+                                        _habitName,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                     if (widget.habit.category == 'custom')
@@ -426,36 +484,15 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: _unit == null
-                                          ? CupertinoPicker(
-                                              itemExtent: 64,
-                                              onSelectedItemChanged: (index) {
-                                                _selectedUnitIndex =
-                                                    index % _units.length;
-                                              },
-                                              children: _units
-                                                  .map(
-                                                    (unit) => Center(
-                                                      child: Text(
-                                                        unit,
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  )
-                                                  .toList(),
-                                            )
-                                          : Center(
-                                              child: Text(
-                                                _unit!,
-                                                style: GoogleFonts.poppins(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ),
+                                      child: Center(
+                                        child: Text(
+                                          _unit!,
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

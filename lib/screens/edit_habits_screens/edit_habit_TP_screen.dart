@@ -197,6 +197,74 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
         : null;
   }
 
+  Future<bool> showRecomendationDialog(
+      BuildContext context, totalNumberOfDays) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                "La magia de los 21 días",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/magic.png',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Con la configuración actual, tu actividad tendrá una duración de $totalNumberOfDays días. Te recomendamos dedicar al menos 21 días para obtener mejores resultados.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    "Ahora no",
+                    style: TextStyle(
+                      color: Color.fromRGBO(121, 30, 198, 1),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(121, 30, 198, 1),
+                  ),
+                  child: Text(
+                    "¡Acepto el reto!",
+                    style: GoogleFonts.openSans(
+                      color: Colors.white,
+                      decorationColor: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -215,14 +283,11 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
 
       if (_selectedNumberOfWeeks != double.infinity &&
           _selectedNumberOfWeeks! * _selectedDaysOfWeek.length < 21) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'En total debes dedicar al menos 21 días a esta actividad.',
-            ),
-          ),
-        );
-        return;
+        final bool confirmation = await showRecomendationDialog(
+            context, _selectedNumberOfWeeks! * _selectedDaysOfWeek.length);
+        if (confirmation) {
+          return;
+        }
       }
 
       int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
@@ -397,12 +462,14 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      _habitName,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 18,
-                                        color: Colors.white,
+                                    Expanded(
+                                      child: Text(
+                                        _habitName,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                     if (widget.habit.category == 'custom')
