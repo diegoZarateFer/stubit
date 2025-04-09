@@ -170,11 +170,13 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         }
       }
 
+      final now = Timestamp.now();
       final Map<String, dynamic> habitParameters = {
         "dailyTarget": int.tryParse(_dailyTargetController.text),
         "days": _selectedDaysOfWeek,
         "numberOfWeeks": _selectedNumberOfWeeks,
         "unit": _unit ?? _unitController.text.toString(),
+        "createdAt": now,
       };
 
       try {
@@ -190,6 +192,8 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
           "category": widget.habit.category,
           "description": widget.habit.description,
           "habitParameters": habitParameters,
+          "streak": 0,
+          "last_log": now,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/screens/auth_wrapper.dart';
+import 'package:stubit/widgets/confirmation_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -47,6 +48,27 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     return null;
   }
 
+  Future<void> _deleteHabit(habitId) async {
+    CollectionReference logRef = _firestore
+        .collection("user_data")
+        .doc(_currentUser.uid.toString())
+        .collection("habits")
+        .doc(habitId)
+        .collection("habit_log");
+
+    var snapshot = await logRef.get();
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    await _firestore
+        .collection("user_data")
+        .doc(_currentUser.uid.toString())
+        .collection("habits")
+        .doc(habitId)
+        .delete();
+  }
+
   Future<void> _deleteAccount() async {
     try {
       AuthCredential credential = EmailAuthProvider.credential(
@@ -66,6 +88,17 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
       accountDocs.docs[0].reference.delete();
 
+      // Delete gems data
+      QuerySnapshot gemsDoc = await _firestore
+          .collection("user_data")
+          .doc(_currentUser.uid.toString())
+          .collection("gems")
+          .get();
+
+      if (gemsDoc.size > 0) {
+        gemsDoc.docs[0].reference.delete();
+      }
+
       // Delete tasks data.
       QuerySnapshot taskDocs = await _firestore
           .collection("user_data")
@@ -73,8 +106,26 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
           .collection("tasks")
           .get();
 
-      if (taskDocs.size > 0) {
-        taskDocs.docs[0].reference.delete();
+      for (final taskDoc in taskDocs.docs) {
+        final taskId = taskDoc.id;
+        await _firestore
+            .collection("user_data")
+            .doc(_currentUser.uid.toString())
+            .collection("tasks")
+            .doc(taskId)
+            .delete();
+      }
+
+      // Delete habits
+      final habitsSnapshot = await _firestore
+          .collection("user_data")
+          .doc(_currentUser.uid.toString())
+          .collection("habits")
+          .get();
+
+      for (final habitDoc in habitsSnapshot.docs) {
+        final habitId = habitDoc.id;
+        await _deleteHabit(habitId);
       }
 
       // Delete user document.
@@ -119,7 +170,17 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      await _deleteAccount();
+      final bool? deleteAccount = await showConfirmationDialog(
+        context,
+        "Eliminar mi cuenta",
+        "¿Estás seguro(a) de que deseas eliminar tu cuenta? Esta acción es irreversible y perderás todos tus datos.",
+        "Si, eliminar mi cuenta",
+        "Cancelar",
+      );
+
+      if (deleteAccount ?? false) {
+        await _deleteAccount();
+      }
     }
   }
 

@@ -154,6 +154,7 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
         }
       }
 
+      final now = Timestamp.now();
       final Map<String, dynamic> habitParameters = {
         "days": _selectedDaysOfWeek,
         "numberOfWeeks": _selectedNumberOfWeeks,
@@ -172,6 +173,8 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
           "category": widget.habit.category,
           "description": widget.habit.description,
           "habitParameters": habitParameters,
+          "streak": 0,
+          "last_log": now,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
