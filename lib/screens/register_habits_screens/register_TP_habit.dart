@@ -62,6 +62,15 @@ class _CreateFtHabitScreenState extends State<RegisterTpHabit> {
             .doc(userId)
             .collection("habits")
             .doc(widget.habit.id)
+            .update({
+          "streak": FieldValue.increment(1),
+          "last_log": now,
+        }),
+        _firestore
+            .collection("user_data")
+            .doc(userId)
+            .collection("habits")
+            .doc(widget.habit.id)
             .collection("habit_log")
             .doc("daily_form")
             .set(
