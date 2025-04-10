@@ -185,6 +185,7 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
       }
 
       int cycles = int.tryParse(_selectedNumberOfCylcesController.text) ?? 0;
+      final now = Timestamp.now();
       final Map<String, dynamic> habitParameters = {
         "workInterval": _workInterval,
         "restInterval": _restInterval,
@@ -206,6 +207,8 @@ class _CreateTpHabitScreenState extends State<CreateTpHabitScreen> {
           "category": widget.habit.category,
           "description": widget.habit.description,
           "habitParameters": habitParameters,
+          "streak": 0,
+          "last_log": now,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

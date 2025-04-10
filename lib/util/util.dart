@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:intl/intl.dart';
+import 'package:stubit/data/phrases.dart';
 
 final Map<int, String> _monthsInSpanish = {
   1: 'enero',
@@ -31,11 +32,24 @@ bool isDifferentDay(DateTime date1, DateTime date2) {
 }
 
 int assignGems() {
-  int gems = Random().nextInt(5 + 1) + 5;
+  int gems = Random().nextInt(6) + 5;
   return gems;
+}
+
+int getStreakCost(int currentStreak) {
+  int randomFactor = Random().nextInt(4) + 3;
+  int cost = randomFactor * currentStreak;
+  return cost;
 }
 
 String formatDate(DateTime date) {
   String monthName = _monthsInSpanish[date.month]!;
   return "${date.day} de $monthName de ${date.year}";
+}
+
+String getPhrase(String category) {
+  final numberOfPhrases = motivationalPhrases[category]?.length ?? 5;
+  int randomIndex = Random().nextInt(numberOfPhrases);
+  return motivationalPhrases[category]?[randomIndex] ??
+      "El único fracaso real es rendirse.";
 }

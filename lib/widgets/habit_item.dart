@@ -14,6 +14,7 @@ import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
 import 'package:stubit/util/util.dart';
 import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/pay_streak_dialog.dart';
 import 'package:stubit/widgets/streak_dialog.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,20 +24,24 @@ class HabitItem extends StatefulWidget {
     super.key,
     required this.habit,
     required this.habitParameters,
+    required this.streak,
   });
 
   final Habit habit;
   final Map<String, dynamic> habitParameters;
+  final int streak;
 
   @override
   State<HabitItem> createState() => _HabitItemState();
 }
 
 class _HabitItemState extends State<HabitItem> {
-  bool _isCompleted = false;
+  List<DateTime> _missedDays = [];
+  bool _isCompleted = false, _streakIsActive = false;
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
   Future<void> _loadHabitData() async {
+    _loadStreakState();
     final userId = _currentUser.uid.toString();
     final date = getDateAsString();
     final doc = await _firestore
@@ -106,6 +111,47 @@ class _HabitItemState extends State<HabitItem> {
     return days.contains(dayOfWeek);
   }
 
+  Future<void> _loadStreakState() async {
+    _missedDays = [];
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
+    List<dynamic> loadedDays = widget.habitParameters['days'] ??
+        [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ];
+
+    final userId = _currentUser.uid.toString();
+    final snapshot = await _firestore
+        .collection("user_data")
+        .doc(userId)
+        .collection("habits")
+        .doc(widget.habit.id)
+        .get();
+
+    final lastLog = (snapshot.data()?['last_log'] as Timestamp).toDate();
+    final lastLogDate = DateTime(lastLog.year, lastLog.month, lastLog.day);
+
+    DateTime day = lastLogDate.add(const Duration(days: 1));
+    while (day.isBefore(date)) {
+      final dayOfWeek = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
+      if (loadedDays.contains(dayOfWeek)) {
+        _missedDays.add(day);
+      }
+
+      day = day.add(const Duration(days: 1));
+    }
+
+    setState(() {
+      _streakIsActive = _missedDays.isEmpty;
+    });
+  }
+
   void _showEditHabitScreen() {
     if (widget.habit.strategy == 'T') {
       Navigator.of(context).push(
@@ -154,14 +200,26 @@ class _HabitItemState extends State<HabitItem> {
   }
 
   void _showProgressDialog() async {
-    await showDialog(
-      context: context,
-      builder: (ctx) => StreakDialog(
-        isRegistered: _isCompleted,
-        habit: widget.habit,
-        habitParameters: widget.habitParameters,
-      ),
-    );
+    if (_streakIsActive) {
+      await showDialog(
+        context: context,
+        builder: (ctx) => StreakDialog(
+          isRegistered: _isCompleted,
+          habit: widget.habit,
+          habitParameters: widget.habitParameters,
+        ),
+      );
+    } else {
+      await showDialog(
+        context: context,
+        builder: (ctx) => PayStreakDialog(
+          habit: widget.habit,
+          habitParameters: widget.habitParameters,
+          currentStreak: widget.streak,
+          missedDays: _missedDays,
+        ),
+      );
+    }
     await _loadHabitData();
   }
 
@@ -320,9 +378,11 @@ class _HabitItemState extends State<HabitItem> {
           bottom: 16,
         ),
         decoration: BoxDecoration(
-          color: _isCompleted
-              ? const Color.fromARGB(242, 16, 16, 16)
-              : const Color(0xFF292D39),
+          color: !_streakIsActive
+              ? const Color.fromARGB(255, 121, 30, 2)
+              : _isCompleted
+                  ? const Color.fromARGB(242, 16, 16, 16)
+                  : const Color(0xFF292D39),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Row(
@@ -343,8 +403,9 @@ class _HabitItemState extends State<HabitItem> {
               ),
             ),
             Icon(
-              Icons.local_fire_department,
-              color: _isCompleted ? Colors.amber : Colors.grey,
+              _streakIsActive ? Icons.local_fire_department : Icons.flash_off,
+              color:
+                  _streakIsActive && _isCompleted ? Colors.amber : Colors.grey,
               size: 32,
             ),
           ],
