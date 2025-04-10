@@ -4,6 +4,7 @@ import 'package:stubit/screens/account_verification_screen.dart';
 import 'package:stubit/screens/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stubit/screens/home_screen.dart';
+import 'package:stubit/screens/ForgotPasswordScreen.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -255,7 +256,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 16,
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgotPasswordScreen(),
+                            ),
+                          );
+                        },
                         child: const Text(
                           '¿Necesitas ayuda? Olvidé mi contraseña',
                           style: TextStyle(
