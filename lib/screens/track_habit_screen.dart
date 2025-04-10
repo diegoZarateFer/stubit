@@ -11,12 +11,15 @@ import 'package:stubit/widgets/habit_log.dart';
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class TrackHabitScreen extends StatefulWidget {
-  const TrackHabitScreen({
-    super.key,
-    required this.habit,
-  });
+  const TrackHabitScreen(
+      {super.key,
+      required this.habit,
+      required this.streak,
+      required this.streakIsActive});
 
   final Habit habit;
+  final int streak;
+  final bool streakIsActive;
 
   @override
   State<TrackHabitScreen> createState() => _TrackHabitScreenState();
@@ -52,7 +55,7 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
 
       return logDates;
     } catch (e) {
-      throw Exception('Falló la eliminación del LOG.');
+      throw Exception('Falló al cargar el LOG.');
     }
   }
 
@@ -192,28 +195,35 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
                         onSelectDay: _showHabitLogDay,
                       ),
                       const SizedBox(height: 16),
-                      Container(
-                        width: 60,
-                        height: 80,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage("assets/images/fire.png"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              "100",
-                              style: GoogleFonts.koHo(
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            child: Icon(
+                              Icons.local_fire_department_rounded,
+                              size: 60,
+                              color: widget.streakIsActive
+                                  ? Colors.amber
+                                  : Colors.grey,
                             ),
-                          ],
-                        ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Positioned(
+                                child: Text(
+                                  "${widget.streak}",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.koHo(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),

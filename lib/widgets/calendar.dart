@@ -39,6 +39,11 @@ class _CalendarState extends State<Calendar> {
     }
   }
 
+  bool _selectedDayIsCompleted() {
+    final t = _dates.any((d) => isSameDay(d, _selectedDay));
+    return t;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -110,7 +115,7 @@ class _CalendarState extends State<Calendar> {
             return Container(
               margin: const EdgeInsets.all(4),
               decoration: const BoxDecoration(
-                color: Color.fromRGBO(139, 34, 227, 1), // today
+                color: Color.fromRGBO(139, 34, 227, 1),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -131,7 +136,9 @@ class _CalendarState extends State<Calendar> {
                 shape: BoxShape.circle,
                 border: Border.all(
                   width: 2,
-                  color: const Color.fromARGB(255, 89, 22, 144), // selected day
+                  color: _selectedDayIsCompleted()
+                      ? Colors.grey
+                      : const Color(0xFFFFA500), // selected day
                 ),
               ),
               child: Center(

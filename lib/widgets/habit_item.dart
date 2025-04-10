@@ -274,6 +274,8 @@ class _HabitItemState extends State<HabitItem> {
                   MaterialPageRoute(
                     builder: (ctx) => TrackHabitScreen(
                       habit: widget.habit,
+                      streak: widget.streak,
+                      streakIsActive: _streakIsActive && _isCompleted,
                     ),
                   ),
                 );
