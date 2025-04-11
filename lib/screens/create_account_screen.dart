@@ -127,8 +127,28 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2030),
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2021),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            inputDecorationTheme: const InputDecorationTheme(
+              hintStyle: TextStyle(color: Colors.white70),
+            ),
+            textTheme: const TextTheme(
+              titleMedium: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              bodyLarge: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null) {
