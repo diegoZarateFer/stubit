@@ -70,10 +70,11 @@ class _HomeScreenState extends State<HomeScreen>
         return;
       }
       bool habitWasCreated = await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (ctx) => const HabitsMenuScreen(),
-        ),
-      );
+            MaterialPageRoute(
+              builder: (ctx) => const HabitsMenuScreen(),
+            ),
+          ) ??
+          false;
 
       if (habitWasCreated) {
         _numberOfActiveHabits++;
