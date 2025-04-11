@@ -39,9 +39,8 @@ class _CalendarState extends State<Calendar> {
     }
   }
 
-  bool _selectedDayIsCompleted() {
-    final t = _dates.any((d) => isSameDay(d, _selectedDay));
-    return t;
+  bool _todayIsCompleted(DateTime day) {
+    return _dates.any((d) => isSameDay(d, day));
   }
 
   @override
@@ -112,38 +111,44 @@ class _CalendarState extends State<Calendar> {
             return null;
           },
           todayBuilder: (context, day, focusedDay) {
+            bool isCompleted = _todayIsCompleted(day);
             return Container(
               margin: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(139, 34, 227, 1),
+              decoration: BoxDecoration(
+                color: isCompleted ? const Color(0xFFFFA500) : Colors.grey,
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: isCompleted ? const Color(0xFFFFA500) : Colors.grey,
+                  width: 3,
+                ),
               ),
               child: Center(
                 child: Text(
                   '${day.day}',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
               ),
             );
           },
           selectedBuilder: (context, day, focusedDay) {
+            bool isCompleted = _todayIsCompleted(day);
             return Container(
               margin: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: Colors.transparent,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  width: 2,
-                  color: _selectedDayIsCompleted()
-                      ? Colors.grey
-                      : const Color(0xFFFFA500), // selected day
+                  width: 3,
+                  color: isCompleted ? const Color(0xFFFFA500) : Colors.grey,
                 ),
               ),
               child: Center(
-                child: Text('${day.day}',
-                    style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  '${day.day}',
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             );
           },

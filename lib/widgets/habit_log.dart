@@ -55,6 +55,13 @@ class _HabitLogInformationState extends State<HabitLogInformation> {
         }
 
         if (snapshot.hasData) {
+          final logData = snapshot.data!.data();
+
+          if (logData!.containsKey('payed')) {
+            final gemsPayed = snapshot.data!['gemsPayed'];
+            return StreakLog(gemsPayed: gemsPayed);
+          }
+
           if (widget.habit.strategy == 'CF') {
             final answerOne = snapshot.data!['answerOne'];
             final answerTwo = snapshot.data!['answerTwo'];
@@ -520,6 +527,43 @@ class COFLog extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class StreakLog extends StatelessWidget {
+  const StreakLog({
+    super.key,
+    required this.gemsPayed,
+  });
+
+  final int gemsPayed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Image.asset(
+              "assets/images/book.png",
+              height: 60,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text(
+              "Pagaste $gemsPayed gemas.",
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Colors.white,
+                decorationColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

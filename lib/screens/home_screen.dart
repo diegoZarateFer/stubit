@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  void _onFloatingButtonPressed() {
+  void _onFloatingButtonPressed() async {
     ScaffoldMessenger.of(context).clearSnackBars();
     int currentTabIndex = _tabController.index;
     if (currentTabIndex == 0) {
@@ -69,11 +69,15 @@ class _HomeScreenState extends State<HomeScreen>
         );
         return;
       }
-      Navigator.of(context).push(
+      bool habitWasCreated = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => const HabitsMenuScreen(),
         ),
       );
+
+      if (habitWasCreated) {
+        _numberOfActiveHabits++;
+      }
     } else {
       // Add a new task to the board.
       Navigator.of(context).push(
@@ -129,9 +133,13 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                   child: TabBarView(
                     controller: _tabController,
-                    children: const [
-                      HabitsScreen(),
-                      BoardScreen(),
+                    children: [
+                      HabitsScreen(
+                        onHabitDelete: () {
+                          _numberOfActiveHabits--;
+                        },
+                      ),
+                      const BoardScreen(),
                     ],
                   ),
                 ),

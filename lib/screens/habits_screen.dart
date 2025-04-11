@@ -15,7 +15,9 @@ String apology = """
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class HabitsScreen extends StatefulWidget {
-  const HabitsScreen({super.key});
+  const HabitsScreen({super.key, required this.onHabitDelete,});
+
+  final void Function() onHabitDelete;
 
   @override
   State<HabitsScreen> createState() => _HabitsScreenState();
@@ -93,6 +95,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
         Expanded(
           child: ListOfHabits(
             showTodayHabits: _showTodayHabits,
+            onHabitDelete: widget.onHabitDelete,
           ),
         ),
       ],
@@ -104,9 +107,11 @@ class ListOfHabits extends StatelessWidget {
   const ListOfHabits({
     super.key,
     required this.showTodayHabits,
+    required this.onHabitDelete,
   });
 
   final bool showTodayHabits;
+  final void Function () onHabitDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +262,7 @@ class ListOfHabits extends StatelessWidget {
                       habit: habit,
                       habitParameters: habitParameters,
                       streak: habitData['streak'],
+                      onHabitDelete: onHabitDelete,
                     );
                   },
                 ),
