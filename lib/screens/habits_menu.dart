@@ -48,7 +48,6 @@ class _HabitsMenuScreenState extends State<HabitsMenuScreen>
   }
 
   void _closeMenu() {
-    print("Hola");
     Navigator.pop(context, true);
   }
 
