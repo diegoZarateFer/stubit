@@ -68,7 +68,7 @@ class _HabitItemState extends State<HabitItem> {
     }
 
     if (widget.habit.strategy == 'COF') {
-      return "Agregar a registro";
+      return "Continuar registro";
     }
     return _isCompleted ? "Modificar registro" : "Registrar";
   }
@@ -143,27 +143,27 @@ class _HabitItemState extends State<HabitItem> {
     });
   }
 
-  void _showEditHabitScreen() {
+  Future<void> _showEditHabitScreen() async {
     if (widget.habit.strategy == 'T') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditTHabitScreen(habit: widget.habit),
         ),
       );
     } else if (widget.habit.strategy == 'TP') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitTpScreen(habit: widget.habit),
         ),
       );
     } else if (widget.habit.strategy == 'L') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitLScreen(habit: widget.habit),
         ),
       );
     } else if (widget.habit.strategy == 'COF') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitCofScreen(
             habit: widget.habit,
@@ -172,7 +172,7 @@ class _HabitItemState extends State<HabitItem> {
         ),
       );
     } else if (widget.habit.strategy == 'TF') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitFtScreen(
             habit: widget.habit,
@@ -180,7 +180,7 @@ class _HabitItemState extends State<HabitItem> {
         ),
       );
     } else if (widget.habit.strategy == 'CF') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitCfScreen(
             habit: widget.habit,
@@ -274,7 +274,10 @@ class _HabitItemState extends State<HabitItem> {
             ListTile(
               leading: const Icon(Icons.edit),
               title: const Text('Editar hábito'),
-              onTap: _showEditHabitScreen,
+              onTap: () async {
+                await _showEditHabitScreen();
+                Navigator.pop(ctx);
+              },
             ),
             ListTile(
               leading: const Icon(
