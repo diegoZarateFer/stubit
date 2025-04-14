@@ -93,27 +93,28 @@ class _CreateFtHabitScreenState extends State<RegisterCfHabit> {
               "streak": FieldValue.increment(1),
               "last_log": now,
             }),
-          _firestore
-              .collection("user_data")
-              .doc(userId)
-              .collection("habits")
-              .doc(widget.habit.id)
-              .collection("habit_log")
-              .doc("daily_form")
-              .set(
-            {
-              "createdAt": now,
-              "answerOne": answerOne,
-              "answerTwo": answerTwo,
-              "confirmation": _confirmationBoxIsSelected,
-              "difficulty": _selectedDifficulty,
-              "questionOne": _questionOne,
-              "questionTwo": _questionTwo
-            },
-            SetOptions(
-              merge: true,
+          if (_isFirstRegister)
+            _firestore
+                .collection("user_data")
+                .doc(userId)
+                .collection("habits")
+                .doc(widget.habit.id)
+                .collection("habit_log")
+                .doc("daily_form")
+                .set(
+              {
+                "createdAt": now,
+                "answerOne": answerOne,
+                "answerTwo": answerTwo,
+                "confirmation": _confirmationBoxIsSelected,
+                "difficulty": _selectedDifficulty,
+                "questionOne": _questionOne,
+                "questionTwo": _questionTwo
+              },
+              SetOptions(
+                merge: true,
+              ),
             ),
-          ),
           _firestore
               .collection("user_data")
               .doc(userId)
