@@ -25,7 +25,7 @@ class RegisterLHabit extends StatefulWidget {
 class _CreateFtHabitScreenState extends State<RegisterLHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
-  late String _date;
+  late String _date, _listName;
   List<String> _listItems = [];
 
   bool _confirmationBoxIsSelected = false,
@@ -194,6 +194,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
           _listItems = list.map((e) => e.toString()).toList();
           _selectedDifficulty = doc.data()?['selectedDifficulty'];
           _confirmationBoxIsSelected = doc.data()?['confirmation'];
+          _listName = doc.data()?['list_name'];
           _isFirstRegister = false;
           _isLoading = false;
         });
@@ -342,8 +343,8 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
                                   style: const TextStyle(
                                     color: Colors.white,
                                   ),
-                                  decoration: const InputDecoration(
-                                    labelText: 'Me siento agradecido por:',
+                                  decoration: InputDecoration(
+                                    labelText: _listName,
                                     counterText: '',
                                   ),
                                   controller: _textEditingController,

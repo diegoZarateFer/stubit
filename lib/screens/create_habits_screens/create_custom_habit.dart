@@ -189,6 +189,7 @@ class _SecondPageState extends State<SecondPage> {
               MaterialPageRoute(
                 builder: (ctx) => CreateLHabitScreen(
                   habit: customHabit,
+                  isCustom: true,
                 ),
               ),
             ) ??
@@ -336,7 +337,7 @@ final List<String> _images = [
   'assets/images/Tec_T.png',
   'assets/images/Tec_CyF.png',
   'assets/images/Tec_FyL.png',
-  'assets/images/Tec_FyC.png'  
+  'assets/images/Tec_FyC.png'
 ];
 
 final List<String> _titles = [

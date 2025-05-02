@@ -48,9 +48,11 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
 
   final _formKey = GlobalKey<FormState>();
   late String _habitName;
+  late bool _isCustom;
   List<String> _selectedDaysOfWeek = [];
   num? _selectedNumberOfWeeks;
   bool _isLoading = true, _hasError = false, _changesWereMade = false;
+  final TextEditingController _listNameController = TextEditingController();
 
   @override
   void initState() {
@@ -135,6 +137,14 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
         false;
   }
 
+  String? _listNameValidator(listName) {
+    if (listName == null || listName.toString().trim() == '') {
+      return 'Campo obligatorio.';
+    }
+
+    return null;
+  }
+
   void _saveForm() async {
     ScaffoldMessenger.of(context).clearSnackBars();
 
@@ -209,6 +219,8 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
 
     if (doc.exists) {
       final habitParameters = doc.data()?['habitParameters'];
+      _listNameController.text = doc.data()?['list_name'];
+      _isCustom = doc.data()?['is_custom'];
       List<dynamic> fetchedDaysOfWeek = habitParameters['days'];
       setState(() {
         _selectedDaysOfWeek =
@@ -404,6 +416,23 @@ class _EditHabitLScreenState extends State<EditHabitLScreen> {
                                 const SizedBox(
                                   height: 16,
                                 ),
+                                if (_isCustom)
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                if (_isCustom)
+                                  TextFormField(
+                                    textAlign: TextAlign.center,
+                                    controller: _listNameController,
+                                    validator: _listNameValidator,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    decoration: const InputDecoration(
+                                      counterText: '',
+                                      labelText: 'Nommbre de la lista',
+                                    ),
+                                  ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
