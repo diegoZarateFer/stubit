@@ -278,6 +278,19 @@ class _SecondPageState extends State<SecondPage> {
                     ),
                   ),
                 ),
+                // EJEMPLO AÑADIDO
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Text(
+                    _examples[widget.heroTag],
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
                 Form(
                   key: _formKey,
                   child: Padding(
@@ -351,9 +364,18 @@ final List<String> _titles = [
 
 final List<String> _resume = [
   'La Técnica Pomodoro ayuda a mejorar la productividad dividiendo el trabajo en intervalos de trabajo con descansos cortos.',
-  'Esta técnica es recomendada para definir tiempo y días específicos.',
-  'Se enfoca en actividades que deben realizarse sí o sí.',
-  'Define los días de práctica con cuestionarios.',
-  'Lista actividades diarias obligatorias.',
-  'Cuenta repeticiones diarias.',
+  'Permite definir la duración diaria, las semanas que se realizará y los días específicos (lunes a domingo), ideal si no quieres hacerla todos los días.',
+  'Es útil para actividades que se harán todos los días, con una duración fija cada día, durante un número determinado de semanas.',
+  'Define cuántos días por semana harás la actividad, en qué días exactos y durante cuántas semanas. Es ideal para hábitos de reflexión, ya que al final de cada registro podrás anotar cómo te sentiste.',
+  'Define la duración en semanas y los días específicos (lunes a domingo). Al registrar el hábito, el usuario podrá crear un listado personalizado según su actividad.',
+  'Diseñada para actividades basadas en repeticiones. Se define una meta diaria, su unidad de medida, los días en que se realizará y la duración en semanas.',
+];
+
+final List<String> _examples = [
+  'Ejemplo: Estudiar 1 hora de matemáticas, dividido en 4 ciclos de 15 minutos de estudio seguidos de 5 minutos de descanso, repitiendo hasta completar la hora.',
+  'Ejemplo: Realizar 30 minutos de ejercicio, solo de lunes a viernes.',
+  'Ejemplo: Leer 20 minutos todos los días, durante 4 semanas seguidas.',
+  'Ejemplo: Lunes, miércoles y viernes,llamar a personas queridas.',
+  'Ejemplo: Cada día, haz una lista de las cosas por las que me siento agradecido.',
+  'Ejemplo: Realizar 20 flexiones los días lunes y viernes.',
 ];
