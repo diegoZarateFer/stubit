@@ -130,11 +130,10 @@ class _HabitItemState extends State<HabitItem> {
 
     DateTime day = lastLogDate.add(const Duration(days: 1));
     while (day.isBefore(date)) {
-      final dayOfWeek = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
+      final dayOfWeek = DateFormat('EEEE').format(day).toLowerCase();
       if (loadedDays.contains(dayOfWeek)) {
         _missedDays.add(day);
       }
-
       day = day.add(const Duration(days: 1));
     }
 
