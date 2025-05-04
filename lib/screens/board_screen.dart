@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/models/priority.dart';
+import 'package:stubit/screens/task_calendar_screen.dart';
 import 'package:stubit/screens/task_details_screen.dart';
 import 'package:stubit/widgets/dissmisible_backgrounds.dart';
 import 'package:stubit/widgets/task_item.dart';
@@ -34,6 +35,7 @@ class _BoardScreenState extends State<BoardScreen> {
         builder: (ctx) => TaskDetailsScreen(
           taskId: taskId,
           title: task["title"],
+          date: DateTime.parse(task['date']),
           description: task["description"],
           priority: task["priority"],
           status: task["status"],
@@ -53,7 +55,8 @@ class _BoardScreenState extends State<BoardScreen> {
         "status": newStatus,
       }, SetOptions(merge: true));
 
-      String message = newStatus == "proceso" ? "¡Manos a la obra!": "¡Misión cumplida!";
+      String message =
+          newStatus == "proceso" ? "¡Manos a la obra!" : "¡Misión cumplida!";
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -180,8 +183,18 @@ class _BoardScreenState extends State<BoardScreen> {
         }
 
         final loadedTasks = boardSnapshots.data!.docs;
-        final toDoTasks =
-            loadedTasks.where((task) => task["status"] == "pendiente").toList();
+        final toDoTasks = loadedTasks.where((task) {
+          DateTime savedDate = DateTime.parse(task['date']);
+          DateTime today = DateTime.now();
+          DateTime todayDateOnly = DateTime(today.year, today.month, today.day);
+
+          final isForToday = savedDate.year == todayDateOnly.year &&
+              savedDate.month == todayDateOnly.month &&
+              savedDate.day == todayDateOnly.day;
+
+          return task["status"] == "pendiente" && isForToday;
+        }).toList();
+
         final inProgressTasks =
             loadedTasks.where((task) => task["status"] == "proceso").toList();
         final completedTasks = loadedTasks
@@ -203,48 +216,111 @@ class _BoardScreenState extends State<BoardScreen> {
                 child: TabBarView(
                   children: [
                     if (toDoTasks.isNotEmpty)
-                      ListView.builder(
-                        padding: const EdgeInsets.all(24),
-                        itemCount: toDoTasks.length,
-                        itemBuilder: (ctx, index) {
-                          final task = toDoTasks[index].data();
-                          final taskId = toDoTasks[index].id.toString();
-                          final taskPriority = task["priority"];
-                          final taskColor = priorityColor[taskPriority];
-                          return Dismissible(
-                            key: Key(taskId),
-                            direction: DismissDirection.horizontal,
-                            onDismissed: (direction) {
-                              if (direction == DismissDirection.startToEnd) {
-                                _changeTaskStatus(taskId, userId, "proceso");
-                              } else {
-                                _deleteTask(taskId, userId);
-                              }
+                      Column(
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (ctx) => const TaskCalendarScreen(),
+                                ),
+                              );
                             },
-                            background: const DissmisibleBackground(),
-                            secondaryBackground:
-                                const DissmisibleSecondaryBackground(),
-                            child: TaskItem(
-                              onTap: () {
-                                _showTaskDetails(context, task, taskId);
-                              },
-                              taskTitle: task["title"],
-                              taskColor: taskColor!,
+                            label: const Text(
+                              "Mis actividades",
+                              style: TextStyle(color: Colors.white),
                             ),
-                          );
-                        },
+                            icon: const Icon(
+                              Icons.calendar_month,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              elevation: 0,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(24),
+                              itemCount: toDoTasks.length,
+                              itemBuilder: (ctx, index) {
+                                final task = toDoTasks[index].data();
+                                final taskId = toDoTasks[index].id.toString();
+                                final taskPriority = task["priority"];
+                                final taskColor = priorityColor[taskPriority];
+                                return Dismissible(
+                                  key: Key(taskId),
+                                  direction: DismissDirection.horizontal,
+                                  onDismissed: (direction) {
+                                    if (direction ==
+                                        DismissDirection.startToEnd) {
+                                      _changeTaskStatus(
+                                          taskId, userId, "proceso");
+                                    } else {
+                                      _deleteTask(taskId, userId);
+                                    }
+                                  },
+                                  background: const DissmisibleBackground(),
+                                  secondaryBackground:
+                                      const DissmisibleSecondaryBackground(),
+                                  child: TaskItem(
+                                    onTap: () {
+                                      _showTaskDetails(context, task, taskId);
+                                    },
+                                    taskTitle: task["title"],
+                                    taskColor: taskColor!,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     if (toDoTasks.isEmpty)
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.all(18),
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            '¡Muy bien! Parece que no tienes actividades pendientes.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
+                          child: Column(
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (ctx) =>
+                                          const TaskCalendarScreen(),
+                                    ),
+                                  );
+                                },
+                                label: const Text(
+                                  "Mis actividades",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                icon: const Icon(
+                                  Icons.calendar_month,
+                                  color: Colors.white,
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Text(
+                                textAlign: TextAlign.center,
+                                '¡Muy bien! Parece que no tienes actividades pendientes.',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -320,20 +396,19 @@ class _BoardScreenState extends State<BoardScreen> {
                           );
                         },
                       ),
-                    if (completedTasks.isEmpty)
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(18),
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            'Aquí podrás ver tus actividades completadas.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'Aquí podrás ver tus actividades completadas.',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.white,
                           ),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
