@@ -33,12 +33,30 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   //Controllers.
   final TextEditingController _taskNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   String? _selectedPriority = "";
 
   // Validators.
   String? _taskNameValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Falta el nombre de la actividad.';
+    }
+
+    return null;
+  }
+
+  String? _dateValidator(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Selecciona una fecha.';
+    }
+
+    DateTime selectedDate = DateTime.parse(value);
+
+    DateTime today = DateTime.now();
+    DateTime todayDateOnly = DateTime(today.year, today.month, today.day);
+
+    if (selectedDate.isBefore(todayDateOnly)) {
+      return 'La fecha no puede ser anterior.';
     }
 
     return null;
@@ -65,6 +83,42 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       await createTask();
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final initialDate = DateTime.now();
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            inputDecorationTheme: const InputDecorationTheme(
+              hintStyle: TextStyle(color: Colors.white70),
+            ),
+            textTheme: const TextTheme(
+              titleMedium: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              bodyLarge: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _dateController.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
     }
   }
 
@@ -97,6 +151,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         "description": _descriptionController.text,
         "priority": _selectedPriority,
         "status": "pendiente",
+        "date": _dateController.text.toString(),
       });
 
       // Redirect to the board.
@@ -122,6 +177,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     super.dispose();
     _taskNameController.dispose();
     _descriptionController.dispose();
+    _dateController.dispose();
   }
 
   @override
@@ -195,6 +251,24 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       ),
                       controller: _descriptionController,
                       validator: _descriptionValidator,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Selecciona una fecha',
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      readOnly: true,
+                      onTap: () {
+                        _selectDate(context);
+                      },
+                      controller: _dateController,
+                      validator: _dateValidator,
                     ),
                     const SizedBox(
                       height: 16,
