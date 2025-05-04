@@ -75,5 +75,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'stu-bit.firebasestorage.app',
     measurementId: 'G-W4ERNS3EG5',
   );
-
 }

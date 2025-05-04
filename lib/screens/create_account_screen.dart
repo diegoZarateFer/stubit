@@ -5,6 +5,7 @@ import 'package:stubit/screens/account_verification_screen.dart';
 import 'package:stubit/screens/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stubit/widgets/gender_selector.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 final _firebase = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -171,6 +172,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       final user = credential.user;
       if (user != null) {
         final userId = user.uid.toString();
+
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
+
         await Future.wait([
           _firestore
               .collection("user_data")
@@ -181,6 +185,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             "last_name": _lastNameController.text.toString(),
             "gender": _selectedGender,
             "birthday": _dateController.text.toString(),
+            "token": fcmToken,
           }),
           _firestore
               .collection("user_data")
