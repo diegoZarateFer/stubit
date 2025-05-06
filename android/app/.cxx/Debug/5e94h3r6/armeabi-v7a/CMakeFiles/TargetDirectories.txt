@@ -1,0 +1,2 @@
+C:/Users/erick/Desktop/StuuBiit/stubit/android/app/.cxx/Debug/5e94h3r6/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/erick/Desktop/StuuBiit/stubit/android/app/.cxx/Debug/5e94h3r6/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -82,7 +82,7 @@ exports.scheduledNotification2 = onSchedule(
 
 exports.scheduledNotification3 = onSchedule(
   {
-    schedule: "8 20 * * *", // 11:00 PM todos los días
+    schedule: "0 23 * * *", // 11:00 PM todos los días
     timeZone: "America/Mexico_City",
   },
   async () => {
