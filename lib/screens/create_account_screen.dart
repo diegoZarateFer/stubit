@@ -5,6 +5,7 @@ import 'package:stubit/screens/account_verification_screen.dart';
 import 'package:stubit/screens/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stubit/widgets/gender_selector.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 final _firebase = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -127,8 +128,28 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2030),
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2021),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            inputDecorationTheme: const InputDecorationTheme(
+              hintStyle: TextStyle(color: Colors.white70),
+            ),
+            textTheme: const TextTheme(
+              titleMedium: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              bodyLarge: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null) {
@@ -151,6 +172,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       final user = credential.user;
       if (user != null) {
         final userId = user.uid.toString();
+
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
+
         await Future.wait([
           _firestore
               .collection("user_data")
@@ -161,6 +185,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             "last_name": _lastNameController.text.toString(),
             "gender": _selectedGender,
             "birthday": _dateController.text.toString(),
+            "token": fcmToken,
           }),
           _firestore
               .collection("user_data")

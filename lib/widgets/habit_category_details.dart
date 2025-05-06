@@ -71,7 +71,7 @@ class _HabitCategoryDetailsState extends State<HabitCategoryDetails> {
           action: SnackBarAction(
             label: "Ver",
             onPressed: () {
-              // TODO: Redirigir a la pantalla de progeso del hábito.
+              Navigator.pop(context);
             },
           ),
         ),

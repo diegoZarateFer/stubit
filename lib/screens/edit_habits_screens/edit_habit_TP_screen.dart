@@ -316,7 +316,7 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Se han guardado los cambios!'),
+            content: Text('¡Se han guardado los cambios!'),
           ),
         );
         Navigator.pop(context, true);

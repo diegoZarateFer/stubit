@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stubit/screens/ForgotPasswordScreen.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -388,6 +389,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               backgroundColor: Colors.white,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ForgotPasswordScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "¿Olvidaste tu contraseña?",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ),
                         ],

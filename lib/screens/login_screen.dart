@@ -4,6 +4,9 @@ import 'package:stubit/screens/account_verification_screen.dart';
 import 'package:stubit/screens/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stubit/screens/home_screen.dart';
+import 'package:stubit/screens/ForgotPasswordScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -72,6 +75,26 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
+  Future<void> _saveTokenToFirestore(User user) async {
+    final token = await FirebaseMessaging.instance.getToken();
+    if (token == null) return;
+
+    try {
+      final accountCollection = await FirebaseFirestore.instance
+          .collection("user_data")
+          .doc(user.uid)
+          .collection("account")
+          .get();
+
+      for (var doc in accountCollection.docs) {
+        await doc.reference.update({"token": token});
+        print("✅ Token actualizado correctamente.");
+      }
+    } catch (e) {
+      print("❌ Error al guardar el token: $e");
+    }
+  }
+
   Future<void> _loginUser() async {
     try {
       final userCredentials = await _firebase.signInWithEmailAndPassword(
@@ -82,6 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = userCredentials.user;
       if (user != null) {
         if (user.emailVerified) {
+          await _saveTokenToFirestore(user);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -255,7 +279,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 16,
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgotPasswordScreen(),
+                            ),
+                          );
+                        },
                         child: const Text(
                           '¿Necesitas ayuda? Olvidé mi contraseña',
                           style: TextStyle(

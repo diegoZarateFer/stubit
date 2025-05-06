@@ -87,14 +87,15 @@ class AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   void _showEditAccountDataScreen() {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (ctx) => const EditAccountScreen(),
       ),
-    ).then((value) {
+    )
+        .then((value) {
       _loadAccountData();
-    }
-    );
+    });
   }
 
   @override

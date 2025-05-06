@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/screens/account_details_screen.dart';
@@ -16,11 +18,47 @@ class UserMenu extends StatefulWidget {
 }
 
 class _UserMenuState extends State<UserMenu> {
+  // ✅ Función para limpiar el campo "token"
+  Future<void> _removeUserToken() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final token = await FirebaseMessaging.instance.getToken();
+
+    if (user == null || token == null) return;
+
+    try {
+      final accountCollection = await FirebaseFirestore.instance
+          .collection("user_data")
+          .doc(user.uid)
+          .collection("account")
+          .get();
+
+      for (var doc in accountCollection.docs) {
+        final data = doc.data();
+        if (data.containsKey("token") && data["token"] == token) {
+          await doc.reference.update({"token": ""}); // 🧹 Vacía el campo
+          print("✅ Token limpiado correctamente");
+          break;
+        }
+      }
+    } catch (e) {
+      print("❌ Error al limpiar el token: $e");
+    }
+  }
+
+  // ✅ Cierre de sesión con limpieza de token
   void _logout() async {
-    final bool? logout = await showConfirmationDialog(context, "Cerrar Sesión",
-        "¿Estás seguro(a) que deseas salir?", "Cerrar Sesión", "Cancelar");
+    final bool? logout = await showConfirmationDialog(
+      context,
+      "Cerrar Sesión",
+      "¿Estás seguro(a) que deseas salir?",
+      "Cerrar Sesión",
+      "Cancelar",
+    );
+
     if (logout ?? false) {
-      await FirebaseAuth.instance.signOut();
+      await _removeUserToken(); // 👈 Primero limpiar el token
+      await FirebaseAuth.instance.signOut(); // Luego cerrar sesión
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: ((ctx) => AuthWrapper()),

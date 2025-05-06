@@ -25,11 +25,13 @@ class HabitItem extends StatefulWidget {
     required this.habit,
     required this.habitParameters,
     required this.streak,
+    required this.onHabitDelete,
   });
 
   final Habit habit;
   final Map<String, dynamic> habitParameters;
   final int streak;
+  final void Function() onHabitDelete;
 
   @override
   State<HabitItem> createState() => _HabitItemState();
@@ -66,7 +68,7 @@ class _HabitItemState extends State<HabitItem> {
     }
 
     if (widget.habit.strategy == 'COF') {
-      return "Agregar a registro";
+      return "Continuar registro";
     }
     return _isCompleted ? "Modificar registro" : "Registrar";
   }
@@ -100,17 +102,6 @@ class _HabitItemState extends State<HabitItem> {
     }
   }
 
-  bool _habitIsActiveToday() {
-    final dayOfWeek = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
-    List<dynamic>? loadedDays = widget.habitParameters['days'];
-    if (loadedDays == null) {
-      return true;
-    }
-
-    List<String> days = loadedDays.map((item) => item.toString()).toList();
-    return days.contains(dayOfWeek);
-  }
-
   Future<void> _loadStreakState() async {
     _missedDays = [];
     DateTime now = DateTime.now();
@@ -139,11 +130,10 @@ class _HabitItemState extends State<HabitItem> {
 
     DateTime day = lastLogDate.add(const Duration(days: 1));
     while (day.isBefore(date)) {
-      final dayOfWeek = DateFormat('EEEE').format(DateTime.now()).toLowerCase();
+      final dayOfWeek = DateFormat('EEEE').format(day).toLowerCase();
       if (loadedDays.contains(dayOfWeek)) {
         _missedDays.add(day);
       }
-
       day = day.add(const Duration(days: 1));
     }
 
@@ -152,27 +142,27 @@ class _HabitItemState extends State<HabitItem> {
     });
   }
 
-  void _showEditHabitScreen() {
+  Future<void> _showEditHabitScreen() async {
     if (widget.habit.strategy == 'T') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditTHabitScreen(habit: widget.habit),
         ),
       );
     } else if (widget.habit.strategy == 'TP') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitTpScreen(habit: widget.habit),
         ),
       );
     } else if (widget.habit.strategy == 'L') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitLScreen(habit: widget.habit),
         ),
       );
     } else if (widget.habit.strategy == 'COF') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitCofScreen(
             habit: widget.habit,
@@ -181,7 +171,7 @@ class _HabitItemState extends State<HabitItem> {
         ),
       );
     } else if (widget.habit.strategy == 'TF') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitFtScreen(
             habit: widget.habit,
@@ -189,7 +179,7 @@ class _HabitItemState extends State<HabitItem> {
         ),
       );
     } else if (widget.habit.strategy == 'CF') {
-      Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => EditHabitCfScreen(
             habit: widget.habit,
@@ -224,7 +214,6 @@ class _HabitItemState extends State<HabitItem> {
   }
 
   void _showMenuAction(BuildContext context) {
-    final bool isActive = _habitIsActiveToday();
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -274,6 +263,8 @@ class _HabitItemState extends State<HabitItem> {
                   MaterialPageRoute(
                     builder: (ctx) => TrackHabitScreen(
                       habit: widget.habit,
+                      streak: widget.streak,
+                      streakIsActive: _streakIsActive && _isCompleted,
                     ),
                   ),
                 );
@@ -282,22 +273,11 @@ class _HabitItemState extends State<HabitItem> {
             ListTile(
               leading: const Icon(Icons.edit),
               title: const Text('Editar hábito'),
-              onTap: _showEditHabitScreen,
+              onTap: () async {
+                await _showEditHabitScreen();
+                Navigator.pop(ctx);
+              },
             ),
-            if (isActive && !_isCompleted)
-              ListTile(
-                leading: const Icon(
-                  Icons.emoji_events,
-                  color: Colors.amber,
-                ),
-                title: const Text(
-                  '¡Mantén tu racha!',
-                  style: TextStyle(
-                    color: Colors.amber,
-                  ),
-                ),
-                onTap: () {},
-              ),
             ListTile(
               leading: const Icon(
                 Icons.delete,
@@ -333,6 +313,7 @@ class _HabitItemState extends State<HabitItem> {
                         .collection("habits")
                         .doc(widget.habit.id)
                         .delete();
+                    widget.onHabitDelete();
                     ScaffoldMessenger.of(rootContext).showSnackBar(
                       const SnackBar(
                         content: Text(

@@ -20,10 +20,12 @@ Map<String, num> _numberOfWeeksOptions = {
 class CreateLHabitScreen extends StatefulWidget {
   const CreateLHabitScreen({
     super.key,
+    this.isCustom = false,
     required this.habit,
   });
 
   final Habit habit;
+  final bool isCustom;
 
   @override
   State<CreateLHabitScreen> createState() => _CreateLHabitScreenState();
@@ -46,6 +48,8 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
   List<String> _selectedDaysOfWeek = [];
 
   num? _selectedNumberOfWeeks;
+
+  final TextEditingController _listNameController = TextEditingController();
 
   @override
   void initState() {
@@ -172,6 +176,10 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
           "strategy": widget.habit.strategy,
           "category": widget.habit.category,
           "description": widget.habit.description,
+          "is_custom": widget.isCustom,
+          "list_name": widget.isCustom
+              ? "Me siento agradecido por:"
+              : _listNameController.text,
           "habitParameters": habitParameters,
           "streak": 0,
           "last_log": now,
@@ -193,6 +201,14 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
         );
       }
     }
+  }
+
+  String? _listNameValidator(listName) {
+    if (listName == null || listName.toString().trim() == '') {
+      return 'Campo obligatorio.';
+    }
+
+    return null;
   }
 
   @override
@@ -246,6 +262,23 @@ class _CreateLHabitScreenState extends State<CreateLHabitScreen> {
                         color: Colors.white,
                       ),
                     ),
+                    if (widget.isCustom)
+                      const SizedBox(
+                        height: 16,
+                      ),
+                    if (widget.isCustom)
+                      TextFormField(
+                        textAlign: TextAlign.center,
+                        controller: _listNameController,
+                        validator: _listNameValidator,
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          labelText: 'Nommbre de la lista',
+                        ),
+                      ),
                     const SizedBox(
                       height: 16,
                     ),

@@ -192,7 +192,7 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Hábito agregado correctamente!'),
+            content: Text('¡Se ha guardado los cambios!'),
           ),
         );
         Navigator.pop(context, true);
@@ -200,7 +200,7 @@ class _EditHabitCofScreenState extends State<EditHabitCofScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Ha ocurrido un error al crear el hábito. Intentalo más tarde.',
+              'Ha ocurrido un error al guardar los cambios. Intentalo más tarde.',
             ),
           ),
         );

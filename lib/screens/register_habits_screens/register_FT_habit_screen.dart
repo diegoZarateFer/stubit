@@ -113,15 +113,16 @@ class _CreateFtHabitScreenState extends State<RegisterFtHabitScreen> {
               .update({
             "collectedGems": FieldValue.increment(givenGems),
           }),
-        _firestore
-            .collection("user_data")
-            .doc(userId)
-            .collection("habits")
-            .doc(widget.habit.id)
-            .update({
-          "streak": FieldValue.increment(1),
-          "last_log": now,
-        }),
+        if (_isFirstRegister)
+          _firestore
+              .collection("user_data")
+              .doc(userId)
+              .collection("habits")
+              .doc(widget.habit.id)
+              .update({
+            "streak": FieldValue.increment(1),
+            "last_log": now,
+          }),
         _firestore
             .collection("user_data")
             .doc(userId)

@@ -58,6 +58,11 @@ class _CreateCofHabitScreenState extends State<CreateCofHabitScreen> {
         selectedDailyTarget.toString().trim() == '') {
       return 'Campo obligatorio.';
     }
+
+    if (int.tryParse(selectedDailyTarget.toString()) == null) {
+      return 'El valor debe ser entero.';
+    }
+
     return null;
   }
 
