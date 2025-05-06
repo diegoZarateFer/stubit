@@ -1,0 +1,2 @@
+C:/Users/erick/Desktop/Stuu/stubit/android/app/.cxx/RelWithDebInfo/1h4g60u5/x86/CMakeFiles/edit_cache.dir
+C:/Users/erick/Desktop/Stuu/stubit/android/app/.cxx/RelWithDebInfo/1h4g60u5/x86/CMakeFiles/rebuild_cache.dir
