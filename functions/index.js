@@ -1,97 +1,92 @@
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
+const { getFirestore } = require("firebase-admin/firestore");
 
 admin.initializeApp();
-
-const db = admin.firestore();
+const db = getFirestore();
 const messaging = admin.messaging();
 
-// Función para enviar notificación a un token específico
-const sendManualNotification = async () => {
-  // Este es el token que deseas probar manualmente
-  const token = "fm4PKD3OTjGf_k16I7xKHy:APA91bGxwkosuwVc3XHrW7GBbT9kUvmZ74jDIsyCFWS-mjKVg2dKkqbYwsSPNPPwpPra5-4WyD4A6C2HgI0OqreX-VdhfrbXtuJi3uUHedsypdEtXfUbaPk";
-  
-  // Crear el mensaje de notificación
-  const message = {
-    token: token,
-    notification: {
-      title: "¡Hola desde Stu-Bit!",
-      body: "Este es tu recordatorio diario. 📚",
-    },
-  };
-
+const sendNotificationToAllUsers = async () => {
   try {
-    // Enviar la notificación manualmente
-    const response = await messaging.send(message);
-    console.log("📤 Notificación enviada con éxito al token manual:", response);
+    console.log("🚀 Iniciando envío de notificaciones a todos los usuarios...");
+
+    // Consulta tipo collectionGroup para obtener todos los documentos de todas las subcolecciones "account"
+    const accountDocsSnapshot = await db.collectionGroup("account").get();
+
+    console.log(`📚 Se encontraron ${accountDocsSnapshot.size} cuentas en Firestore.`);
+
+    const tokens = [];
+
+    for (const doc of accountDocsSnapshot.docs) {
+      const data = doc.data();
+      const token = data.token;
+
+      if (token && token.trim() !== "") {
+        tokens.push(token);
+      } else {
+        console.log(`⚠️ Documento ${doc.ref.path} tiene token vacío o indefinido.`);
+      }
+    }
+
+    console.log(`✅ Se recolectaron ${tokens.length} tokens válidos.`);
+
+    if (tokens.length === 0) {
+      console.log("⛔ No hay tokens válidos para enviar notificaciones.");
+      return;
+    }
+
+    const message = {
+      notification: {
+        title: "📅 Recordatorio de hábitos - Stu-Bit",
+        body: "No olvides realizar tus hábitos asignados para hoy. ¡Tú puedes! 💪",
+      },
+      tokens: tokens,
+    };
+
+    const response = await messaging.sendEachForMulticast(message);
+    console.log(`📤 Notificaciones enviadas. Éxitos: ${response.successCount}, Fallos: ${response.failureCount}`);
+
+    response.responses.forEach((resp, idx) => {
+      if (!resp.success) {
+        console.log(`❌ Fallo en el token ${tokens[idx]}:`, resp.error);
+      }
+    });
+
   } catch (error) {
-    console.error("🔥 Error en el envío de notificación manual:", error);
+    console.error("🔥 Error general en el envío de notificaciones:", error);
   }
 };
 
-// Función para obtener e imprimir el token desde Firestore
-const logUserToken = async () => {
-  // Obtener el primer documento de la colección "user_data"
-  const userDocs = await db.collection("user_data").limit(1).get();
-  
-  if (userDocs.empty) {
-    console.log("⚠️ No se encontraron usuarios en la colección 'user_data'.");
-    return;
-  }
-
-  // Acceder al primer usuario encontrado
-  const userDoc = userDocs.docs[0];
-  const accountSubcollection = await userDoc.ref.collection("account").limit(1).get();
-
-  if (accountSubcollection.empty) {
-    console.log("⚠️ No se encontró la subcolección 'account' para el usuario.");
-    return;
-  }
-
-  // Accedemos al primer documento de la subcolección 'account'
-  const accountDoc = accountSubcollection.docs[0];
-  const token = accountDoc.data().token;
-
-  // Imprimir el token encontrado en los logs
-  if (token) {
-    console.log(`🟢 Token encontrado para el usuario ${userDoc.id}: ${token}`);
-  } else {
-    console.log("⚠️ No se encontró token en el documento de la cuenta.");
-  }
-};
-
-// Programar la tarea para enviar la notificación 1 y logear el token
+// Programación de tareas
 exports.scheduledNotification1 = onSchedule(
   {
-    schedule: "52 20 * * *", // Esto ejecutará la función todos los días a las 8:30 PM (hora local)
+    schedule: "0 8 * * *", // 08:00 AM todos los días
     timeZone: "America/Mexico_City",
   },
   async () => {
-    await logUserToken();  // Loguear el token
-    await sendManualNotification();  // Enviar la notificación al token manual
+    console.log("⏰ Ejecutando tarea programada: 8:00 AM");
+    await sendNotificationToAllUsers();
   }
 );
 
-// Programar la tarea para enviar la notificación 2 y logear el token
 exports.scheduledNotification2 = onSchedule(
   {
-    schedule: "54 20 * * *", // Esto ejecutará la función todos los días a las 8:30 PM (hora local)
+    schedule: "0 17 * * *", // 05:00 PM todos los días
     timeZone: "America/Mexico_City",
   },
   async () => {
-    await logUserToken();  // Loguear el token
-    await sendManualNotification();  // Enviar la notificación al token manual
+    console.log("⏰ Ejecutando tarea programada: 5:00 PM");
+    await sendNotificationToAllUsers();
   }
 );
 
-// Programar la tarea para enviar la notificación 3 y logear el token
 exports.scheduledNotification3 = onSchedule(
   {
-    schedule: "59 20 * * *", // Esto ejecutará la función todos los días a las 8:33 PM (hora local)
+    schedule: "8 20 * * *", // 11:00 PM todos los días
     timeZone: "America/Mexico_City",
   },
   async () => {
-    await logUserToken();  // Loguear el token
-    await sendManualNotification();  // Enviar la notificación al token manual
+    console.log("⏰ Ejecutando tarea programada: 11:00 PM");
+    await sendNotificationToAllUsers();
   }
 );
