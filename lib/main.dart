@@ -12,8 +12,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('📩 Background message ID: ${message.messageId}');
 }
-import 'package:stubit/screens/auth_wrapper.dart';
-import 'package:stubit/screens/InitWrapper.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
