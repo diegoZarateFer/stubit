@@ -148,7 +148,7 @@ class _HabitItemState extends State<HabitItem> {
           .collection("habits")
           .doc(widget.habit.id)
           .update({
-        "isGray": _streakIsActive && _isCompleted,
+        "isGray": !(_streakIsActive && _isCompleted),
       });
     } catch (e) {
       throw Exception('Falló la eliminación del LOG.');
