@@ -140,6 +140,19 @@ class _HabitItemState extends State<HabitItem> {
     setState(() {
       _streakIsActive = _missedDays.isEmpty;
     });
+
+    try {
+      await _firestore
+          .collection("user_data")
+          .doc(userId)
+          .collection("habits")
+          .doc(widget.habit.id)
+          .update({
+        "isGray": _streakIsActive && _isCompleted,
+      });
+    } catch (e) {
+      throw Exception('Falló la eliminación del LOG.');
+    }
   }
 
   Future<void> _showEditHabitScreen() async {
