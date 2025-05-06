@@ -13,11 +13,13 @@ class TaskDetailsScreen extends StatefulWidget {
     required this.title,
     required this.description,
     required this.priority,
+    required this.date,
     required this.status,
   });
 
   final String taskId;
   final String title;
+  final DateTime date;
   final String description;
   final String priority;
   final String status;
@@ -49,6 +51,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   // Controllers
   final TextEditingController _taskNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   String? _selectedPriority, _selectedTaskStatus;
 
   // Validators
@@ -82,6 +85,42 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     }
 
     return null;
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final initialDate = DateTime.now();
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            inputDecorationTheme: const InputDecorationTheme(
+              hintStyle: TextStyle(color: Colors.white70),
+            ),
+            textTheme: const TextTheme(
+              titleMedium: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              bodyLarge: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _dateController.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
   }
 
   void _onDismiss() async {
@@ -153,10 +192,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           .doc(_currentUser!.uid.toString())
           .collection("tasks")
           .doc(widget.taskId)
-          .set({
+          .update({
         "title": _taskNameController.text,
         "description": _descriptionController.text,
         "priority": _selectedPriority,
+        "date": _dateController.text.toString(),
         "status": _selectedTaskStatus,
       });
 
@@ -170,6 +210,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
       Navigator.of(context).pop();
     } catch (error) {
+      print("ERROR: $error");
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -179,6 +220,23 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     }
   }
 
+  String? _dateValidator(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Selecciona una fecha.';
+    }
+
+    DateTime selectedDate = DateTime.parse(value);
+
+    DateTime today = DateTime.now();
+    DateTime todayDateOnly = DateTime(today.year, today.month, today.day);
+
+    if (selectedDate.isBefore(todayDateOnly)) {
+      return 'La fecha no puede ser anterior.';
+    }
+
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -186,6 +244,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     _descriptionController.text = widget.description;
     _selectedPriority = widget.priority;
     _selectedTaskStatus = widget.status;
+    _dateController.text =
+        "${widget.date.year}-${widget.date.month.toString().padLeft(2, '0')}-${widget.date.day.toString().padLeft(2, '0')}";
+
     _currentUser = FirebaseAuth.instance.currentUser;
   }
 
@@ -194,6 +255,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     super.dispose();
     _taskNameController.dispose();
     _descriptionController.dispose();
+    _dateController.dispose();
   }
 
   @override
@@ -277,6 +339,24 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         counterText: '',
                         labelText: 'Descripción',
                       ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Selecciona una fecha',
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      readOnly: true,
+                      onTap: () {
+                        _selectDate(context);
+                      },
+                      controller: _dateController,
+                      validator: _dateValidator,
                     ),
                     const SizedBox(
                       height: 20,
