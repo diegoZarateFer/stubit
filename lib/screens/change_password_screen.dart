@@ -27,24 +27,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       TextEditingController();
 
   // Validators
-  String? _validatePassword(String? currentPassword) {
-    String errorMessage = "Contraseña incorrecta";
-    if (currentPassword == null || currentPassword.trim().isEmpty) {
-      return "Ingresa tu contaseña.";
-    }
-
-    if (currentPassword.length < 8) {
-      return errorMessage;
-    }
-
-    final upperCharacterExp = RegExp(r'^(?=.*[A-Z])');
-    if (!upperCharacterExp.hasMatch(currentPassword)) {
-      return errorMessage;
+  String? _validatePassword(String? password) {
+    if (password == null || password.trim().isEmpty) {
+      return 'Ingresa tu contraseña.';
     }
 
     final numberExp = RegExp(r'^(?=.*\d)');
-    if (!numberExp.hasMatch(currentPassword)) {
-      return errorMessage;
+    final upperCharacterExp = RegExp(r'^(?=.*[A-Z])');
+
+    if (password.length < 8 ||
+        !numberExp.hasMatch(password) ||
+        !upperCharacterExp.hasMatch(password)) {
+      return 'Ingresa tu contrseña actual';
     }
 
     return null;
@@ -55,18 +49,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       return 'Ingresa la nueva contraseña.';
     }
 
-    if (newPassword.length < 8) {
-      return 'La contraseña debe tener al menos 8 caracteres.';
-    }
-
-    final upperCharacterExp = RegExp(r'^(?=.*[A-Z])');
-    if (!upperCharacterExp.hasMatch(newPassword)) {
-      return 'La contraseña debe contener al menos una letra mayúscula';
-    }
-
     final numberExp = RegExp(r'^(?=.*\d)');
+    final upperCharacterExp = RegExp(r'^(?=.*[A-Z])');
+
+    final List<String> errors = [];
+
+    if (newPassword.length < 8) {
+      errors.add('Debe tener al menos 8 caracteres.');
+    }
+
     if (!numberExp.hasMatch(newPassword)) {
-      return 'La contraseña debe contener al menos un número.';
+      errors.add('Debe tener al menos un número.');
+    }
+
+    if (!upperCharacterExp.hasMatch(newPassword)) {
+      errors.add('Debe tener al menos una letra mayúscula.');
+    }
+
+    if (errors.isNotEmpty) {
+      return errors.join('\n');
     }
 
     return null;
@@ -265,6 +266,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               color: Colors.white,
                             ),
                             decoration: InputDecoration(
+                              errorMaxLines: 3,
                               counterText: '',
                               labelText: 'Contraseña actual',
                               suffixIcon: IconButton(
@@ -294,6 +296,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               color: Colors.white,
                             ),
                             decoration: InputDecoration(
+                              errorMaxLines: 3,
                               counterText: '',
                               labelText: 'Nueva contraseña',
                               suffixIcon: IconButton(
@@ -322,6 +325,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               color: Colors.white,
                             ),
                             decoration: InputDecoration(
+                              errorMaxLines: 3,
                               counterText: '',
                               labelText: 'Confirmar la nueva contraseña',
                               suffixIcon: IconButton(
