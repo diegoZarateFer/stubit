@@ -13,7 +13,7 @@ import 'package:stubit/screens/edit_habits_screens/edit_habit_TP_screen.dart';
 import 'package:stubit/screens/register_habits_screens/register_habit.dart';
 import 'package:stubit/screens/track_habit_screen.dart';
 import 'package:stubit/util/util.dart';
-import 'package:stubit/widgets/confirmation_dialog.dart';
+import 'package:stubit/widgets/pay_habit_deletion.dart';
 import 'package:stubit/widgets/pay_streak_dialog.dart';
 import 'package:stubit/widgets/streak_dialog.dart';
 
@@ -303,14 +303,13 @@ class _HabitItemState extends State<HabitItem> {
                 ),
               ),
               onTap: () async {
-                bool deleteConfirmation = await showConfirmationDialog(
-                      ctx,
-                      "Eliminar hábito",
-                      "Se borrará toda la información de tu hábito permanentemente.",
-                      "Eliminar",
-                      "Cancelar",
-                    ) ??
-                    false;
+                final deleteConfirmation = await showDialog(
+                  context: context,
+                  builder: (ctx) => PayHabitDeletion(
+                    habit: widget.habit,
+                    habitParameters: widget.habitParameters,
+                  ),
+                ) ?? false;
 
                 ScaffoldMessenger.of(context).clearSnackBars();
                 final userId = _currentUser.uid.toString();
