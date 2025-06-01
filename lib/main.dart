@@ -6,14 +6,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stubit/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stubit/screens/InitWrapper.dart';
+import 'package:stubit/widgets/InternetOverlay.dart';
 
-/// Handler para mensajes recibidos en background o cuando la app está terminada
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('📩 Background message ID: ${message.messageId}');
 }
-import 'package:stubit/screens/auth_wrapper.dart';
-import 'package:stubit/screens/InitWrapper.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
@@ -85,7 +82,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initFCM() async {
-    // Solicitar permisos (más relevante para iOS)
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
@@ -93,26 +89,20 @@ class _MyAppState extends State<MyApp> {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('✅ Permiso concedido para notificaciones');
+      print('Permiso concedido para notificaciones');
     } else {
-      print('❌ Permiso denegado para notificaciones');
+      print('Permiso denegado para notificaciones');
     }
 
-    // Obtener token del dispositivo
     String? token = await _messaging.getToken();
-    print('📱 FCM Token: $token');
+    print('FCM Token: $token');
 
-    // Escuchar mensajes en primer plano
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('📥 Mensaje en foreground: ${message.notification?.title}');
-      // Puedes mostrar un diálogo, snackbar, etc.
+      print('Mensaje en foreground: ${message.notification?.title}');
     });
 
-    // Cuando el usuario toca la notificación y abre la app
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print(
-          '📬 Mensaje abierto desde background: ${message.notification?.title}');
-      // Puedes navegar a una pantalla específica aquí
+      print('Mensaje abierto desde background: ${message.notification?.title}');
     });
   }
 
@@ -130,6 +120,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      builder: (context, child) => InternetOverlay(child: child!),
       home: const InitWrapper(),
     );
   }

@@ -154,6 +154,18 @@ class _CreateFtHabitScreenState extends State<CreateFtHabitScreen> {
       return;
     }
 
+    if (_selectedDaysOfWeek.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Debes seleccionar al menos un día.',
+          ),
+        ),
+      );
+
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 

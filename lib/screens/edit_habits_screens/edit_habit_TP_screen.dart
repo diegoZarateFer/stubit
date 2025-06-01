@@ -266,10 +266,21 @@ class _EditHabitTpScreenState extends State<EditHabitTpScreen> {
   }
 
   void _saveForm() async {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (_selectedDaysOfWeek.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Debes seleccionar al menos un día.',
+          ),
+        ),
+      );
+
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      ScaffoldMessenger.of(context).clearSnackBars();
       if (_selectedNumberOfWeeks == double.infinity &&
           _selectedDaysOfWeek.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(

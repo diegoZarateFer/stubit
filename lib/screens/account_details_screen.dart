@@ -25,6 +25,12 @@ class AccountDetailsScreenState extends State<AccountDetailsScreen> {
   bool _isLoading = true;
   Map<String, dynamic>? _userData;
 
+  late String _selectedGender;
+
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _lastNameController = TextEditingController();
+  TextEditingController _birthDateController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +60,10 @@ class AccountDetailsScreenState extends State<AccountDetailsScreen> {
     setState(() {
       _isLoading = false;
       _userData = loadedData;
+      _nameController.text = loadedData["name"] ?? "";
+      _lastNameController.text = loadedData["last_name"] ?? "";
+      _selectedGender = loadedData["gender"] ?? "";
+      _birthDateController.text = loadedData["birthday"];
     });
   }
 
@@ -159,7 +169,7 @@ class AccountDetailsScreenState extends State<AccountDetailsScreen> {
                           ),
                           TextFormField(
                             maxLength: 35,
-                            initialValue: _userData!["lastname"],
+                            controller: _nameController,
                             readOnly: true,
                             style: const TextStyle(
                               color: Colors.white,
@@ -173,7 +183,7 @@ class AccountDetailsScreenState extends State<AccountDetailsScreen> {
                             height: 16,
                           ),
                           TextFormField(
-                            initialValue: _userData!["birthday"],
+                            controller: _birthDateController,
                             style: const TextStyle(
                               color: Colors.white,
                             ),
@@ -187,7 +197,7 @@ class AccountDetailsScreenState extends State<AccountDetailsScreen> {
                             height: 16,
                           ),
                           GenderSelector(
-                            selectedGender: _userData!["gender"],
+                            selectedGender: _selectedGender,
                             readOnly: true,
                           ),
                           const SizedBox(

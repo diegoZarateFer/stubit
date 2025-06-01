@@ -210,15 +210,13 @@ class _TrackHabitScreenState extends State<TrackHabitScreen> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Positioned(
-                                child: Text(
-                                  "${widget.streak}",
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.koHo(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                              Text(
+                                "${widget.streak}",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.koHo(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
