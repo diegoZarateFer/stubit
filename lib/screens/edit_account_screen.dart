@@ -21,6 +21,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   bool _isLoading = true;
   bool _hasEdited = false;
 
+  late DateTime _birthDate;
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -107,6 +109,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     _dateController.text = querySnapshot.docs[0]["birthday"];
     _gender = querySnapshot.docs[0]["gender"];
     _documentID = querySnapshot.docs[0].id;
+    _birthDate = DateTime.parse(querySnapshot.docs[0]["birthday"]);
     setState(() {
       _isLoading = false;
     });
@@ -117,7 +120,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final initialDate = DateTime(2008, 1, 1);
+    final initialDate = _birthDate;
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,

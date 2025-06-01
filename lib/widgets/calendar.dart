@@ -16,16 +16,14 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-  late DateTime _focusedDay;
-  late DateTime _selectedDay;
-  late Set<DateTime> _dates;
+  DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
+  Set<DateTime> _dates = {};
 
   @override
   void initState() {
     super.initState();
     _dates = widget.dates;
-    _focusedDay = DateTime.now();
-    _selectedDay = DateTime.now();
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -49,7 +47,7 @@ class _CalendarState extends State<Calendar> {
       height: 410,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(230, 35, 35, 35),
+        color: const Color.fromARGB(230, 8, 4, 4),
         borderRadius: BorderRadius.circular(16),
       ),
       child: TableCalendar(

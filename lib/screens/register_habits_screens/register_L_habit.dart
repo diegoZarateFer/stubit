@@ -25,7 +25,8 @@ class RegisterLHabit extends StatefulWidget {
 class _CreateFtHabitScreenState extends State<RegisterLHabit> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
-  late String _date, _listName;
+  late String _date;
+  String _listName = "Me siento agradecido por:";
   List<String> _listItems = [];
 
   bool _confirmationBoxIsSelected = false,
@@ -185,6 +186,7 @@ class _CreateFtHabitScreenState extends State<RegisterLHabit> {
         setState(() {
           _listItems = [];
           _isLoading = false;
+          _listName = "Me siento agradecido por";
           _confirmationBoxIsSelected = false;
           _selectedDifficulty = 0;
         });
