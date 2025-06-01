@@ -40,18 +40,25 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       return 'Ingresa tu contraseña.';
     }
 
-    if (password.length < 8) {
-      return 'La contraseña debe tener al menos 8 caracteres.';
-    }
-
-    final upperCharacterExp = RegExp(r'^(?=.*[A-Z])');
-    if (!upperCharacterExp.hasMatch(password)) {
-      return 'La contraseña debe contener al menos una letra mayúscula';
-    }
-
     final numberExp = RegExp(r'^(?=.*\d)');
+    final upperCharacterExp = RegExp(r'^(?=.*[A-Z])');
+
+    final List<String> errors = [];
+
+    if (password.length < 8) {
+      errors.add('Debe tener al menos 8 caracteres.');
+    }
+
     if (!numberExp.hasMatch(password)) {
-      return 'La contraseña debe contener al menos un número.';
+      errors.add('Debe tener al menos un número.');
+    }
+
+    if (!upperCharacterExp.hasMatch(password)) {
+      errors.add('Debe tener al menos una letra mayúscula.');
+    }
+
+    if(errors.isNotEmpty) {
+      return errors.join('\n');
     }
 
     return null;
@@ -376,6 +383,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       ),
                       decoration: InputDecoration(
                         counterText: '',
+                        errorMaxLines: 3,
                         labelText: 'Contraseña',
                         suffixIcon: IconButton(
                           onPressed: () {
